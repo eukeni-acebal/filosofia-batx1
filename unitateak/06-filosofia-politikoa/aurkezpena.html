@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="eu" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f0f13">
+<title>Filosofia Politikoa · Batxilergoa 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f13;
+  --surface: #1a1a24;
+  --surface2: #22222e;
+  --border: #2e2e42;
+  --text: #e8e8f0;
+  --text-muted: #888899;
+  --accent: #c9a84c;
+  --red: #e05252;
+  --blue: #5b8dee;
+  --green: #52c07a;
+  --purple: #9b72cf;
+  --font-body: 'Source Sans 3', sans-serif;
+  --font-title: 'Playfair Display', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+[data-theme="light"] {
+  --bg: #f5f4ef;
+  --surface: #ffffff;
+  --surface2: #ededea;
+  --border: #d8d6cc;
+  --text: #1a1a26;
+  --text-muted: #666677;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: clamp(15px, 1.7vw, 18px);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+  min-height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── NAVBAR ── */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  min-height: 46px;
+}
+#navbar button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+#navbar button:hover, #navbar button.active { background: var(--accent); color: #000; border-color: var(--accent); }
+#navbar button.nav-arrow { font-size: 14px; padding: 4px 10px; }
+#navbar .sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+#session-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* ── TOC ── */
+#toc-panel {
+  position: fixed; top: 46px; left: 0; bottom: 0; z-index: 90;
+  width: 0; overflow: hidden;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  transition: width .25s;
+}
+#toc-panel.open { width: min(300px, 82vw); overflow-y: auto; }
+#toc-list { padding: 8px 0 16px; list-style: none; }
+.toc-group-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px 5px;
+  cursor: pointer; -webkit-user-select: none; user-select: none;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em;
+  border-top: 1px solid var(--border);
+  transition: color .15s, background .15s;
+}
+.toc-group-header:first-child { border-top: none; }
+.toc-group-header:hover { color: var(--text); background: var(--surface2); }
+.toc-group-header.active-group { color: var(--accent); }
+.toc-group-arrow { font-size: 9px; transition: -webkit-transform .2s; transition: transform .2s; display: inline-block; opacity: .5; }
+.toc-group-header.open .toc-group-arrow { -webkit-transform: rotate(90deg); transform: rotate(90deg); opacity: 1; }
+.toc-items { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
+.toc-items.open { max-height: 2000px; }
+.toc-items li {
+  font-size: 11.5px; padding: 5px 14px 5px 28px;
+  cursor: pointer; border-left: 3px solid transparent;
+  transition: all .15s; color: var(--text-muted); line-height: 1.35;
+}
+.toc-items li:hover { background: var(--surface2); color: var(--text); }
+.toc-items li.active { border-left-color: var(--accent); color: var(--accent); background: var(--surface2); }
+
+/* ── MAIN CONTENT ── */
+#content-wrap {
+  margin-top: 46px;
+  flex: 1;
+  transition: margin-left .25s;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 46px);
+  overflow: hidden;
+}
+#content-wrap.toc-open { margin-left: min(280px, 80vw); }
+
+/* ── SLIDES ── */
+#stage {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.slide {
+  display: none;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+  padding: clamp(20px, 3vw, 50px) clamp(20px, 5vw, 80px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  -webkit-animation: fadeIn .3s ease;
+  animation: fadeIn .3s ease;
+}
+.slide.active { display: flex; flex-direction: column; justify-content: center; }
+[data-session="portada"].active { justify-content: flex-start; padding-top: clamp(30px, 5vh, 60px); }
+@-webkit-keyframes fadeIn { from { opacity: 0; -webkit-transform: translateY(6px); transform: translateY(6px); } to { opacity: 1; -webkit-transform: none; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ── PORTADA ── */
+.portada-title {
+  font-family: var(--font-title);
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  color: var(--accent);
+  margin-bottom: .25em;
+  line-height: 1.1;
+}
+.portada-sub {
+  font-size: clamp(.9rem, 2vw, 1.2rem);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: .04em;
+}
+.portada-nav { display: flex; flex-direction: column; gap: 4px; max-width: 680px; }
+.portada-nav-item {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  font-size: .88em;
+  color: var(--text-muted);
+  border-left: 2px solid transparent;
+}
+.portada-nav-item:hover { background: var(--surface2); color: var(--text); border-left-color: var(--accent); }
+.portada-nav-code {
+  font-family: var(--font-mono); font-size: .75em; font-weight: 600;
+  color: var(--accent); min-width: 28px; flex-shrink: 0;
+}
+
+/* ── SLIDE COMPONENTS ── */
+.slide-title {
+  font-family: var(--font-title);
+  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+  color: var(--accent);
+  margin-bottom: .6em;
+  line-height: 1.2;
+}
+
+.phase-badge { display: none; }
+
+.session-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  display: block;
+}
+.session-badge.phase-hasiera { color: var(--red); }
+.session-badge.phase-garapena { color: var(--blue); }
+.session-badge.phase-itxiera { color: var(--green); }
+
+.kasu-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(201,168,76,.12);
+  border: 1px solid rgba(201,168,76,.3);
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 12px 0;
+  font-size: .9em;
+  color: var(--accent);
+}
+.kasu-badge::before { content: '📍'; font-size: .95em; }
+
+/* Reveal */
+.reveal-list { list-style: none; padding: 0; margin: .5em 0; }
+.reveal-list li {
+  padding: 7px 0 7px 1.2em;
+  border-left: 2px solid transparent;
+  transition: opacity .3s, -webkit-transform .3s;
+  transition: opacity .3s, transform .3s;
+  position: relative;
+  line-height: 1.5;
+}
+.reveal-list li::before { content: '›'; position: absolute; left: 0; color: var(--accent); font-weight: bold; }
+.reveal-list li.hidden { opacity: 0; -webkit-transform: translateX(-8px); transform: translateX(-8px); pointer-events: none; }
+.reveal-list li.visible { opacity: 1; -webkit-transform: none; transform: none; border-left-color: var(--border); }
+.reveal-list li.current { border-left-color: var(--accent); }
+
+/* Collapse */
+.collapse-trigger {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 10px 0 0;
+  font-size: .95em;
+  cursor: pointer;
+  -webkit-user-select: none; user-select: none;
+}
+.collapse-trigger .arr {
+  font-family: var(--font-mono);
+  font-size: .85em;
+  color: var(--text-muted);
+  opacity: .45;
+  transition: opacity .25s, color .25s;
+  flex-shrink: 0;
+}
+.collapse-trigger.open .arr { color: var(--accent); opacity: 1; }
+.collapse-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .4s ease, padding .25s ease, opacity .3s ease;
+  padding: 0 16px;
+  opacity: 0;
+  background: var(--surface);
+  border: 0px solid var(--border);
+  border-radius: 0 0 6px 6px;
+}
+.collapse-body.open {
+  padding: 12px 16px 14px;
+  border-width: 0 1px 1px 1px;
+  opacity: 1;
+  overflow: visible;
+}
+
+/* Tooltip */
+[data-tip] { position: relative; cursor: help; border-bottom: 1px dotted var(--accent); }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%; -webkit-transform: translateX(-50%); transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: .78em;
+  font-family: var(--font-body);
+  white-space: normal;
+  max-width: 250px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s .35s;
+  z-index: 200;
+  line-height: 1.4;
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+[data-tip]:hover::after { opacity: 1; }
+
+/* Cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin: 12px 0; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  transition: border-color .2s;
+}
+.card:hover { border-color: var(--accent); }
+.card-title { font-family: var(--font-title); font-size: 1.1em; margin-bottom: 6px; color: var(--accent); }
+.card-body { font-size: .9em; color: var(--text-muted); line-height: 1.5; }
+
+/* SVG */
+.svg-wrap { width: 100%; max-width: 700px; margin: 0 auto; }
+.svg-wrap svg { width: 100%; height: auto; }
+
+/* Blockquote */
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 10px 18px;
+  margin: 14px 0;
+  color: var(--text-muted);
+  font-style: italic;
+  background: var(--surface);
+  border-radius: 0 6px 6px 0;
+}
+blockquote cite { display: block; margin-top: 6px; font-size: .85em; font-style: normal; color: var(--text-muted); }
+
+/* Table */
+.etika-table { width: 100%; border-collapse: collapse; font-size: .88em; margin: 12px 0; }
+.etika-table th { background: var(--surface2); padding: 8px 10px; text-align: left; font-family: var(--font-mono); font-size: .75em; text-transform: uppercase; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+.etika-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.etika-table tr:hover td { background: var(--surface); }
+
+/* Highlight box */
+.highlight-box {
+  background: var(--surface);
+  border-left: 4px solid var(--accent);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: .95em;
+}
+
+/* Reveal counter */
+#reveal-counter {
+  position: fixed;
+  bottom: 44px; left: 12px;
+  z-index: 95;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  display: flex; align-items: center; gap: 6px;
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+  -webkit-user-select: none; user-select: none;
+}
+#reveal-counter.visible { opacity: 1; }
+#reveal-counter .rc-dots { display: flex; gap: 3px; align-items: center; flex-wrap: wrap; max-width: 120px; }
+#reveal-counter .rc-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text-muted); opacity: .35; flex-shrink: 0;
+  transition: background .2s, opacity .2s;
+}
+#reveal-counter .rc-dot.rc-done { opacity: .6; }
+#reveal-counter .rc-dot.rc-pending { background: var(--accent); opacity: 1; }
+#reveal-counter .rc-dot.rc-collapse { background: var(--purple); opacity: 1; border-radius: 2px; width: 10px; }
+#reveal-counter .rc-label { font-size: 11px; color: var(--accent); }
+
+/* Dots bar */
+#dots-bar {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  min-height: 36px;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.dot.done { background: var(--text-muted); }
+.dot.active { background: var(--accent); border-color: var(--accent); width: 12px; height: 12px; box-shadow: 0 0 6px var(--accent); }
+
+/* Print */
+@media print {
+  #navbar, #toc-panel, #dots-bar { display: none !important; }
+  body { overflow: auto; height: auto; }
+  #stage { position: static; overflow: visible; }
+  .slide { display: flex !important; position: static; animation: none !important; page-break-after: always; min-height: 85vh; border-bottom: 1px solid #ccc; }
+  .reveal-list li { opacity: 1 !important; transform: none !important; }
+  .reveal-list li.hidden { opacity: 1 !important; }
+  .collapse-body { max-height: 1000px !important; padding: 10px 14px !important; }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  #session-tabs { display: none; }
+  .slide { padding: 16px; }
+}
+/* ── §2.13 Pie CC BY-SA ─────────────────────────────── */
+.cc-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 10px 16px;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 8px 8px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.cc-icon {
+  width: 54px;
+  height: 19px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.cc-text { line-height: 1.4; }
+.cc-link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent);
+}
+.cc-link:hover { opacity: .75; }
+@media print {
+  .cc-footer { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <button id="btn-toc" onclick="toggleToc()" title="Aurkibidea">T</button>
+  <div class="sep"></div>
+  <button class="nav-arrow" onclick="prevSlide()">&#8592;</button>
+  <button class="nav-arrow" onclick="nextSlide()">&#8594;</button>
+  <button class="nav-arrow" onclick="skipSlide(1)" title="Ctrl+&#8594;">&#9197;</button>
+  <button class="nav-arrow" onclick="skipSlide(-1)" title="Ctrl+&#8592;">&#9198;</button>
+  <div class="sep"></div>
+  <div id="session-tabs">
+    <button onclick="goToSession('portada')" id="tab-portada">&#8962;</button>
+    <button onclick="goToSession('s01')" id="tab-s01">S01</button>
+    <button onclick="goToSession('s02')" id="tab-s02">S02</button>
+    <button onclick="goToSession('s03')" id="tab-s03">S03</button>
+    <button onclick="goToSession('s04')" id="tab-s04">S04</button>
+    <button onclick="goToSession('s05')" id="tab-s05">S05</button>
+    <button onclick="goToSession('s06')" id="tab-s06">S06</button>
+    <button onclick="goToSession('s07')" id="tab-s07">S07</button>
+  </div>
+  <div class="sep"></div>
+  <button id="btn-theme" onclick="toggleTheme()">&#9728;</button>
+  <button onclick="window.print()" title="Inprimatu">&#128424;</button>
+</nav>
+
+<!-- TOC -->
+<div id="toc-panel">
+  <ul id="toc-list"></ul>
+</div>
+
+<!-- REVEAL COUNTER -->
+<div id="reveal-counter">
+  <span class="rc-dots"></span>
+  <span id="rc-label" class="rc-label"></span>
+</div>
+
+<!-- CONTENT -->
+<div id="content-wrap">
+  <div id="stage">
+
+    <!-- ══════════════════════════════════════════════
+         PORTADA
+    ══════════════════════════════════════════════ -->
+    <div class="slide active" data-session="portada" data-label="Portada">
+      <div class="portada-title">Filosofia<br>Politikoa</div>
+      <div class="portada-sub">Batxilergoa 1 · IES Minas BHI · 2025–26</div>
+      <nav class="portada-nav" style="margin-top:2.4em;">
+        <div class="portada-nav-item" onclick="goToSession('s01')"><span class="portada-nav-code">S01</span><span>Giza Eskubideak · GEAU · Belaunaldiak</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s02')"><span class="portada-nav-code">S02</span><span>Kontratu Soziala · Hobbes · Leviatán</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s03')"><span class="portada-nav-code">S03</span><span>Locke · Rousseau · Eskubide Naturalak</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s04')"><span class="portada-nav-code">S04</span><span>Rawls · Jatorrizko Posizioa · Justizia</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s05')"><span class="portada-nav-code">S05</span><span>Demokrazia · Legitimitatea · Boterea</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s06')"><span class="portada-nav-code">S06</span><span>Estatua · Weber · Indarkeria Legitimoa</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s07')"><span class="portada-nav-code">S07</span><span>Feminismoa · 3 Olatuak · Intersekzionalitatea</span></div>
+      </nav>
+      <div class="cc-footer">
+        <svg class="cc-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 42" aria-hidden="true">
+          <circle cx="21" cy="21" r="20" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <text x="21" y="26.5" text-anchor="middle" font-size="17" font-family="sans-serif" font-weight="bold" fill="currentColor">CC</text>
+          <circle cx="63" cy="21" r="20" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <text x="63" y="26.5" text-anchor="middle" font-size="14" font-family="sans-serif" font-weight="bold" fill="currentColor">BY</text>
+          <circle cx="105" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <text x="105" y="26.5" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="bold" fill="currentColor">SA</text>
+        </svg>
+        <span class="cc-text">
+          Eukeni Acebal, <span id="cc-year"></span> ·
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="cc-link">CC BY-SA 4.0</a>
+          · Elaborado con asistencia de IA (Claude, Anthropic)
+        </span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S01 · GIZA ESKUBIDEAK
+    ══════════════════════════════════════════════ -->
+    <div class="slide" data-session="s01" data-label="Kasu nagusia: Iker">
+      <span class="session-badge">S01 · 1. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Kasu bat: Iker</h2>
+      <div class="kasu-badge">Kasu nagusia · Filosofia Politikoa</div>
+      <p><strong>Iker</strong> 24 urteko bilbotarra da. Unibertsitate graduatua du eta lan-kontratu bat du, baina soldata txikiarekin. Bilbon alokairuak <strong>%55 igo dira azken 5 urteetan</strong>. Ikerk ezin du etxerik aurkitu bere soldata txikiarekin — guraso etxean jarraitzen du, ezin joan, ezin bikotea osatu, ezin autonomia lortu.</p>
+      <p style="margin-top:.7em;">Udalak alokairuen erregulazioa proposatu du. Baina jabeen elkarteak aurka egiten du: «merkatuaren eskua askea da». Alderdiek etxebizitzaren gaian eztabaidatzen dute. Arazoaren «erruduna» nor da?</p>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)" style="margin-top:1em;">
+        <span class="arr">→</span> Pentsatu: Ikerrek eskubiderik al du etxebizitzara? Norena da erantzukizuna — estatuarena, merkatuarena, gizartearena?
+      </div>
+      <div class="collapse-body">
+        <p>Erantzuna ez dugu oraingoz emango. Saio bakoitzean teoria filosofiko politiko batek bere ikuspuntua emango du: kontratu soziala, giza eskubideak, demokrazia, justizia eta feminismoa.</p>
+        <p style="margin-top:.6em; color:var(--text-muted); font-size:.92em;"><strong style="color:var(--accent);">Galdera sakonagoak:</strong> Zer eskubide du? Kontratuaren parte al da? Justua al da merkatuak etxebizitza kontrolatzea? Rawlsek zer esango luke?</p>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s01" data-label="Giza eskubideen jatorria">
+      <span class="session-badge">S01 · Aurrekariak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Giza eskubideen jatorria</h2>
+      <p>Giza eskubideen kontzeptu modernoa ez zen agertu XVIII. mendera arte. Baina aurrekariak aspaldikoak dira.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Antzinako Grezia:</strong> hiritarren berdintasuna — baina emakumeak, esklaboak eta atzerritarrak kanpo</li>
+        <li class="hidden"><strong><span data-tip="munduko herritarra naizela esan zuen lehena (gr.)">Diogenes Sinopekoa</span>:</strong> «Munduko hiritarra naiz» — kosmopolita terminoaren sortzailea</li>
+        <li class="hidden"><strong>Estoikoak:</strong> gizaki guztiak berdinak gara arrazoidun izaki garen aldetik — <span data-tip="arrazoia eta antolaketa unibertsala (gr.)">logos</span> berbera daukagu</li>
+        <li class="hidden"><strong>John Locke</strong> (1632–1704): natura egoeraren gainetik, eskubide naturalak berez daude gizaki orori</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s01" data-label="Iraultza burgesak eta GEAU">
+      <span class="session-badge">S01 · Iraultza burgesak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">XVIII. mendetik 1948ra</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">1776 · AEB</div>
+          <div class="card-body">«Gizon guztiak berdin sortuak dira» — baina esklabutza mantendu zen.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">1789 · Frantzia</div>
+          <div class="card-body">Gizon eta Hiritarraren Eskubideen Aldarrikapena — emakumeak kanpo.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">1791 · Olympe de Gouges</div>
+          <div class="card-body">Emakumearen Eskubideen Aldarrikapena — lehen feministetako bat. Guillotinan hil zuten.</div>
+        </div>
+        <div class="card" style="border-color:var(--accent);">
+          <div class="card-title" style="color:var(--accent);">1948 · NBE · GEAU</div>
+          <div class="card-body">Giza Eskubideen Aldarrikapen Unibertsala — lehen aldiz gizaki <em>guztientzako</em>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s01" data-label="GEAU: oinarriak eta belaunaldiak">
+      <span class="session-badge">S01 · GEAU</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">GEAUren oinarriak eta belaunaldiak</h2>
+      <p>Bi oinarrizko balio: <strong>giza duintasuna</strong> eta <strong>berdintasuna</strong>. Eskubide guztiak hauetan oinarritzen dira.</p>
+      <table class="etika-table" style="margin-top:14px;">
+        <thead><tr><th width="22%">Belaunaldia</th><th width="30%">Mota</th><th width="24%">Balioa</th><th width="24%">Adibidea</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(224,82,82,.08)">
+            <td style="border-left:3px solid var(--red); color:var(--red); font-weight:600;">1.</td>
+            <td>Eskubide zibil eta politikoak</td>
+            <td>Askatasuna</td>
+            <td>Adierazpen-askatasuna, botoa</td>
+          </tr>
+          <tr style="background:rgba(91,141,238,.08)">
+            <td style="border-left:3px solid var(--blue); color:var(--blue); font-weight:600;">2.</td>
+            <td>Eskubide ekonomiko, sozial eta kulturalak</td>
+            <td>Berdintasuna</td>
+            <td>Hezkuntza, osasuna, lana</td>
+          </tr>
+          <tr style="background:rgba(82,192,122,.08)">
+            <td style="border-left:3px solid var(--green); color:var(--green); font-weight:600;">3.</td>
+            <td>Elkartasun-eskubideak</td>
+            <td>Anaitasuna</td>
+            <td>Bake-eskubidea, ingurumena</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="slide" data-session="s01" data-label="Gaur egungo erronkak: mutur-eskuina eta GE">
+      <span class="session-badge">S01 · Gaur egun</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Giza eskubideak gaur: mehatxuak</h2>
+      <p>GEAUk 75 urte bete zituen 2023an. Baina eskubide batzuk zalantzan daude:</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Mutur-eskuinaren hazkundea Europan:</strong> Marine Le Pen, Meloni, Orbán, Milei... Migratzaileen eskubideak murrizteko proposamenak</li>
+        <li class="hidden"><strong>Trump eta eskubide zibilak:</strong> 2025eko itzulerarekin, GEAUren aurkako neurriak AEBetan — genero-identitatea, atzerritarrak</li>
+        <li class="hidden"><strong>Gaza eta Ukraina:</strong> Nazioarteko Zuzenbide Humanitarioaren urraketa posibleak — NBEren eraginkortasuna zalantzan</li>
+        <li class="hidden"><strong>IA eta pribatutasuna:</strong> 3. belaunaldiko eskubideak — eskubide digitalak, datuen babesa</li>
+        <li class="hidden"><span data-tip="Etikako S02 saioaren Hobbes eta egoismo psikologikoaren konexioa">Etika ikuspegia:</span> egoismoa nazioartean ere? Herrialdeen interesak GEAUren aurretik?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s01" data-label="S01 Itxiera: Iker eta GEAU">
+      <span class="session-badge">S01 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">GEAUk zer dio Ikerren kasuan?</h2>
+      <div class="kasu-badge">Iker · GEAU aplikazioa</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>25. artikulua:</strong> «Norbanakoek dute etxebizitza egokia izateko eskubidea» — Iker barne, biztanle espainiar gisa</li>
+        <li class="hidden"><strong>Baina:</strong> GEAUk ez du derrigorrezko aplikazio-mekanismorik — Estatuek ez bete dezakete zigorgabetasunez</li>
+        <li class="hidden"><strong>Tentsioa:</strong> Merkatuaren jabetza-eskubidea (17. art.) vs. etxebizitza eskubidea (25. art.) — bi eskubide, kontraesanean</li>
+        <li class="hidden"><strong>Galdera:</strong> Merkatuak etxebizitza prezioak igotzen badu eta gobernuak ez badu esku-hartzen, nork babestu behar du Iker? — Datorren saioan: kontratu soziala eta Hobbes</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s01" data-label="S01 · Gaur ikasi dugu…">
+      <span class="session-badge">S01 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Giza eskubideen jatorria:</strong> Estoikoetatik (gizaki guztiak berdinak) Ilustraziora (1776, 1789) — eskubideak unibertsalak dira, ez herritar batzuenak</li>
+        <li class="hidden"><strong>GEAU 1948:</strong> 30 artikulu, NBEk onartuta — hiru belaunaldi: askatasuna, berdintasuna, elkartasuna</li>
+        <li class="hidden"><strong>Aplikazio-arazo nagusia:</strong> GEAUk ez du betearazle-mekanismorik — eskubideak aldarrikatzen ditu, baina estatuek ez bete ditzakete zigorrik gabe</li>
+        <li class="hidden"><strong>Etxebizitza eskubidea (25. art.):</strong> existitzen da idatziz — baina merkatuaren jabetza-eskubidearekin tentsioan dago praktikan (Ikerren kasua)</li>
+        <li class="hidden"><strong>Galdera irekia:</strong> Eskubide bat idatzita egotea nahikoa al da? Zer behar da eskubide bat benetakoa izateko?</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S02 · KONTRATU SOZIALA: HOBBES
+    ══════════════════════════════════════════════ -->
+    <div class="slide" data-session="s02" data-label="S02 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S02 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zer dira giza eskubideen hiru belaunaldiak? Eman adibide bat bakoitzarentzat.</li>
+        <li class="hidden">Zergatik ez du GEAUk mekanismo derrigorrezkorik? Zeintzuk dira horren ondorioak?</li>
+        <li class="hidden">Ikerren kasuan: zein artikuluk babesten du? Eta zergatik ez da nahikoa?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s02" data-label="Kontratu soziala: hasiera">
+      <span class="session-badge">S02 · 2. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Zer gertatuko litzateke gobernurik gabe?</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: irudika ezazu gobernu, lege eta polizia gabe mundua. Zer gertatuko litzateke?
+      </div>
+      <div class="collapse-body">
+        <p>Batzuek esango dute jendea kooperatuko lukeela. Beste batzuek, kaosa. <strong>Hobbesek</strong> erantzuna argi dauka: gerra. Baina zergatik?</p>
+        <p style="margin-top:.6em; color:var(--text-muted); font-size:.92em;">Gogoan hartu etikan (S02) ikusi genuen Hobbesen egoismo psikologikoa: ekintza guztiak norberaren interestik mugi­tzen dira. Filosofia politikoan oinarri berak aplikatzen ditu baina eskalara sozialean.</p>
+      </div>
+      <p style="margin-top:16px;">Gaur: XVII. mendeko hiru kontratistaren ikuspegia — eta galdera: <em>Ikerren kasua nola azalduko lukete?</em></p>
+    </div>
+
+    <div class="slide" data-session="s02" data-label="Hobbes: Natura egoera">
+      <span class="session-badge">S02 · Hobbes</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Thomas Hobbes (1588–1679)</h2>
+      <p><strong>Giza naturaren kontzepzioa:</strong> gizakiok izaki berekoi gara. Baliabide mugatuko munduan bizirauteko borrokatzen gara.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Natura egoera:</strong> gobernurik gabeko bizitza — «etengabeko gerra denen aurka»</li>
+        <li class="hidden">Gizakiaren bizitza natura egoeran: <em>«bakartia, pobrea, desatsegina, basatia eta laburra»</em></li>
+        <li class="hidden"><span data-tip="otso (lat.)">«Homo homini lupus»</span> — gizakia gizonarentzat otso da</li>
+        <li class="hidden"><strong>Konponbidea:</strong> botere absolutu bat onartu — Leviatan (subiranoari eskubide guztiak laga)</li>
+      </ul>
+      <blockquote>
+        «Gizakiok beldurrak eta ospeak gidatzen gaituzte, eta honek estatuaren beharra azaltzen du.»
+        <cite>— Thomas Hobbes, Leviatán (1651)</cite>
+      </blockquote>
+    </div>
+
+    <div class="slide" data-session="s02" data-label="Hobbes: Kontratua eta kritikak">
+      <span class="session-badge">S02 · Hobbes · Kritika</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Hobbesen kontratua eta mugak</h2>
+      <div class="highlight-box">Gizabanakoek eskubideak lagatzen dizkiote gobernariari babes eta segurtasunaren truke. Kontratu hau ez da egin ezin dena.</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Gobernuaren funtzioa:</strong> botere absolutua — legeak betearazi eta kaosa saihestu</li>
+        <li class="hidden"><strong>Muga:</strong> gobernuak ez badu babesten, kontratuaren obligazioak desagertzen dira</li>
+        <li class="hidden"><strong>Kritika 1:</strong> Antropologia ezkorregia — altruismoa eta lankidetza ere existitzen dira</li>
+        <li class="hidden"><strong>Kritika 2:</strong> Totalitarismoa justifika dezake — botere absolutuak abusu-arriskua du</li>
+        <li class="hidden"><strong>Kritika 3:</strong> Natura egoera irudimenezkoa da — ez dago ebidentziarik</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s02" data-label="Gaur egungo konexioa: Trump eta Hobbes">
+      <span class="session-badge">S02 · Gaur egun</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Hobbes gaur: «Ordena» diskurtsoa</h2>
+      <p>Hobbesen argudioak berpiztuta daude mutur-eskuinaren diskurtsoan:</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Trump 2025:</strong> «Demokrazia kaosa da — behar dugu indar handia» — Hobbesen beldurraren argudioa</li>
+        <li class="hidden"><strong>Orban (Hungaria):</strong> Migrazioa «inbasio» gisa — natura-egoera irudia erabiltzea legitimaziorako</li>
+        <li class="hidden"><strong>Kontrakoa:</strong> Hobbesentzat kontratuak babes eskaintzen du — baina nori? Mugakideak sartzen al dira?</li>
+        <li class="hidden"><strong>Galdera filosofikoa:</strong> Babes-kontratuak mugarik al dauka? Nortzuk daude barnean?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s02" data-label="S02 Itxiera: Iker eta Hobbes">
+      <span class="session-badge">S02 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Hobbesek Ikerren kasuan zer esango luke?</h2>
+      <div class="kasu-badge">Iker · Hobbesen kontratua</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Hobbes koherente:</strong> Estatua ordena ezartzeko da — etxebizitza-kaosean Estatua botere absolutua erabil dezake merkatua arautzeko</li>
+        <li class="hidden"><strong>Baina:</strong> Hobbesen Estatua jabeen eskubideak ere babesten ditu — jabeen eskubidea eta Ikerren eskubidea talka egiten dute</li>
+        <li class="hidden"><strong>Kontratu-muga:</strong> Hobbesen kontratuak «indartsuenak» babestu ohi ditu — zer gertatzen da ahulenek, Ikerrek bezalakoek, ez dutenean eragina?</li>
+        <li class="hidden"><strong>Galdera:</strong> Ordena soziala etxebizitza-krisiaren bidez hautsi bada, zer egin beharko luke Estatuak? — Datorren saioan: Locke eta Rousseau, ikusmolde ezberdinak</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s02" data-label="S02 · Gaur ikasi dugu…">
+      <span class="session-badge">S02 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Natura-egoera (Hobbes):</strong> gizakia egoista da berez — gizarte gabe, «homo homini lupus» — gerra unibertsala</li>
+        <li class="hidden"><strong>Leviatana:</strong> kontratu sozialaren bidez, herriak botere absolutua Estatuari ematen dio — trukean, ordena eta babesa</li>
+        <li class="hidden"><strong>Hobbesen muga nagusia:</strong> botere absolutuak tirania ekar dezake — eta kontratuak ez du babesten indartsuenak ez direnen eskubideak</li>
+        <li class="hidden"><strong>Ikerren kasuan:</strong> Estatuak merkatua arautu dezake (bere logikaren barruan) — baina jabeen eskubideak eta Ikerren eskubidea talkan daude</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S03 · LOCKE ETA ROUSSEAU
+    ══════════════════════════════════════════════ -->
+    <div class="slide" data-session="s03" data-label="S03 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S03 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Hobbesen «natura-egoera» zer da? Zergatik behar da Estatua?</li>
+        <li class="hidden">Zer da Leviatana eta zer eskaintzen du herritarrei?</li>
+        <li class="hidden">Zein da Hobbesen ereduaren arazo nagusia Ikerren kasuan?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s03" data-label="Locke eta Rousseau: hasiera">
+      <span class="session-badge">S03 · 3. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Hobbes: ados? Ez ados?</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: Hobbesen mundua — beldur eta botere absolutua. Zer falta da?
+      </div>
+      <div class="collapse-body">
+        <p>Hobbesi erantzuten dioten bi pentsalari: <strong>John Locke</strong> (eskubide naturalak) eta <strong>Jean-Jacques Rousseau</strong> (borondate orokorra). Biak ados daude gobernuaren beharrarekin — baina zergatik eta nolako gobernuaren inguruan desadostasun handia dago.</p>
+      </div>
+      <p style="margin-top:16px;">Konparatu hiru ikusmolde: Hobbes (beldurra) vs. Locke (eskubideak) vs. Rousseau (borondate orokorra).</p>
+    </div>
+
+    <div class="slide" data-session="s03" data-label="Locke: eskubide naturalak">
+      <span class="session-badge">S03 · Locke</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">John Locke (1632–1704)</h2>
+      <p><strong>Giza naturaren kontzepzioa:</strong> gizakiok <em>eskubide naturalak</em> ditugu berez, Jainkoak emanak — eta <em>besterenezinak</em> dira.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Eskubide naturalak:</strong> bizitza, askatasuna eta <strong>jabetza pribatua</strong> — inork ezin ditu kendu</li>
+        <li class="hidden"><strong>Natura egoera:</strong> ez da Hobbesena bezain iluna — baina arbitro neutral bat falta da eztabaidetan</li>
+        <li class="hidden"><strong>Kontratua:</strong> gobernua <em>eskubideak babesteko</em> da, ez botere absolutua lortzeko</li>
+        <li class="hidden"><strong>Kontratu-hauste:</strong> gobernuak eskubideak urratzen baditu, herritarrek gobernu hori aldatzeko eskubidea dute — <em>iraultzarako eskubidea</em></li>
+        <li class="hidden"><strong>Demokrazia liberalaren oinarria:</strong> AEBetako Konstituzioa, Frantziako Aldarrikapena — Locken zuzeneko eragina</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s03" data-label="Rousseau: borondate orokorra">
+      <span class="session-badge">S03 · Rousseau</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Jean-Jacques Rousseau (1712–1778)</h2>
+      <p><strong>Giza naturaren kontzepzioa:</strong> «gizakia ongia da, gizarteak hondatzen du.» Jabetzaren sorkuntzak desberdintasuna ekarri zuen.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong><span data-tip="hiritar guztien borondatearen batura, interes komunaren adierazpena (fr.)">Borondate orokorra</span>:</strong> hiritarren elkarren batura — interes komunaren adierazpena</li>
+        <li class="hidden"><strong>Subiranoa ≠ gobernua:</strong> subiranoa = hiritar guztien batura; gobernua = subiranoaren erabakiak exekutatzeko tresna</li>
+        <li class="hidden"><strong>Demokrazia:</strong> Rousseauk demokrazia zuzena lehenesten du — hauteskundeetan oinarritutakoa «hautatutako aristokrazia» besterik ez da</li>
+        <li class="hidden"><strong>Kritika:</strong> gehiengoaren borondate orokorrak gutxiengoak zapal dezake — Tocquevillek «gehiengoen tirania» deituko du</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s03" data-label="Hiru kontratisten konparazioa">
+      <span class="session-badge">S03 · Konparazioa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Hiru kontratistak alderatuta</h2>
+      <table class="etika-table">
+        <thead><tr><th width="18%">Pentsalaria</th><th width="25%">Natura egoera</th><th width="30%">Kontratua</th><th width="27%">Gobernuaren muga</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(224,82,82,.08)">
+            <td style="color:var(--red);font-weight:600;">Hobbes</td>
+            <td>Gerra denen aurka</td>
+            <td>Botere absolutua lagatzen da</td>
+            <td>Bat ere ez (monarkia absolutua)</td>
+          </tr>
+          <tr style="background:rgba(91,141,238,.08)">
+            <td style="color:var(--blue);font-weight:600;">Locke</td>
+            <td>Lasaia, baina epailerik gabe</td>
+            <td>Eskubideak babestu</td>
+            <td>Iraultzarako eskubidea</td>
+          </tr>
+          <tr style="background:rgba(82,192,122,.08)">
+            <td style="color:var(--green);font-weight:600;">Rousseau</td>
+            <td>Ona, gizarteak hondatu du</td>
+            <td>Borondate orokorra adierazi</td>
+            <td>Subiranoa da herria</td>
+          </tr>
+        </tbody>
+      </table>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Hobbes → Autoritarismoa</strong> (Trumpen diskurtso batzuk, Orban)</li>
+        <li class="hidden"><strong>Locke → Liberalismoa</strong> (AEB, UE, Mendebaldeko demokraziak)</li>
+        <li class="hidden"><strong>Rousseau → Demokrazia partehartzailea</strong> (Mugimendu sozialak, Suitzako erreferendumak)</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s03" data-label="S03 Itxiera: Iker eta kontratua">
+      <span class="session-badge">S03 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Lockek eta Rousseauk Ikerren kasuan zer esango lukete?</h2>
+      <div class="kasu-badge">Iker · Locke eta Rousseau</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Locke:</strong> Jabetza-eskubidea funtsezkotzat hartu zuen — baina Ikerren kasuan, jabeen eskubideak Ikerren etxebizitza-eskubidea murritz dezake?</li>
+        <li class="hidden"><strong>Rousseau:</strong> Borondate orokorrak Ikerren egoera eraldatu beharko luke — baina botoa duen gehiengoaren interesek jabeak babesten badituzte, zer?</li>
+        <li class="hidden"><strong>Tentsioa:</strong> Jabetza-eskubide indibiduala (Locke) vs. borondate kolektiboa etxebizitza-politikan (Rousseau)</li>
+        <li class="hidden"><strong>Galdera:</strong> Herriaren gehiengoak etxebizitza-erregulazioa nahi badu baina jabeen lobbyak blokeatzen badu, demokrazia ondo funtzionatzen al du? — Datorren saioan: Rawls eta ezjakintasunaren errezela</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s03" data-label="S03 · Gaur ikasi dugu…">
+      <span class="session-badge">S03 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Locke:</strong> eskubide naturalak (bizitza, askatasuna, jabetza) Estatuaren aurretik existitzen dira — gobernuak ezin ditu urra</li>
+        <li class="hidden"><strong>Rousseau:</strong> borondate orokorrak (interes kolektiboa) banako interesen gainetik dago — demokrazia zuzenaren aldekoa</li>
+        <li class="hidden"><strong>Hobbes vs. Locke vs. Rousseau:</strong> ados gobernuaren beharra — desados motiboan eta botere-mugetan</li>
+        <li class="hidden"><strong>Tentsioa nagusia:</strong> jabetza-eskubide indibiduala (Locke) vs. gizartearen borondate kolektiboa (Rousseau) — Ikerren kasua bi aldetik irakur daiteke</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S04 · RAWLS ETA JUSTIZIA
+    ══════════════════════════════════════════════ -->
+    <div class="slide" data-session="s04" data-label="S04 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S04 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zein da Lockeren eta Rousseauren arteko desberdintasun nagusia gobernuaren izaerari buruz?</li>
+        <li class="hidden">Zer da «borondate orokorra» Rousseauren arabera? Eta nola bereizten da gehiengoaren borondatetik?</li>
+        <li class="hidden">Jabetza-eskubideak (Locke) eta etxebizitza-eskubideak (GEAU) talka egiten dute Ikerren kasuan — zer argudio erabil daiteke alde batetik eta bestetik?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s04" data-label="Rawls: hasiera">
+      <span class="session-badge">S04 · 4. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Pentsamendu-esperimentu bat</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Irudika ezazu: bihar sortuko zara berriz, baina ez dakizu nor izango zaren — zer herrialdetan, zer klase sozialetan, zer sexu eta nazionalitaterekin.
+      </div>
+      <div class="collapse-body">
+        <p>Jakin gabe zer tokia tokatuko zaizun: <strong>zer gizarte diseinatuko zenuke?</strong> Aberatsentzako pribilegiorik? Mugarik immigranteentzako? Desberdintasun handiak?</p>
+        <p style="margin-top:.6em; color:var(--text-muted); font-size:.92em;">Hau da <strong>John Rawlsen</strong> «ezjakintasunaren errezela» — XX. mendeko filosofia politikoaren argudio eraginkorrenetako bat.</p>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s04" data-label="Rawls: jatorrizko posizioa">
+      <span class="session-badge">S04 · Rawls</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">John Rawls (1921–2002): <span data-tip="gizartea justuki diseinatzeko pentsamendu-esperimentua (ing.)">Jatorrizko Posizioa</span></h2>
+      <p>Gizarte justu bat diseinatzeko, <strong><span data-tip="zure gizarte-posizioa jakingo ez bazenu hartuko zenukeen erabakia (ing.)">ezjakintasunaren errezelaren</span></strong> atzean imajinatu behar dugu geure burua.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Ez dakizu: gizona al emakumea, aberatsa al pobrea, bertakoa al atzerritar, gaitasun handikoa al txikia</li>
+        <li class="hidden"><strong>Maximin estrategia:</strong> gizarterik txarrenak ere bizitza duina bermatu behar du — minimoa maximizatu</li>
+        <li class="hidden"><strong>1. Printzipioa:</strong> oinarrizko askatasunak berdinak guztientzat (adierazpen-askatasuna, botoa…)</li>
+        <li class="hidden"><strong>2. Printzipioa (a):</strong> aukera-berdintasun justua — postuak denontzat irekiak, benetan</li>
+        <li class="hidden"><strong>2. Printzipioa (b):</strong> Desberdintasun printzipioa — desberdintasunak onartzen dira bakarrik gizarteko txirrinenak hobetzen baditu</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s04" data-label="Rawls: Justizia ekitate gisa">
+      <span class="session-badge">S04 · Rawls · Aplikazioa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Justizia ekitate gisa</h2>
+      <div class="highlight-box">«Nolakoa izatea nahiko zenuke gizartea, zein izango litzatekeen zure posizioa jakingo ez bazenu?» — Rawls</div>
+      <div class="cards" style="margin-top:14px;">
+        <div class="card" style="border-color:var(--red);">
+          <div class="card-title" style="color:var(--red);">Kritika 1</div>
+          <div class="card-body">Jatorrizko posiziotik pentsatzea praktikan ezinezkoa — gure ezaugarrietatik ez gara aske.</div>
+        </div>
+        <div class="card" style="border-color:var(--blue);">
+          <div class="card-title" style="color:var(--blue);">Kritika 2</div>
+          <div class="card-body">Utilitaristak: gehiengoen zoriona maximizatu behar da, ez gutxiengoena.</div>
+        </div>
+        <div class="card" style="border-color:var(--green);">
+          <div class="card-title" style="color:var(--green);">Bere indargunea</div>
+          <div class="card-body">Eskubide-talka hauetan pentsatzeko tresnarik operatiboena — estatubatuar demokrazietan eragin handia.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s04" data-label="Rawls eta etxebizitza-krisia">
+      <span class="session-badge">S04 · Gaur egun</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Rawls eta etxebizitza-krisia Europan</h2>
+      <p>Etxebizitzaren prezioak Europa osoko hiri handietan %40–80 igo dira 2015etik. Gazteak ezin dute etxerik erosi. Inmigratzaileak are gutxiago.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Ezjakintasunaren errezela aplicatuta:</strong> ez bazekizu jaiotzean noiz eta non sortuko zinen, zer sistema etxebizitza diseinatuko zenuke?</li>
+        <li class="hidden"><strong>Desberdintasun printzipioa:</strong> etxebizitza-merkatu librea onartzen da bakarrik txiroenek ere etxe duina badute — hori gertatzen al da?</li>
+        <li class="hidden"><strong>Aukera-berdintasun justua:</strong> gazteak eta migratzaileak benetako aukera bera al dute etxea lortzeko?</li>
+        <li class="hidden"><strong>Erantzun posibleak:</strong> alokairuen erregulazioa, etxebizitza soziala, hutsik dagoen etxeen zerga</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s04" data-label="S04 Itxiera: Iker eta Rawls">
+      <span class="session-badge">S04 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Rawlsek Ikerren kasuan zer esango luke?</h2>
+      <div class="kasu-badge">Iker · Rawlsen justizia</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Ezjakintasunaren errezela:</strong> jakingo ez bazenu Iker edo Bilboko jaberik aberatsena izango zinela, zer etxebizitza-sistema diseinatuko zenuke?</li>
+        <li class="hidden"><strong>Desberdintasun printzipioa:</strong> Ikerrek etxerik ez izatea eta jabeak aberastea — hori ez da gizartearen txiroenak hobetzea, okertzea baizik</li>
+        <li class="hidden"><strong>Ondorioa Rawlsendako:</strong> Etxebizitza politika bat beharrezkoa da Ikerren modukoak babesteko — ezjakintasunaren erezelatik hala aukeratuko genuke</li>
+        <li class="hidden"><strong>Galdera:</strong> Merkatuaren askatasunak eta jabetza-eskubideak Rawlsen sistemarekin bateragarriak al dira? — Datorren saioan: demokraziaren mugak eta legitimitatea</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s04" data-label="S04 · Gaur ikasi dugu…">
+      <span class="session-badge">S04 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Jatorrizko posizioa:</strong> Rawlsen pentsamendu-esperimentua — gizarte-arauak diseinatu behar ditugu ez dakigula non jaiotako garen</li>
+        <li class="hidden"><strong>Ezjakintasunaren errezela:</strong> ezjakintasunaz estaltzen bagara, arraza, sexua, aberastasuna eta nazionalitatea ezezagunak dira — arau justuagoak sortzen ditugu</li>
+        <li class="hidden"><strong>Desberdintasun printzipioa:</strong> desberdintasunak onartzen dira soilik txiroenei mesede egiten badiete — Ikerren kasuan, ez da betetzen</li>
+        <li class="hidden"><strong>Rawls vs. merkatu librea:</strong> merkatuak berez ez du bermatzen justizia — esku-hartze publikoa beharrezkoa da Rawlsen ikuspegitik</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S05 · DEMOKRAZIA ETA LEGITIMITATEA
+    ══════════════════════════════════════════════ -->
+    <div class="slide" data-session="s05" data-label="S05 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S05 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zer da «ezjakintasunaren errezela»? Zergatik da tresna filosofiko erabilgarria?</li>
+        <li class="hidden">Rawlsen desberdintasun-printzipioa azaldu: zein baldintzan onartzen ditu desberdintasunak?</li>
+        <li class="hidden">Ikerren kasuan, Rawlsen arabera, zein etxebizitza-politika litzateke justua?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s05" data-label="Demokrazia: hasiera">
+      <span class="session-badge">S05 · 5. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Demokrazia: zer da, benetan?</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: herrialdeko biztanleriaren %51ak atzerritarrak kanporatu nahi baditu, demokratikoa al da hori egitea?
+      </div>
+      <div class="collapse-body">
+        <p>Hau demokraziaren paradoxa handienetako bat da: gehiengoaren aukera eta gutxiengoaren eskubideen arteko tentsioa. Hitler bozkatuta iritsi zen botererantz. Franco-k «demokrazia organikoa» aldarrikatzen zuen. Demokrazia = gehiengoa bakarrik? Ala zerbait gehiago?</p>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s05" data-label="Demokraziaren ezaugarriak">
+      <span class="session-badge">S05 · Demokrazia</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Demokraziaren ezaugarri nagusiak</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Botereen banaketa:</strong> legegiletzako (Parlamentua) + exekutibo (Gobernua) + judiziala (Auzitegiak) — elkar kontrolatzen dute</li>
+        <li class="hidden"><strong>Kontu-ematea:</strong> gobernuak herritarren aurrean erantzun behar du hauteskundeetan — diktadurak ez</li>
+        <li class="hidden"><strong>Hauteskunde askeak:</strong> aldizkakoak, gardenak, sufragio unibertsala — inork ezin du zurearen gain bortxatu</li>
+        <li class="hidden"><strong>Gizarte zibila:</strong> Estatuaz eta merkatuaz gain — sindikatuak, GKEak, auzokideen elkarteak, prentsa askea</li>
+        <li class="hidden"><strong>Gehiengoaren gobernua + gutxiengoaren eskubideak:</strong> Konstituzioaren gainetik ez dago — Ikerren kasua ez litzateke aukesketaz erabaki — etxebizitza eskubidea konstituzioan dago</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s05" data-label="Demokrazia zuzenekoa vs. ordezkaritza">
+      <span class="session-badge">S05 · Sistema demokratikoak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Demokrazia mota nagusiak</h2>
+      <div class="cards">
+        <div class="card" style="border-color:var(--blue);">
+          <div class="card-title" style="color:var(--blue);">Demokrazia ordezkatzailea</div>
+          <div class="card-body">Herritarrek ordezkari hautatzen dituzte. Espainia, Frantzia, AEB. Erabakiak parlamentariek hartzen dituzte.</div>
+        </div>
+        <div class="card" style="border-color:var(--green);">
+          <div class="card-title" style="color:var(--green);">Demokrazia zuzena</div>
+          <div class="card-body">Herritarrek zuzenean bozkatzen dute gaietan. Suitza: erreferendum ugari urtean. Rousseauk lehenesten zuen hau.</div>
+        </div>
+        <div class="card" style="border-color:var(--purple);">
+          <div class="card-title" style="color:var(--purple);">Demokrazia deliberatiboa</div>
+          <div class="card-body">Eztabaida publikoaren bidez hartu erabakiak. Habermas: arrazionaltasuna eta parte-hartzea oinarri.</div>
+        </div>
+        <div class="card" style="border-color:var(--red);">
+          <div class="card-title" style="color:var(--red);">«Demokrazia ilegitimatuak»</div>
+          <div class="card-body">Hauteskunderik bai, baina prentsa menpean, oposizioa jazarrita. Hungaria, Turkia, Errusia.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s05" data-label="Demokraziaren mehatxuak gaur">
+      <span class="session-badge">S05 · Gaur egun</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Demokraziaren mehatxuak XXI. mendean</h2>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 680 260" font-family="'Source Sans 3', sans-serif" font-size="13">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#c9a84c"/>
+            </marker>
+          </defs>
+          <!-- Demokrazia center -->
+          <ellipse cx="340" cy="130" rx="80" ry="40" fill="#c9a84c22" stroke="#c9a84c" stroke-width="1.5"/>
+          <text x="340" y="126" text-anchor="middle" fill="#c9a84c" font-weight="bold" font-size="15">Demokrazia</text>
+          <text x="340" y="144" text-anchor="middle" fill="#888899" font-size="11">liberala</text>
+          <!-- Threats -->
+          <rect x="20" y="20" width="160" height="60" rx="6" fill="#e0525215" stroke="#e05252" stroke-width="1.2"/>
+          <text x="100" y="46" text-anchor="middle" fill="#e05252" font-weight="bold">Populismo</text>
+          <text x="100" y="63" text-anchor="middle" fill="#888899" font-size="11">Trump, Orbán, Milei</text>
+          <path d="M180,65 L260,110" stroke="#c9a84c" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="4,2"/>
+
+          <rect x="500" y="20" width="160" height="60" rx="6" fill="#e0525215" stroke="#e05252" stroke-width="1.2"/>
+          <text x="580" y="46" text-anchor="middle" fill="#e05252" font-weight="bold">Desinformazioa</text>
+          <text x="580" y="63" text-anchor="middle" fill="#888899" font-size="11">Sare sozialak, IA</text>
+          <path d="M500,65 L420,110" stroke="#c9a84c" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="4,2"/>
+
+          <rect x="20" y="180" width="160" height="60" rx="6" fill="#5b8dee15" stroke="#5b8dee" stroke-width="1.2"/>
+          <text x="100" y="206" text-anchor="middle" fill="#5b8dee" font-weight="bold">Desberdintasuna</text>
+          <text x="100" y="223" text-anchor="middle" fill="#888899" font-size="11">Etxebizitza, diru-sarbidea</text>
+          <path d="M180,195 L260,155" stroke="#c9a84c" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="4,2"/>
+
+          <rect x="500" y="180" width="160" height="60" rx="6" fill="#5b8dee15" stroke="#5b8dee" stroke-width="1.2"/>
+          <text x="580" y="206" text-anchor="middle" fill="#5b8dee" font-weight="bold">Abstentzioa</text>
+          <text x="580" y="223" text-anchor="middle" fill="#888899" font-size="11">Herritarren parte-hartzea</text>
+          <path d="M500,195 L420,155" stroke="#c9a84c" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="4,2"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s05" data-label="S05 Itxiera: Iker eta demokrazia">
+      <span class="session-badge">S05 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Demokraziak Iker babesten al du?</h2>
+      <div class="kasu-badge">Iker · Demokrazia eta legitimitatea</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Hauteskunde demokratikoak:</strong> alderdi batek etxebizitzaren erregulazioa aldarrikatuz boto gehiago lortzen badu, zergatik ez da betetzen?</li>
+        <li class="hidden"><strong>Lobby arazoa:</strong> Jabeen elkarteak presio egiten dute legegileon gainean — boterea diru-boterearekin bat egiten badu, demokrazia ala oligarkia?</li>
+        <li class="hidden"><strong>Konstituzioaren muga:</strong> Espainiako Konstituzioak 47. artikuluan etxebizitza eskubidea aipatzen du — baina ez du subjektu-eskubide gisa, printzipio-gisa baizik</li>
+        <li class="hidden"><strong>Paradoxa:</strong> Ikerrek botoa du, baina bere interes nagusia ez bada ordezkatua, demokrazia benetan funtzionatzen al du? — Datorren saioan: Estatua, boterea eta Weberen indarkeria legitimoa</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s05" data-label="S05 · Gaur ikasi dugu…">
+      <span class="session-badge">S05 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Demokraziaren ezaugarriak:</strong> botere-banaketa, hauteskunde askeak, eskubideen bermea — ez da gehiengoaren tiranoa</li>
+        <li class="hidden"><strong>Demokrazia motak:</strong> ordezkaritza (gehiena), zuzena (Suitza), deliberatiboa (Habermas) — bakoitzak tentsioak ditu</li>
+        <li class="hidden"><strong>Lobby-arazoa:</strong> diru-boterea politika-boterearekin lotzen bada, demokrazia formala bihur daiteke — gehiengoak nahi duen arren, ez da egiten</li>
+        <li class="hidden"><strong>Konstituzioaren muga:</strong> demokraziak ezin du dena — gutxiengoaren eskubideak (eta etxebizitza bezalako oinarrizkoak) gehiengoaren erabakitik babestuta egon behar dira</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S06 · ESTATUA ETA BOTEREA
+    ══════════════════════════════════════════════ -->
+    <div class="slide" data-session="s06" data-label="S06 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S06 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zer da demokrazia ordezkaritzazkoa? Eta zuzena? Zer abantaila eta desabantaila ditu bakoitzak?</li>
+        <li class="hidden">Lobby-arazoa: nola deformatzen du botere ekonomikoak demokrazia formala?</li>
+        <li class="hidden">Ikerren kasuan: botoa du, baina bere etxebizitza-interesa ez da ordezkatua — zer konponbide ikus ditzakezu?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s06" data-label="Estatua eta boterea: hasiera">
+      <span class="session-badge">S06 · 6. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Nork du boterea, benetan?</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: polizia etxetik bota nahi bazaituzte legez, obeditu behar al duzu? Zergatik?
+      </div>
+      <div class="collapse-body">
+        <p>Batzuek esango dute: bai, lege bat da. Beste batzuek: lege injustua da, ez dut zergatik onartu. Hemen boterearen legitimazioaren gaia agertzen da: <strong>zer egiten du boterea legitimoa?</strong> Max Weber soziologoak erantzun hau landu zuen.</p>
+      </div>
+      <p style="margin-top:16px;">Estatuaren kontzeptua, Weberren botere-teoria, eta legitimazioaren arazoa gaur.</p>
+    </div>
+
+    <div class="slide" data-session="s06" data-label="Estatua: definizioa">
+      <span class="session-badge">S06 · Estatua</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Estatua zer da?</h2>
+      <p><strong>Carl Schmitt</strong>-en definizioa (1888–1985): Estatua da <em>eremu jakin batean indarkeria fisiko legitimoaren monopolioa</em> duen giza komunitatea.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Lurraldea:</strong> muga finkoak dituen eremu geografikoa</li>
+        <li class="hidden"><strong>Biztanleria iraunkorra:</strong> estatu-kide diren pertsonak — herritarrak</li>
+        <li class="hidden"><strong>Indarkeria legitimoaren monopolioa:</strong> polizia eta armada — hauek bakarrik indar fisikoa erabil dezakete legez</li>
+        <li class="hidden"><strong>Kontrol praktikoa:</strong> Estatua ez dena: mafia (indarkeria bai, baina ez legitimoa), Euskadi (indarkeriaren monopoliorik ez)</li>
+        <li class="hidden"><strong>Nazio vs. Estatu:</strong> nazioagatik → kultura, hizkuntza, identitate komunak; Estatua → entitate juridiko-politikoa</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s06" data-label="Weber: botere motak">
+      <span class="session-badge">S06 · Weber</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Max Weber (1864–1920): <span data-tip="obeditzen den botere mota (al.)">Botere-motak</span></h2>
+      <p>Weberrek <strong>hiru botere-mota legitimazio-iturri</strong> identifikatzen ditu:</p>
+      <table class="etika-table" style="margin-top:12px;">
+        <thead><tr><th width="25%">Mota</th><th width="40%">Oinarria</th><th width="35%">Adibidea</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(201,168,76,.08)">
+            <td style="color:var(--accent);font-weight:600;">Tradizionala</td>
+            <td>Ohiturak eta tradizioak — «beti horrela egin da»</td>
+            <td>Monarkia hereditarioa, lehen mailako auzoak</td>
+          </tr>
+          <tr style="background:rgba(91,141,238,.08)">
+            <td style="color:var(--blue);font-weight:600;">Karismatikoа</td>
+            <td>Lider baten ezohiko gaitasunetan sinesmena</td>
+            <td>Hitler, De Gaulle, Castro, Zelenski (gerrako garaia)</td>
+          </tr>
+          <tr style="background:rgba(82,192,122,.08)">
+            <td style="color:var(--green);font-weight:600;">Legalaren-arrazionala</td>
+            <td>Arau eta legeetan oinarritua — inpersonala</td>
+            <td>Demokrazia konstituzionala, funtzionarioak</td>
+          </tr>
+        </tbody>
+      </table>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Gaur egungo tentsioa:</strong> Trump → karismatikoa + «demokrazia» estalkia; Orbán → legalki hautatu, baina demokrazia karismatikorantz eramanez</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s06" data-label="Estatu liberala vs. totalitarioa">
+      <span class="session-badge">S06 · Estatu motak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Estatu liberala, sozialdemokrata eta totalitarioa</h2>
+      <div class="cards">
+        <div class="card" style="border-color:var(--green);">
+          <div class="card-title" style="color:var(--green);">Estatu liberala</div>
+          <div class="card-body">Gutxieneko Estatua. Merkatuak eta gizarte zibilak ekimen gehiena. Eskubide negatiboak nagusi (ez esku hartu).</div>
+        </div>
+        <div class="card" style="border-color:var(--blue);">
+          <div class="card-title" style="color:var(--blue);">Estatu sozialdemokrata</div>
+          <div class="card-body">Oreka bilatu. Osasuna, hezkuntza, gizarte-babesa. Eskubide positiboak ere bermatzen ditu. Europako eredua.</div>
+        </div>
+        <div class="card" style="border-color:var(--red);">
+          <div class="card-title" style="color:var(--red);">Estatu totalitarioa</div>
+          <div class="card-body">Estatuak bizitzaren alderdi guztiak kontrolatzen ditu. Sindikatuk ez, prentsa libre ez. SESB, Ipar Korea.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s06" data-label="S06 Itxiera: Iker eta Estatua">
+      <span class="session-badge">S06 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Estatuak Ikerrekin zer du?</h2>
+      <div class="kasu-badge">Iker · Estatua eta boterea</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Indarkeria legitimoa:</strong> Estatuak desalojo bat betearaz dezake (jabeen alde) — horretarako dago, legala da; baina <em>justua</em> al da Ikerren kasuan?</li>
+        <li class="hidden"><strong>Weber motak aplikatuta:</strong> etxebizitza-politika falta legalaren-arrazionala da (legerik ez) — baina politikariak botere karismatikoa erabiltzen dute gazteei promesak eginez</li>
+        <li class="hidden"><strong>Estatu sozialdemokrata:</strong> Euskadi eredu honetan — baina etxebizitza politika huts egiten du belaunaldi gazteentzat, bereziki</li>
+        <li class="hidden"><strong>Galdera:</strong> Estatuak Iker babesteko betebeharra al du ala merkatuak libreki funtzionatzekoa? — Datorren saioan: Feminismoa eta intersekzionalitatea — Iker gaztea ere bada, baina genero-ikuspegitik zer?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s06" data-label="S06 · Gaur ikasi dugu…">
+      <span class="session-badge">S06 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Estatuaren definizioa (Weber/Schmitt):</strong> indarkeria fisiko legitimoaren monopolioa lurralde batean — ez da morala, deskriptiboa da</li>
+        <li class="hidden"><strong>Weberen hiru legitimazio-mota:</strong> tradizionala (monarkia), karismatikoa (lider indartsua), legal-arrazionala (konstituzio eta legeak) — demokraziak hirugarrena behar du</li>
+        <li class="hidden"><strong>Estatu motak:</strong> liberala (merkatu nagusi), sozialdemokrata (oreka), totalitarioa (kontrol osoa) — Euskadi eta Espainia bigarrenean, baina etxebizitzan hutsegitearekin</li>
+        <li class="hidden"><strong>Ikerren kasua:</strong> desalojoa legala da (indarkeria legitimoa), baina legaltasuna ≠ justizia — Rawlsek onartuko luke hori?</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S07 · FEMINISMOA ETA POLITIKA
+    ══════════════════════════════════════════════ -->
+    <div class="slide" data-session="s07" data-label="S07 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S07 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Weberen arabera, zer da «indarkeria legitimoa» eta zergatik du monopolioa Estatuak?</li>
+        <li class="hidden">Azaldu Weberen hiru legitimazio-motak. Demokraziak zein behar du?</li>
+        <li class="hidden">Legala izateak justizia bermatzen al du? Eman adibide bat Ikerren kasuarekin.</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s07" data-label="Feminismoa eta politika: hasiera">
+      <span class="session-badge">S07 · 7. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Zein giza eskubide falta da?</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Begiratu berriz GEAU 1948ko egileak diren presidenteen argazkia: zer nabari duzu?
+      </div>
+      <div class="collapse-body">
+        <p>Gizon zuriak nagusiki. NBEko erabakigune nagusiak gizon zuriek osatzen zituzten. Honek eragina al zuen zer eskubide definitu ziren?</p>
+        <p style="margin-top:.6em; color:var(--text-muted); font-size:.92em;">Feminismoaren ekarpen nagusienetako bat da: politika ez da neutroa. Zer ahots dauden esertokian erabakitzen da zer eskubide dauden eta nola babesten diren.</p>
+      </div>
+      <p style="margin-top:16px;">Saio honetan: feminismoaren hiru olatuak eta <span data-tip="arraza, generoa, klase soziala eta beste ezaugarrien arteko elkarreragina (ing.)">intersekzionalitatea</span> — Ikerren kasua bukatzeko.</p>
+    </div>
+
+    <div class="slide" data-session="s07" data-label="Feminismoaren hiru olatuak">
+      <span class="session-badge">S07 · Feminismoa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Feminismoaren hiru olatuak</h2>
+      <table class="etika-table">
+        <thead><tr><th width="15%">Olatu</th><th width="25%">Garaia</th><th width="35%">Aldarrikapen nagusia</th><th width="25%">Lorpen nagusiak</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(224,82,82,.08)">
+            <td style="color:var(--red);font-weight:600;">1.</td>
+            <td>XIX. m. – 1960</td>
+            <td>Botoa, jabetza-eskubideak, hezkuntza — eskubide formal berdinak</td>
+            <td>Sufragioa (Espainia 1931, Suitza 1971!)</td>
+          </tr>
+          <tr style="background:rgba(91,141,238,.08)">
+            <td style="color:var(--blue);font-weight:600;">2.</td>
+            <td>1960–1990</td>
+            <td>«Pertsonala politikoa da» — lan berdintasuna, gorputzaren autonomia</td>
+            <td>Lege diskriminatzaileen abolizioa, abortu legalizazioa</td>
+          </tr>
+          <tr style="background:rgba(82,192,122,.08)">
+            <td style="color:var(--green);font-weight:600;">3.</td>
+            <td>1990–gaur</td>
+            <td>Intersekzionalitatea — ez da feminismo bakarra: arraza, klase, sexualitatea</td>
+            <td>Genero aniztasunaren onarpena, mugimendu globalak (#MeToo)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="slide" data-session="s07" data-label="Intersekzionalitatea: Crenshaw">
+      <span class="session-badge">S07 · Intersekzionalitatea</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title"><span data-tip="arraza, generoa eta besteen arteko elkarreragina aztertzen duen ikuspegia (ing.)">Intersekzionalitatea</span></h2>
+      <p><strong>Kimberlé Crenshaw</strong> (1989): zapalkuntza sistemak ez daude isolatuta — elkarri eragiten diote.</p>
+      <div class="highlight-box">Emakume beltz amerikanarrak ez du esperimentatzen «emakumearen diskriminazioa + arrazismoaren diskriminazioa» banaka — bi sistemen <em>gurutzaketa</em> berezia da, ezin dena banatuta ulertu.</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Zapalkuntza-ardatzak:</strong> generoa, arraza, klase soziala, sexu-orientazioa, nazionalitatea, desgaitasuna…</li>
+        <li class="hidden"><strong>Ondorioa politikorako:</strong> eskubide-politikak «neutro» ezin dira — nor ahotsik gabe geratzen da?</li>
+        <li class="hidden"><strong>Kritika eskuinetik:</strong> identitate-politika zatikatzailea da — klase orokorra baztertzen du</li>
+        <li class="hidden"><strong>Kritika ezkerretik:</strong> intersekzionalismoa akademikoegia — klase-borroka ahaztu egiten da</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s07" data-label="Feminismoa eta politika gaur">
+      <span class="session-badge">S07 · Gaur egun</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Feminismoa politikan gaur: bi ildo</h2>
+      <div class="cards">
+        <div class="card" style="border-color:var(--blue);">
+          <div class="card-title" style="color:var(--blue);">Feminismo liberal-instituzionala</div>
+          <div class="card-body">Zitatuz Simone de Beauvoirren «Bigarren sexua» (1949): sistema barruan aldaketa. Kuotak, lege berdinak. Parlamentuko ordezkaritza hobetzea.</div>
+        </div>
+        <div class="card" style="border-color:var(--purple);">
+          <div class="card-title" style="color:var(--purple);">Feminismo erradikala eta intersekzionala</div>
+          <div class="card-body">Sistema bera aldatu behar da. Patriarkatua eta kapitalismoa lotuta daude. Migrazioa, klase sozialak eta generoa ezin dira banatu.</div>
+        </div>
+      </div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Espainiako eztabaida:</strong> Berdintasun Legea, trans-ley, sex work debatea — mugimendu barruko tentsioak</li>
+        <li class="hidden"><strong>Mutur-eskuina eta generoa:</strong> Vox, Le Pen, Milei — «feminismo ideologia» gisa aurkeztuta, botoa lortzeko</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s07" data-label="S07 Itxiera: Iker intersekzionalki">
+      <span class="session-badge">S07 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Ikerren kasua: analisi intersekzionala</h2>
+      <div class="kasu-badge">Iker · Analisi osoa</div>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Ardatzak:</strong> Iker da — gaztea + klase langile + Bilbotarra + lan-sektore prekarioa — ardatz hauek elkarreragiten dute</li>
+        <li class="hidden"><strong>GEAU:</strong> etxebizitza eskubidea du (S01) — baina mekanismoak ahulak dira pribatu vs. publiko tentsioan</li>
+        <li class="hidden"><strong>Hobbes/Locke/Rousseau:</strong> kontratuaren parte da, baina kontratuak jabeen interesa gehiago babestu du (S02-S03)</li>
+        <li class="hidden"><strong>Rawls:</strong> ezjakintasunaren errezelaren atzean, bere egoera ez litzateke onartuko — txiroenei kalte egiten dio (S04)</li>
+        <li class="hidden"><strong>Demokrazia:</strong> botoa du, baina lobby-botere ekonomikoak bere ordezkaritza ahultzen du (S05)</li>
+        <li class="hidden"><strong>Estatua:</strong> indarkeria legitimoa jabeen alde erabilgarria da, baina Iker babesteko borondateak faltan du (S06)</li>
+        <li class="hidden"><strong>Feminismoa:</strong> generoa eta klasea elkartrukatzen dira — emakume gazteek aukera gutxiago dituzte etxebizitzan klase-intersekzioan (S07)</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s07" data-label="S07 · Gaur ikasi dugu…">
+      <span class="session-badge">S07 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Feminismoen hiru olatuak:</strong> lehen (sufragioa eta eskubide legalak), bigarren (lan-berdintasuna eta «pertsonala politikoa da»), hirugarren (intersekzionalitatea eta genero-aniztasuna)</li>
+        <li class="hidden"><strong>Intersekzionalitatea (Crenshaw):</strong> zapalkuntzak ez dira batzen — elkarreragiten dute; emakume beltza ez da «emakume» + «beltza», kategoria propio bat baizik</li>
+        <li class="hidden"><strong>Feminismoa eta filosofia politikoa:</strong> nor ikusten ez den galdera — politika ez da neutroa; zer ahots dauden mahai inguruan erabakitzen da zer arazo diren «arazo»</li>
+        <li class="hidden"><strong>Ikerren kasua osatuta:</strong> zazpi teorietatik aztertu dugu — GEAU, kontratu soziala, justizia, demokrazia, Estatua eta feminismoa; denak beharrezkoak dira erantzun osatuetarako</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s07" data-label="Filosofia Politikoa: Ondorioak">
+      <span class="session-badge">S07 · Ondorioak</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Filosofia Politikoa: zer ikasi dugu?</h2>
+      <p>Abstrakzioetatik ez gara mugitu: Ikerren kasua errealitate bat da. Filosofia politikoaren tresnak honako galderak erantzuteko dira:</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Nor da komunitatearen parte?</strong> — Kontratu soziala, herritartasuna, kidego politikoa</li>
+        <li class="hidden"><strong>Zer eskubide datoz berez?</strong> — Giza eskubideak, Locke, GEAU — eta etxebizitza eskubidea barne al dago benetan?</li>
+        <li class="hidden"><strong>Zer gizarte da justua?</strong> — Rawlsen ezjakintasunaren errezela: zein sistema aukeratuko zenuke jakin gabe non jaiotako zinenaren?</li>
+        <li class="hidden"><strong>Nork erabakitzen du, nola?</strong> — Demokrazia, boterea, Weberen legitimazioa — eta lobby-ahalak demokrazia deformatzen du?</li>
+        <li class="hidden"><strong>Nor ez da ikusten?</strong> — Feminismoa, intersekzionalitatea, generoa eta klasea — gazteek, emakumeek, klase baxukoek</li>
+        <li class="hidden" style="color:var(--accent);">Filosofia politikoa ez da iraganeko ideia-bilduma — XXI. mendeko arazoei erantzuteko tresna bizia da.</li>
+      </ul>
+    </div>
+
+  </div><!-- /#stage -->
+  <div id="dots-bar"></div>
+</div><!-- /#content-wrap -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  SLIDES ARRAY & STATE
+// ══════════════════════════════════════════════════════
+const slides = Array.from(document.querySelectorAll('.slide'));
+
+// Propagar clase de fase al session-badge para colorear sutilmente
+slides.forEach(slide => {
+  const phaseBadge = slide.querySelector('.phase-badge');
+  const sessionBadge = slide.querySelector('.session-badge');
+  if (phaseBadge && sessionBadge) {
+    ['phase-hasiera','phase-garapena','phase-itxiera'].forEach(cls => {
+      if (phaseBadge.classList.contains(cls)) sessionBadge.classList.add(cls);
+    });
+  }
+});
+let current = 0;
+const revealState = {};
+
+function goTo(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+  slides[current].classList.remove('active');
+  current = idx;
+  slides[current].classList.add('active');
+  updateDots();
+  updateToc();
+  updateSessionTabs();
+  updateRevealCounter();
+}
+
+function goToSession(sess) {
+  const idx = slides.findIndex(s => s.dataset.session === sess);
+  if (idx !== -1) goTo(idx);
+}
+
+function skipSlide(dir) {
+  const currentSession = slides[current].dataset.session;
+  if (dir > 0) {
+    for (let i = current + 1; i < slides.length; i++) {
+      if (slides[i].dataset.session !== currentSession) { goTo(i); return; }
+    }
+  } else {
+    let prevSession = null;
+    for (let i = current - 1; i >= 0; i--) {
+      if (slides[i].dataset.session !== currentSession) {
+        prevSession = slides[i].dataset.session;
+        break;
+      }
+    }
+    if (prevSession) {
+      const idx = slides.findIndex(s => s.dataset.session === prevSession);
+      if (idx !== -1) goTo(idx);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  REVEAL
+// ══════════════════════════════════════════════════════
+function getRevealList(idx) {
+  return Array.from(slides[idx].querySelectorAll('.reveal-list li, .collapse-trigger'));
+}
+
+function nextSlide() {
+  const list = getRevealList(current);
+  const state = revealState[current] || 0;
+  if (state < list.length) {
+    revealNext(list, state);
+    revealState[current] = state + 1;
+    updateRevealCounter();
+  } else {
+    goTo(current + 1);
+  }
+}
+
+function prevSlide() {
+  const list = getRevealList(current);
+  const state = revealState[current] || 0;
+  if (state > 0) {
+    retractLast(list, state - 1);
+    revealState[current] = state - 1;
+    updateRevealCounter();
+  } else {
+    goTo(current - 1);
+  }
+}
+
+function revealNext(list, idx) {
+  const item = list[idx];
+  if (!item) return;
+  if (item.classList.contains('collapse-trigger')) {
+    openCollapse(item);
+  } else {
+    list.forEach((li, i) => { if (!li.classList.contains('collapse-trigger')) li.classList.remove('current'); });
+    item.classList.remove('hidden');
+    item.classList.add('visible', 'current');
+  }
+}
+
+function retractLast(list, idx) {
+  const item = list[idx];
+  if (!item) return;
+  if (item.classList.contains('collapse-trigger')) {
+    closeCollapse(item);
+  } else {
+    item.classList.remove('visible', 'current');
+    item.classList.add('hidden');
+    if (idx > 0) {
+      const prev = list[idx - 1];
+      if (prev && !prev.classList.contains('collapse-trigger')) prev.classList.add('current');
+    }
+  }
+}
+
+function updateRevealCounter() {
+  const counter = document.getElementById('reveal-counter');
+  const dotsEl = counter.querySelector('.rc-dots');
+  const label = document.getElementById('rc-label') || counter.querySelector('.rc-label');
+  const list = getRevealList(current);
+  const state = revealState[current] || 0;
+
+  dotsEl.innerHTML = '';
+  list.forEach((item, i) => {
+    const dot = document.createElement('span');
+    dot.className = 'rc-dot';
+    if (item.classList.contains('collapse-trigger')) dot.classList.add('rc-collapse');
+    else if (i < state) dot.classList.add('rc-done');
+    else dot.classList.add('rc-pending');
+    dotsEl.appendChild(dot);
+  });
+
+  if (list.length > 0) {
+    counter.classList.add('visible');
+    if (label) label.textContent = state + '/' + list.length;
+  } else {
+    counter.classList.remove('visible');
+  }
+
+  if (state === list.length && list.length > 0) {
+    setTimeout(() => {
+      if ((revealState[current] || 0) === list.length) counter.classList.remove('visible');
+    }, 1800);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  DOTS BAR
+// ══════════════════════════════════════════════════════
+function buildDots() {
+  const bar = document.getElementById('dots-bar');
+  bar.innerHTML = '';
+  const sessionSlides = {};
+  slides.forEach((s, i) => {
+    const sess = s.dataset.session;
+    if (!sessionSlides[sess]) sessionSlides[sess] = [];
+    sessionSlides[sess].push(i);
+  });
+  const currentSession = slides[current].dataset.session;
+  const sessionGroup = sessionSlides[currentSession] || [];
+  sessionGroup.forEach(i => {
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (i === current ? ' active' : (i < current ? ' done' : ''));
+    dot.onclick = () => goTo(i);
+    bar.appendChild(dot);
+  });
+}
+
+function updateDots() { buildDots(); }
+
+// ══════════════════════════════════════════════════════
+//  TOC
+// ══════════════════════════════════════════════════════
+function buildToc() {
+  const list = document.getElementById('toc-list');
+  const SESSION_TITLES = {
+    'portada': 'Portada',
+    's01': 'S01 · Giza Eskubideak · GEAU',
+    's02': 'S02 · Kontratu Soziala · Hobbes',
+    's03': 'S03 · Locke · Rousseau',
+    's04': 'S04 · Rawls · Justizia',
+    's05': 'S05 · Demokrazia · Legitimitatea',
+    's06': 'S06 · Estatua · Weber · Boterea',
+    's07': 'S07 · Feminismoa · Intersekzionalitatea',
+  };
+  const sessions = {};
+  const sessionOrder = [];
+  slides.forEach((s, i) => {
+    const sess = s.dataset.session;
+    if (!sessions[sess]) { sessions[sess] = []; sessionOrder.push(sess); }
+    sessions[sess].push({ idx: i, label: s.dataset.label || 'Diapositiba' });
+  });
+  sessionOrder.forEach(sess => {
+    const items = sessions[sess];
+    const title = SESSION_TITLES[sess] || sess.toUpperCase();
+    const header = document.createElement('div');
+    header.className = 'toc-group-header';
+    header.dataset.sess = sess;
+    header.innerHTML = '<span class="toc-group-arrow">&#9654;</span><span>' + title + '</span>';
+    header.onclick = () => {
+      const isOpen = header.classList.toggle('open');
+      const itemsEl = header.nextElementSibling;
+      itemsEl.style.maxHeight = isOpen ? '2000px' : '0';
+      itemsEl.classList.toggle('open', isOpen);
+    };
+    list.appendChild(header);
+    const itemsUl = document.createElement('ul');
+    itemsUl.className = 'toc-items';
+    items.forEach(function(item) {
+      const li = document.createElement('li');
+      li.textContent = item.label;
+      li.dataset.idx = item.idx;
+      li.onclick = () => { goTo(item.idx); };
+      itemsUl.appendChild(li);
+    });
+    list.appendChild(itemsUl);
+  });
+}
+
+function updateToc() {
+  document.querySelectorAll('.toc-items li').forEach(li => {
+    li.classList.toggle('active', parseInt(li.dataset.idx) === current);
+  });
+  const currentSess = slides[current].dataset.session;
+  document.querySelectorAll('.toc-group-header').forEach(h => {
+    h.classList.toggle('active-group', h.dataset.sess === currentSess);
+    if (h.dataset.sess === currentSess && !h.classList.contains('open')) {
+      h.classList.add('open');
+      h.nextElementSibling.style.maxHeight = '2000px';
+      h.nextElementSibling.classList.add('open');
+    }
+  });
+  const activeLi = document.querySelector('.toc-items li.active');
+  if (activeLi) activeLi.scrollIntoView({ block: 'nearest' });
+}
+
+function toggleToc() {
+  document.getElementById('toc-panel').classList.toggle('open');
+  document.getElementById('content-wrap').classList.toggle('toc-open');
+}
+
+// ══════════════════════════════════════════════════════
+//  SESSION TABS
+// ══════════════════════════════════════════════════════
+function updateSessionTabs() {
+  const currentSession = slides[current].dataset.session;
+  document.querySelectorAll('#session-tabs button').forEach(btn => { btn.classList.remove('active'); });
+  const tab = document.getElementById('tab-' + currentSession);
+  if (tab) tab.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════
+//  COLLAPSE
+// ══════════════════════════════════════════════════════
+function openCollapse(trigger) {
+  const body = trigger.nextElementSibling;
+  trigger.classList.add('open');
+  body.style.maxHeight = '2000px';
+  body.classList.add('open');
+}
+function closeCollapse(trigger) {
+  const body = trigger.nextElementSibling;
+  trigger.classList.remove('open');
+  body.style.maxHeight = '0';
+  body.classList.remove('open');
+}
+function toggleCollapse(trigger) {
+  trigger.classList.contains('open') ? closeCollapse(trigger) : openCollapse(trigger);
+}
+
+// ══════════════════════════════════════════════════════
+//  THEME
+// ══════════════════════════════════════════════════════
+function toggleTheme() {
+  const html = document.documentElement;
+  const isLight = html.dataset.theme === 'light';
+  html.dataset.theme = isLight ? 'dark' : 'light';
+  document.getElementById('btn-theme').textContent = isLight ? '☀' : '🌙';
+}
+
+// ══════════════════════════════════════════════════════
+//  KEYBOARD
+// ══════════════════════════════════════════════════════
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.ctrlKey && e.key === 'ArrowRight') { e.preventDefault(); skipSlide(1); }
+  else if (e.ctrlKey && e.key === 'ArrowLeft') { e.preventDefault(); skipSlide(-1); }
+  else if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+  else if (e.key === 't' || e.key === 'T') toggleToc();
+});
+
+// ══════════════════════════════════════════════════════
+//  TOUCH / SWIPE
+// ══════════════════════════════════════════════════════
+(function() {
+  var startX = 0, startY = 0, startTime = 0;
+  var stage = document.getElementById('stage');
+  stage.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    startTime = Date.now();
+  }, { passive: true });
+  stage.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - startX;
+    var dy = e.changedTouches[0].clientY - startY;
+    var dt = Date.now() - startTime;
+    if (dt > 500) return;
+    if (Math.abs(dy) > Math.abs(dx)) return;
+    if (Math.abs(dx) < 40) return;
+    if (dx < 0) nextSlide();
+    else prevSlide();
+  }, { passive: true });
+})();
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+buildToc();
+// Año dinámico en el pie CC
+(function() {
+  var el = document.getElementById('cc-year');
+  if (el) el.textContent = new Date().getFullYear();
+})();
+buildDots();
+updateSessionTabs();
+updateRevealCounter();
+</script>
+</body>
+</html>

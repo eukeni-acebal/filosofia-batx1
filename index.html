@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="eu" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f0f13">
+<title>Filosofia · Batxilergoa 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f13;
+  --surface: #1a1a24;
+  --surface2: #22222e;
+  --border: #2e2e42;
+  --text: #e8e8f0;
+  --text-muted: #888899;
+  --accent: #c9a84c;
+  --red: #e05252;
+  --blue: #5b8dee;
+  --green: #52c07a;
+  --font-body: 'Source Sans 3', sans-serif;
+  --font-title: 'Playfair Display', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+[data-theme="light"] {
+  --bg: #f5f4ef;
+  --surface: #ffffff;
+  --surface2: #ededea;
+  --border: #d8d6cc;
+  --text: #1a1a26;
+  --text-muted: #666677;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: clamp(15px, 1.6vw, 17px);
+  line-height: 1.65;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* ── NAVBAR ── */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 16px;
+  min-height: 46px;
+}
+.nav-brand {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  flex: 1;
+}
+#navbar button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+}
+#navbar button:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+/* ── LAYOUT ── */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 80px 24px 60px;
+}
+
+/* ── HEADER ── */
+.site-header {
+  margin-bottom: 52px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.site-kode {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.site-title {
+  font-family: var(--font-title);
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  color: var(--accent);
+  line-height: 1.05;
+  margin-bottom: .3em;
+}
+.site-sub {
+  font-family: var(--font-mono);
+  font-size: .82em;
+  color: var(--text-muted);
+  letter-spacing: .03em;
+}
+
+/* ── SECTIONS ── */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.section-title {
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+/* ── UNITATE CARDS ── */
+.unitateak-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 12px;
+}
+.unitate-card {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  -webkit-transition: border-color .2s, -webkit-transform .15s;
+  transition: border-color .2s, transform .15s;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+.unitate-card:hover {
+  border-color: var(--accent);
+  -webkit-transform: translateY(-2px);
+  transform: translateY(-2px);
+}
+.unitate-card.disabled {
+  opacity: .45;
+  pointer-events: none;
+  cursor: default;
+}
+.card-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #000;
+  background: var(--accent);
+  min-width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: .04em;
+}
+.unitate-card.disabled .card-num {
+  background: var(--surface2);
+  color: var(--text-muted);
+}
+.card-body {
+  padding: 14px 16px;
+  flex: 1;
+}
+.card-izena {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.25;
+}
+.card-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.card-kasu {
+  color: var(--accent);
+}
+.card-arrow {
+  font-size: 18px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding-right: 14px;
+  -webkit-transition: color .2s;
+  transition: color .2s;
+}
+.unitate-card:hover .card-arrow { color: var(--accent); }
+.badge-laster {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: var(--surface2);
+  color: var(--text-muted);
+  border-radius: 3px;
+  padding: 2px 6px;
+  margin-left: auto;
+}
+
+/* ── EBALUAZIOA GRID ── */
+.ebaluazioa-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.eval-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  -webkit-transition: border-color .2s, -webkit-transform .15s;
+  transition: border-color .2s, transform .15s;
+}
+.eval-card:hover {
+  border-color: var(--blue);
+  -webkit-transform: translateY(-2px);
+  transform: translateY(-2px);
+}
+.eval-card.disabled {
+  opacity: .45;
+  pointer-events: none;
+}
+.eval-icon { font-size: 1.4rem; margin-bottom: 8px; }
+.eval-izena {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.eval-desc {
+  font-size: .83em;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ── CC FOOTER ── */
+.cc-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 60px;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+.cc-icon {
+  width: 54px;
+  height: 19px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.cc-link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent);
+}
+.cc-link:hover { opacity: .75; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .unitateak-grid { grid-template-columns: 1fr; }
+  .ebaluazioa-grid { grid-template-columns: 1fr; }
+  main { padding: 70px 16px 40px; }
+}
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <span class="nav-brand">Filosofia · Batx. 1</span>
+  <button onclick="toggleTheme()" id="btn-theme" title="Gaia aldatu">☀</button>
+</nav>
+
+<main>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="site-kode">Filosofia · Batxilergoa 1 · D eredua · 2025–26</div>
+    <h1 class="site-title">Filosofia</h1>
+    <p class="site-sub">Aurkezpen interaktiboak · Ebaluazio baliabideak · IES Minas BHI, Barakaldo</p>
+  </header>
+
+  <!-- UNITATEAK -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">01–07</span>
+      <h2 class="section-title">Unitateak</h2>
+    </div>
+    <div class="unitateak-grid">
+
+      <a class="unitate-card disabled" href="unitateak/01-zer-da-filosofia/aurkezpena.html">
+        <div class="card-num">U01</div>
+        <div class="card-body">
+          <div class="card-izena">Zer da Filosofia?</div>
+          <div class="card-meta">
+            <span>Aurkezpena</span>
+            <span class="badge-laster">Laster</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="unitate-card disabled" href="unitateak/02-antropologia/aurkezpena.html">
+        <div class="card-num">U02</div>
+        <div class="card-body">
+          <div class="card-izena">Antropologia</div>
+          <div class="card-meta">
+            <span>Aurkezpena</span>
+            <span class="badge-laster">Laster</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="unitate-card disabled" href="unitateak/03-epistemologia/aurkezpena.html">
+        <div class="card-num">U03</div>
+        <div class="card-body">
+          <div class="card-izena">Epistemologia</div>
+          <div class="card-meta">
+            <span>Aurkezpena</span>
+            <span class="badge-laster">Laster</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="unitate-card disabled" href="unitateak/04-metafisika/aurkezpena.html">
+        <div class="card-num">U04</div>
+        <div class="card-body">
+          <div class="card-izena">Metafisika</div>
+          <div class="card-meta">
+            <span>Aurkezpena</span>
+            <span class="badge-laster">Laster</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="unitate-card" href="unitateak/05-etika/aurkezpena.html">
+        <div class="card-num">U05</div>
+        <div class="card-body">
+          <div class="card-izena">Etika</div>
+          <div class="card-meta">
+            <span>12 saio · Aurkezpena</span>
+            <span class="card-kasu">📌 Portu kalea</span>
+          </div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="unitate-card" href="unitateak/06-filosofia-politikoa/aurkezpena.html">
+        <div class="card-num">U06</div>
+        <div class="card-body">
+          <div class="card-izena">Filosofia Politikoa</div>
+          <div class="card-meta">
+            <span>7 saio · Aurkezpena</span>
+            <span class="card-kasu">📌 Iker</span>
+          </div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="unitate-card disabled" href="unitateak/07-estetika/aurkezpena.html">
+        <div class="card-num">U07</div>
+        <div class="card-body">
+          <div class="card-izena">Estetika</div>
+          <div class="card-meta">
+            <span>Aurkezpena</span>
+            <span class="badge-laster">Laster</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- EBALUAZIOA -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">Baliabideak</span>
+      <h2 class="section-title">Ebaluazioa</h2>
+    </div>
+    <div class="ebaluazioa-grid">
+
+      <a class="eval-card disabled" href="ebaluazioa/errubrikak.html">
+        <div class="eval-icon">📋</div>
+        <div class="eval-izena">Errubrikak</div>
+        <div class="eval-desc">15 ebidentzien ebaluazio errubrikak, maila bakoitzeko adierazleekin.</div>
+      </a>
+
+      <a class="eval-card disabled" href="ebaluazioa/programazioa/programazio-didaktikoa.html">
+        <div class="eval-icon">📐</div>
+        <div class="eval-izena">Programazio Didaktikoa</div>
+        <div class="eval-desc">Ikasgaiaren programazio ofiziala, Dekretu 76/2023 eta 17/2023 legearen arabera.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- CC FOOTER -->
+  <footer class="cc-footer">
+    <svg class="cc-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 42" aria-hidden="true">
+      <circle cx="21" cy="21" r="20" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <text x="21" y="26.5" text-anchor="middle" font-size="17" font-family="sans-serif" font-weight="bold" fill="currentColor">CC</text>
+      <circle cx="63" cy="21" r="20" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <text x="63" y="26.5" text-anchor="middle" font-size="14" font-family="sans-serif" font-weight="bold" fill="currentColor">BY</text>
+      <circle cx="105" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <text x="105" y="26.5" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="bold" fill="currentColor">SA</text>
+    </svg>
+    <span>
+      Eukeni Acebal, <span id="cc-year"></span> ·
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="cc-link">CC BY-SA 4.0</a>
+      · Elaborado con asistencia de IA (Claude, Anthropic)
+    </span>
+  </footer>
+
+</main>
+
+<script>
+function toggleTheme() {
+  var html = document.documentElement;
+  var isLight = html.dataset.theme === 'light';
+  html.dataset.theme = isLight ? 'dark' : 'light';
+  document.getElementById('btn-theme').textContent = isLight ? '☀' : '🌙';
+}
+
+(function() {
+  var el = document.getElementById('cc-year');
+  if (el) el.textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
