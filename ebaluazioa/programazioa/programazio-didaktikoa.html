@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="eu" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0f0f13">
+  <title>Programazio Didaktikoa · Filosofia Batx. 1 · 2025–2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --surface2: #22222e;
+      --border: #2e2e42;
+      --text: #e8e8f0;
+      --text-muted: #888899;
+      --accent: #c9a84c;
+      --red: #e05252;
+      --blue: #5b8dee;
+      --green: #52c07a;
+      --purple: #9b72cf;
+      --font-body: 'Source Sans 3', sans-serif;
+      --font-title: 'Playfair Display', serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="light"] {
+      --bg: #f5f4ef;
+      --surface: #ffffff;
+      --surface2: #ededea;
+      --border: #d8d6cc;
+      --text: #1a1a26;
+      --text-muted: #666677;
+    }
+
+    /* ── RESET ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ─────────────────────────────────────────── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 46px;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+    }
+    #navbar button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      -webkit-transition: color .15s, background .15s;
+      transition: color .15s, background .15s;
+    }
+    #navbar button:hover { color: var(--text); background: var(--surface2); }
+    .nav-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: .04em;
+      flex: 1;
+      text-align: center;
+    }
+    .sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+    /* ── LAYOUT ─────────────────────────────────────────── */
+    #toc-panel {
+      position: fixed;
+      top: 46px; left: 0; bottom: 0;
+      width: 300px;
+      overflow-y: auto;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      -webkit-transition: -webkit-transform .25s ease;
+      transition: transform .25s ease;
+      z-index: 90;
+    }
+    #toc-panel.hidden {
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
+    }
+    .toc-group { border-bottom: 1px solid var(--border); padding: 4px 0; }
+    #toc-list a {
+      display: block;
+      padding: 5px 16px;
+      color: var(--text-muted);
+      text-decoration: none;
+      line-height: 1.35;
+      border-left: 2px solid transparent;
+      -webkit-transition: color .15s, background .15s;
+      transition: color .15s, background .15s;
+    }
+    #toc-list a:hover { color: var(--text); background: var(--surface2); }
+    #toc-list a.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface2); }
+    #toc-list a.toc-h2 { font-weight: 600; color: var(--text); font-size: 11.5px; }
+    #toc-list a.toc-h3 { padding-left: 28px; font-size: 10.5px; }
+
+    #content {
+      margin-top: 46px;
+      margin-left: 300px;
+      padding: 48px 52px;
+      max-width: 900px;
+      line-height: 1.7;
+    }
+    #content.full-width { margin-left: 0; }
+
+    @media (max-width: 768px) {
+      #toc-panel { display: none; }
+      #content { margin-left: 0; padding: 24px 18px; }
+    }
+
+    /* ── TIPOGRAFÍA ─────────────────────────────────────── */
+    #content h1 {
+      font-family: var(--font-title);
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: var(--accent);
+      line-height: 1.1;
+      margin-bottom: .3em;
+    }
+    #content .doc-subtitle {
+      font-family: var(--font-mono);
+      font-size: .85rem;
+      color: var(--text-muted);
+      letter-spacing: .05em;
+      margin-bottom: 2.5em;
+    }
+    #content h2 {
+      font-family: var(--font-title);
+      font-size: 1.55rem;
+      color: var(--text);
+      margin: 3em 0 .8em;
+      padding-bottom: .45em;
+      border-bottom: 1px solid var(--border);
+    }
+    #content h3 {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 2em 0 .5em;
+    }
+    #content h4 {
+      font-family: var(--font-body);
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin: 1.5em 0 .4em;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-size: .8rem;
+      font-family: var(--font-mono);
+    }
+    #content p { margin-bottom: 1em; max-width: 720px; }
+    #content ul, #content ol { padding-left: 1.5em; margin-bottom: 1em; max-width: 720px; }
+    #content li { margin-bottom: .35em; }
+    #content strong { color: var(--text); }
+    blockquote {
+      border-left: 3px solid var(--accent);
+      padding: .85em 1.2em;
+      margin: 1.4em 0;
+      background: var(--surface);
+      border-radius: 0 6px 6px 0;
+      color: var(--text-muted);
+      font-style: italic;
+      max-width: 720px;
+    }
+
+    /* ── LEGAL REF ──────────────────────────────────────── */
+    .legal-ref {
+      font-family: var(--font-mono);
+      font-size: .78em;
+      color: var(--blue);
+      background: rgba(91,141,238,.1);
+      border: 1px solid rgba(91,141,238,.25);
+      border-radius: 4px;
+      padding: 2px 8px;
+      display: inline-block;
+      margin: 0 2px;
+    }
+
+    /* ── TABLAS ─────────────────────────────────────────── */
+    .prog-table-wrap { overflow-x: auto; margin: 1.5em 0; }
+    .prog-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .88em;
+    }
+    .prog-table th {
+      background: var(--surface2);
+      font-family: var(--font-mono);
+      font-size: .72em;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .prog-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .prog-table tr:hover td { background: var(--surface2); }
+    .prog-table .section-header td {
+      background: var(--surface2);
+      font-weight: 600;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: .8em;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 6px 14px;
+    }
+
+    /* ── KE BADGES ──────────────────────────────────────── */
+    .ke-badge {
+      font-family: var(--font-mono);
+      font-size: .72em;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .ke1 { background: rgba(224,82,82,.15); color: var(--red); }
+    .ke2 { background: rgba(91,141,238,.15); color: var(--blue); }
+    .ke3 { background: rgba(82,192,122,.15); color: var(--green); }
+    .ke4, .ke5 { background: rgba(201,168,76,.15); color: var(--accent); }
+    .ke6, .ke7 { background: rgba(155,114,207,.15); color: var(--purple); }
+    .ke8, .ke9 { background: rgba(136,136,153,.15); color: var(--text-muted); }
+
+    /* ── TABLA INFO CENTRO ──────────────────────────────── */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2.5em;
+      font-size: .9em;
+      background: var(--surface);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .info-table td {
+      padding: 9px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .info-table td:first-child {
+      font-family: var(--font-mono);
+      font-size: .78em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      width: 160px;
+      white-space: nowrap;
+    }
+    .info-table td:last-child { font-weight: 600; }
+    .info-table tr:last-child td { border-bottom: none; }
+
+    /* ── SECCIONES COLAPSABLES ──────────────────────────── */
+    .prog-collapse { margin: 1.2em 0; }
+    .prog-collapse-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 16px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: .95em;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      -webkit-transition: background .15s;
+      transition: background .15s;
+    }
+    .prog-collapse-btn:hover { background: var(--surface2); }
+    .prog-collapse-btn .arr {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: .9em;
+      min-width: 12px;
+    }
+    .prog-collapse-body {
+      max-height: 0;
+      overflow: hidden;
+      -webkit-transition: max-height .35s ease;
+      transition: max-height .35s ease;
+    }
+    .prog-collapse-body.open { max-height: 9999px; }
+    .prog-collapse-body > * { margin-top: .6em; }
+    .prog-collapse-inner { padding: 12px 16px 4px; }
+
+    /* ── TABLA KE PESO ──────────────────────────────────── */
+    .ke-weight-table { margin: 1.2em 0; }
+    .ke-weight-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ke-weight-row:last-child { border-bottom: none; }
+    .ke-weight-badge { min-width: 52px; }
+    .ke-weight-desc { flex: 1; font-size: .9em; color: var(--text-muted); }
+    .ke-weight-bar-wrap { width: 100px; background: var(--surface2); border-radius: 3px; height: 6px; }
+    .ke-weight-bar { height: 6px; border-radius: 3px; background: var(--accent); }
+    .ke-weight-pct { font-family: var(--font-mono); font-size: .8em; color: var(--accent); min-width: 36px; text-align: right; }
+
+    /* ── PIE CC ─────────────────────────────────────────── */
+    .cc-footer {
+      margin-top: 4em;
+      padding: 24px 0 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--text-muted);
+      font-size: .8em;
+    }
+    .cc-footer svg { flex-shrink: 0; opacity: .7; }
+    .cc-footer a { color: var(--accent); text-decoration: none; }
+    .cc-footer a:hover { text-decoration: underline; }
+
+    /* ── HIGHLIGHT BOX ──────────────────────────────────── */
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-left: 4px solid var(--accent);
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 1.4em 0;
+      max-width: 720px;
+      font-size: .95em;
+    }
+
+    /* ── FORMULA ────────────────────────────────────────── */
+    .formula-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: .9em;
+      color: var(--accent);
+      text-align: center;
+      margin: 1.5em 0;
+      max-width: 520px;
+    }
+
+    /* ── GRID EVALUACIÓN TRESNAK ────────────────────────── */
+    .eval-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 1.4em 0;
+    }
+    .eval-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .eval-card-title {
+      font-family: var(--font-mono);
+      font-size: .75em;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .eval-card p { font-size: .88em; color: var(--text-muted); margin: 0; }
+
+    /* ── RÚBRICAS ─────────────────────────────────────────── */
+    .rubric-section { margin-bottom: 3rem; }
+    .rubric-instrument-title { font-family: var(--font-title); font-size: 1.3rem; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: .4rem; margin: 2rem 0 .5rem; }
+    .rubric-note { font-size: .8rem; color: var(--text-muted); font-style: italic; margin-bottom: .8rem; }
+    .rubric-wrap { overflow-x: auto; margin-bottom: 2rem; }
+    .rubric-table { width: 100%; border-collapse: collapse; font-size: .8rem; min-width: 700px; }
+    .rubric-table th { padding: .5rem .55rem; text-align: left; border: 1px solid var(--border); font-weight: 700; font-size: .78rem; }
+    .rubric-table th.col-crit { background: var(--surface); }
+    .rubric-table th.level-bikain    { background: rgba(82,192,122,.22); }
+    .rubric-table th.level-ongi      { background: rgba(91,141,238,.22); }
+    .rubric-table th.level-egokia    { background: rgba(201,168,76,.22); }
+    .rubric-table th.level-hasierak  { background: rgba(224,82,82,.18); }
+    .rubric-table th.level-egingabe  { background: rgba(136,136,153,.18); }
+    .rubric-table td { padding: .42rem .55rem; border: 1px solid var(--border); vertical-align: top; line-height: 1.42; }
+    .rubric-table td.criterion { font-weight: 600; background: var(--surface); font-size: .79rem; }
+    .rubric-table tr:hover td { background: rgba(201,168,76,.05); }
+    .rubric-table tr:hover td.criterion { background: var(--surface); }
+
+    /* ── SCROLL BAR ─────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ──────────────────────────────────────────── -->
+<nav id="navbar">
+  <button id="btn-toc" onclick="toggleToc()" title="Aurkibidea">☰</button>
+  <div class="sep"></div>
+  <span class="nav-title">Programazio Didaktikoa · Filosofia Batx. 1 · 2025–2026</span>
+  <div class="sep"></div>
+  <button id="btn-theme" onclick="toggleTheme()">☀</button>
+</nav>
+
+<!-- ── TOC LATERAL ─────────────────────────────────────── -->
+<aside id="toc-panel">
+  <div id="toc-list"></div>
+</aside>
+
+<!-- ── CONTENIDO PRINCIPAL ─────────────────────────────── -->
+<main id="content">
+
+  <!-- CABECERA -->
+  <h1>Urteko Programazio Didaktikoa</h1>
+  <div class="doc-subtitle">Batxilergoa 1 · Filosofia · IES Minas BHI · 2025–2026</div>
+
+  <table class="info-table">
+    <tr><td>Ikastetxea</td><td>IES Minas BHI</td></tr>
+    <tr><td>Kodea</td><td>014068</td></tr>
+    <tr><td>Ikasturtea</td><td>2025–2026</td></tr>
+    <tr><td>Etapa</td><td>DBHO – Batxilergoa 1</td></tr>
+    <tr><td>Jakintzagaia</td><td>Filosofia</td></tr>
+    <tr><td>Irakaslea</td><td>Eukeni Acebal</td></tr>
+  </table>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 id="justifikazioa">1. Programazio didaktikoaren justifikazioa</h2>
+
+  <h3 id="izaera-garrantzia">Filosofia irakasgaiaren izaera eta garrantzia</h3>
+  <p>Filosofia irakasgaiak, berekin dakarren errotiko ezagutza-jarreragatik eta jorratzen dituen gaien eta alderdien aniztasunagatik, espazio egokia eskaintzen du Batxilergoko etapako funtsezko konpetentziak eta helburuak modu integratuan garatzeko. Arazo unibertsal eta funtsezkoei buruzko ikerketak —errealitatearen azken izaerari, egiari, justiziari, edertasunari edo norberaren nortasunari eta giza duintasunari buruzkoak— gure ingurune kulturala osatzen duten ideia eta praktikei buruzko gogoeta kritikoarekin batera baliagarria da ikasleen heldutasun pertsonala eta soziala sustatzeko.</p>
+
+  <h3 id="ikasleen-profila">Ikasleen abiapuntua eta testuinguru soziolinguistikoa</h3>
+  <p>IES Minas BHI-ko 1. batxilergoko ikasleen profila berezia da: D eredukoak izan arren, erregistro akademikoko euskara-maila eskasa dute eta jarioa ez da oso egokia filosofiaren hizkuntza konplexurako. Ikasleen erdiak baino gutxiagok egin du DBH 4.ko Filosofiaren historia aukerakoa, eta horrek esan nahi du filosofiaren metodoekin eta edukiekin aurre-harremana oso urria dela.</p>
+  <p>Egoera horrek metodologia graduala eta euskarri sendoa eskatzen du, transmisio magistralean soilik oinarritu gabe. Hori dela eta, programazioak ikaskuntza kooperatiboa eta dialogikoa lehenesten du, non ikasleek elkarren arteko trukean kontzeptuak barneratzen dituzten eta hizkuntza-trebetasunak garatzen dituzten aldi berean.</p>
+
+  <h3 id="hiru-helburu">Hiru helburu pedagogiko nagusiak</h3>
+  <p>Filosofia Batxilergoko jakintza guztien arteko lotura naturala da, ikasleek aukeratzen duten ibilbidea edozein dela ere. Irakasgaiak hiru helbururi erantzuten die:</p>
+  <ul>
+    <li><strong>Hurbilketa gogoetatsua eta dialogikoa.</strong> Errealitatearen izaera problematikoa eta giza existentzia bera ulertzea, hura azaltzen eta bideratzen saiatzeko ezinbestekoa den gogoetari buruzkoa da. Gai filosofiko nagusietara modu dialogikoan hurbiltzeak ikaste-prozesu esanguratsuak eta diziplinarteko ikuskera errazten ditu.</li>
+    <li><strong>Hizkuntza-konpetentzien garapena.</strong> Testu filosofikoak analizatuz sakonean lantzen da, argudiaketan sakontzearen pizgarri gisa erabiliz. Jakintzaren ibilbideetan dagoen gogoetak espazio bat aurkitzen du Filosofiaren adar etikoan.</li>
+    <li><strong>Gogoeta filosofiko existentziala.</strong> Batxilergoko ikasleek 16–18 urte bitartean identitate pertsonala eta bizitza-proiektua eraikitzeko une kritikoan daude. Filosofiak espazio segurua eta egituratua eskaintzen die galdera hauei aurre egiteko.</li>
+  </ul>
+
+  <h3 id="marco-legal">Marco legal: <span class="legal-ref">76/2023 Dekretua</span> eta <span class="legal-ref">17/2023 Legea</span></h3>
+  <p>Programazio honek aplikatzen ditu Dekretuan eta Legean ezarritako printzipio pedagogiko nagusiak:</p>
+  <ul>
+    <li><strong>Ebaluazio jarraitua, integrala eta konpetentziala:</strong> 15 ebidentziako sistema progresiboak (1x, 1,5x, 2x pisuarekin) ziurtatzen du ikaskuntzaren jarraipena eta epe luzeko erretentzia.</li>
+    <li><strong>Konpetentzia-ikuspegia:</strong> Edukien transmisioa baino garrantzitsuagoa da 9 konpetentzia espezifikoen aplikazioa kasu errealistikoetan.</li>
+    <li><strong>Aniztasunaren harrera:</strong> IDU printzipioak aplikatuz, ikasle guztiek arrakasta izan dezaten.</li>
+  </ul>
+
+  <h3 id="hobekuntzak">Hobekuntza-proposamenen integrazioa</h3>
+  <p>Aurreko ikasturtearen memoriatik eratorritako hobekuntza-proposamenak:</p>
+  <ul>
+    <li><strong>Hizkuntza-trebetasunen sendotzea:</strong> aurkezpen laburrak eta elkarrizketa sistematikoak txertatzen dira.</li>
+    <li><strong>Parte-hartzea sustatzea:</strong> talde txikiko eztabaidak eta ebaluazio-adierazle zehatzen erabilera.</li>
+    <li><strong>Teknologia-integrazioa:</strong> Google Classroom sistematikoki erabiliz, baina koaderno metakognitibo analogikoa mantenduz.</li>
+  </ul>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 id="curriculum-plangintza">2. Curriculumaren plangintza</h2>
+
+  <h3 id="ikas-egoeren-sekuentzia">Ikas-egoeren sekuentzia eta oinarrizko jakintzak</h3>
+
+  <div class="prog-table-wrap">
+  <table class="prog-table">
+    <thead>
+      <tr>
+        <th style="width:32%">Ikas-egoerak</th>
+        <th style="width:38%">Oinarrizko jakintzak (laburpena)</th>
+        <th style="width:15%">KE</th>
+        <th style="width:15%">Ponderazioa</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="section-header"><td colspan="4">LEHEN HIRUHILEKOA</td></tr>
+      <tr>
+        <td><strong>1. Norberaren filosofiari buruzko gogoeta filosofikoa</strong><br><small style="color:var(--text-muted)">Filosofia eta gizakia</small></td>
+        <td>Zer da filosofia? Ezaugarriak eta ikusmoldeak · Mitotik logoserako jauzia · Adarrak eta arloak · Metodoak eta tresnak · Disertazio filosofikoa · Russell</td>
+        <td><span class="ke-badge ke1">KE1</span>–<span class="ke-badge ke8">KE8</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">Azken taula</td>
+      </tr>
+      <tr>
+        <td><strong>2. Antropologia: Gizakia esperientzia filosofikoaren subjektu</strong></td>
+        <td>Giza izaeraren sorrera · Eboluzio-teoria · Homo sapiens · Gogoaren filosofia: dualismoa/monismoa · Kultura eta sozializazioa · Nortasuna eta identitate pertsonala</td>
+        <td><span class="ke-badge ke1">KE1</span>–<span class="ke-badge ke8">KE8</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">Azken taula</td>
+      </tr>
+      <tr class="section-header"><td colspan="4">BIGARREN HIRUHILEKOA</td></tr>
+      <tr>
+        <td><strong>3. Epistemologia: Ezagutzaren eta egiaren arazo filosofikoa</strong><br><small style="color:var(--text-muted)">Ezagutza eta errealitatea</small></td>
+        <td>Ezagutzaren arazoa: definizioa, aukera eta mugak · Egiaren teoriak · Arrazionalismoa eta enpirismoa · Argumentazio informala eta falaziak · Metodo zientifikoa · Pseudozientzia · Ezagutzaren dimentsio soziala</td>
+        <td><span class="ke-badge ke1">KE1</span>–<span class="ke-badge ke8">KE8</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">Azken taula</td>
+      </tr>
+      <tr>
+        <td><strong>4. Metafisika: Errealitatea eta erreala ez dena</strong></td>
+        <td>Batasuna eta aniztasuna · Unibertsalen arazoa · Gorputz-gogoaren arazoa · Adimen Artifizialaren eztabaida · Determinismoa eta askatasuna · Jainkoaren existentziaren arazoa</td>
+        <td><span class="ke-badge ke1">KE1</span>–<span class="ke-badge ke8">KE8</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">Azken taula</td>
+      </tr>
+      <tr>
+        <td><strong>5. Giza ekintza: Etika (1. zatia)</strong></td>
+        <td>Etika eta morala · Metaetika · Egoismoa eta altruismoa · Emozio eta arrazoia · Kohlbergen garapen moralaren faseak</td>
+        <td><span class="ke-badge ke1">KE1</span>–<span class="ke-badge ke8">KE8</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">Azken taula</td>
+      </tr>
+      <tr class="section-header"><td colspan="4">HIRUGARREN HIRUHILEKOA</td></tr>
+      <tr>
+        <td><strong>5. Giza ekintza: Etika (jarraipena)</strong><br><small style="color:var(--text-muted)">Ekintza eta sorkuntza</small></td>
+        <td>Bertute-etikak · Betebeharraren etikak (Kant) · Etika ondoriozkoak (utilitarismoa) · Nietzscheren moral amorala · Zaintzaren etikak · Etika aplikatua</td>
+        <td><span class="ke-badge ke1">KE1</span>–<span class="ke-badge ke8">KE8</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">Azken taula</td>
+      </tr>
+      <tr>
+        <td><strong>6. Giza ekintza: Filosofia politikoa</strong></td>
+        <td>Giza eskubideak · Filosofia politikoa: justiziaren gaia · Kontratualismoa · Demokraziaren inguruko hausnarketa · Utopiak eta distopiak · Feminismoa eta genero-ikuspegia</td>
+        <td><span class="ke-badge ke1">KE1</span>–<span class="ke-badge ke8">KE8</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">Azken taula</td>
+      </tr>
+      <tr>
+        <td><strong>9. Estetika: Sorkuntza artistikoaren inguruko gogoeta filosofikoa</strong></td>
+        <td>Estetikaren definizioa eta arazoak · Estetikoaren erlazioa kulturarekin · Edertasunari eta arteari buruzko teoria klasiko eta modernoak · Esteka-arazo garaikideak · Ikus-entzunezko kultura</td>
+        <td><span class="ke-badge ke9">KE9</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">Azken taula</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 id="ke-deskripzioak">Konpetentzia espezifikoak eta ebaluazio-irizpideak</h3>
+
+  <div class="prog-table-wrap">
+  <table class="prog-table">
+    <thead>
+      <tr>
+        <th style="width:8%">KE</th>
+        <th style="width:40%">Deskribapena</th>
+        <th style="width:35%">Ebaluazio-irizpideak</th>
+        <th style="width:17%">Deskriptoreak</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="ke-badge ke1">KE1</span></td>
+        <td>Arazoak identifikatzea eta errealitatearen eta giza existentziaren funtsari buruzko galderak egitea, testuak eta beste adierazpide filosofiko eta kultural batzuk aztertuz</td>
+        <td>Arazo filosofikoen errotikotasuna ezagutzea, formulatuz eta analizatuz · Filosofiaren izaera ulertzea galdera handiak sakonduz</td>
+        <td><span class="legal-ref" style="font-size:.7em">HKK2, KPSII2, HK1, HK3, KAKK1</span></td>
+      </tr>
+      <tr>
+        <td><span class="ke-badge ke2">KE2</span></td>
+        <td>Gai filosofikoei buruzko informazioa bilatzea, kudeatzea, interpretatzea eta produzitzea, iturriak modu kontrastatu eta seguruan erabiliz</td>
+        <td>Ikerketa filosofikoaren oinarrizko prozedurak praktikan jartzea · Gogoeta filosofikorako jarrera autonomoa garatzea</td>
+        <td><span class="legal-ref" style="font-size:.7em">HKK1–3, KD1–3, KPSII5, HK3, EK3</span></td>
+      </tr>
+      <tr>
+        <td><span class="ke-badge ke3">KE3</span></td>
+        <td>Argudio eta argudio-egiturak behar bezala erabiltzea, hainbat diskurtso mota modu zorrotzean sortu eta balioesteko</td>
+        <td>Argudiozko diskurtso filosofikoak sortzea eta ebaluatzea, arau logiko eta erretorikoak aplikatuz · Iritziak modu dogmatiko eta faltsuak saihestea</td>
+        <td><span class="legal-ref" style="font-size:.7em">HKK1, HKK5, STEM1, HK3</span></td>
+      </tr>
+      <tr>
+        <td><span class="ke-badge ke4">KE4</span></td>
+        <td>Elkarrizketa filosofikoa zorroztasunez, kritikoki, tolerantziaz eta enpatiaz gauzatzea, talde-jardueretan parte hartuz</td>
+        <td>Elkarrizketa filosofikoan parte hartzea, arau etiko eta formalak barneratuz · Ideien kontrastea eta trukea sustatzea herritartasun aktiboa gauzatzeko</td>
+        <td><span class="legal-ref" style="font-size:.7em">HKK1, HKK5, STEM1, KPSII4, HK2–3, KAKK1</span></td>
+      </tr>
+      <tr>
+        <td><span class="ke-badge ke5">KE5</span></td>
+        <td>Filosofiaren funtsezko arazo bakoitzaren inguruko ikusmoldeak pluralak direla onartzea, horiei buruzko hainbat tesi garrantzitsu kritikoki aztertuz</td>
+        <td>Arazo filosofikoei buruzko ikuspegi desberdinak ulertzea · Jarrera tolerantea eta gatazken konponbide baketsua sustatzea</td>
+        <td><span class="legal-ref" style="font-size:.7em">HKK5, HK1–3</span></td>
+      </tr>
+      <tr>
+        <td><span class="ke-badge ke6">KE6</span></td>
+        <td>Pentsalari garrantzitsuenen ideia eta teoria filosofiko nagusiak ulertzea, azterketa kritiko eta dialektikoaren bidez</td>
+        <td>Pentsalari garrantzitsuen ideiak ulertzea, horien azterketa kritikoa eginez · Filosofiaren aberastasuna eta ekarpen historikoa baloratzea</td>
+        <td><span class="legal-ref" style="font-size:.7em">HKK2, HK1, HK3, KAKK2</span></td>
+      </tr>
+      <tr>
+        <td><span class="ke-badge ke7">KE7</span></td>
+        <td>Ikuspegi globala, sistemikoa eta diziplinaz gaindikoa hartzea funtsezko eta gaur egungo gaien planteamenduan</td>
+        <td>Gaurkotasuneko gaiei buruzko ikuspegi globala garatzea · Gai konplexuak modu kritiko eta sortzailean jorratzea</td>
+        <td><span class="legal-ref" style="font-size:.7em">HKK2–3, KPSII5, HK1, HK3–4, KAKK1</span></td>
+      </tr>
+      <tr>
+        <td><span class="ke-badge ke8">KE8</span></td>
+        <td>Oinarrizko eta gaurkotasuneko arazo etiko eta politikoak aztertzea, jarrera filosofiko egokiak kritikoki azalduz</td>
+        <td>Gaurkotasuneko arazo etiko eta politikoak aztertzea · Norberaren iritzia eta autonomia morala garatzea</td>
+        <td><span class="legal-ref" style="font-size:.7em">HKK5, KPSII1.2, HK1–4, EK1</span></td>
+      </tr>
+      <tr>
+        <td><span class="ke-badge ke9">KE9</span></td>
+        <td>Artearen eta balio estetikoa duten beste adierazpen batzuen sentsibilitatea eta ulermen kritikoa garatzea</td>
+        <td>Arteari eta balio estetikoei buruzko sentsibilitatea garatzea · Irudien hitzkuntzari buruzko jarrera gogoetatsua garatzea</td>
+        <td><span class="legal-ref" style="font-size:.7em">KPSII4, HK2–3, KAKK1–2</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 id="metodologia">3. Erabaki metodologikoak</h2>
+
+  <h3 id="printzipioak">Printzipioak</h3>
+  <p>Filosofia irakatsi eta ikasteak ez du gaien azalpen programatiko hutsa izan behar. Aldiz, galdera filosofikoak deskubritzeko esperientzia erreal bat sortu behar da. Esperientzia horretatik abiatuz, ikasleak bultzatu behar dira horien inguruko ikerketa analitikora, erantzunen ebaluazio kritikora eta beren jarrera-hartze pertsonalen eraikuntza zorrotzera.</p>
+
+  <blockquote>Irakasgaiaren programazioan kontuan hartu beharko da jarduera filosofikoak berez duen izaera dialogikoa, parte-hartzailea, diziplinartekoa, sortzailea eta garrantzizko arazoekin konprometitua. — Héctor Ruíz Martínen ikuspegitik, elkarrizketa sokratikoa da filosofia ikasteko modu naturala.</blockquote>
+
+  <p>Azalpen magistrala ezinbestekoa da ikasketa-prozesu pertsonala abiarazteko, zuzentzeko eta motibatzeko, baina irakaslearen lana ikaslearen ikaste-prozesuan laguntzean datza. Material guztia Google Classroom-en egongo da eskuragarri.</p>
+
+  <h3 id="idu">IDU: ikaskuntzarako diseinu unibertsala</h3>
+  <p>IDUren hiru printzipiori jarraituz, baliabide eta proposamen didaktikoak eskuragarriak dira ikasle guztientzat, maila fisikoan, sentsorialean, kognitiboan eta emozionalean:</p>
+  <ul>
+    <li><strong>Ikaskuntzan inplikatzeko modu ugari:</strong> interesa erakartzeko eta autoerregulaziorako aukerak; epe luzerako xedeak epe laburreko helburuetan banatzea.</li>
+    <li><strong>Informazioa irudikatzeko modu ugari:</strong> ikus-entzunezkoak, eskemak, aurkezpenak, testu idatzia.</li>
+    <li><strong>Ekintza eta adierazpenerako modu ugari:</strong> ahozko, idatzizkoa eta digitala.</li>
+  </ul>
+
+  <h3 id="antolaketa">Antolaketa</h3>
+  <p>Ikas-egoera bakoitzaren edukiak curriculumaren blokeen artean antolatu, oinarrizko edukiak eta ez-funtsezkoak bereiziz. Gai berri bat hastean irakasleak sarrera-azalpena emango du, ondoren ariketa gidatuetan lan eginez. Jarduerak eguneroko testuinguruetako egoeretatik eta ikasleen interesetatik ateratakoak izango dira.</p>
+
+  <h4>Ikasleen taldekatzea</h4>
+  <ul>
+    <li><strong>Banakako lana:</strong> irakurketak, gogoetak, disertazioak eta ebaluazio-probak.</li>
+    <li><strong>Binakako lana:</strong> testuen inguruko eztabaidak bikoteka.</li>
+    <li><strong>Talde txikiak:</strong> klasea lau taldetan banatuta debateetarako.</li>
+    <li><strong>Talde handia:</strong> entzute aktiboa eta parte-hartzailea, ikasgelako elkarrizketa.</li>
+  </ul>
+
+  <h3 id="estrategia-didaktikoak">Estrategia didaktikoak</h3>
+  <div class="prog-collapse">
+    <button class="prog-collapse-btn" onclick="toggleProgCollapse(this)">
+      <span class="arr">▶</span> Estrategia-zerrenda osoa ikusi
+    </button>
+    <div class="prog-collapse-body">
+      <div class="prog-collapse-inner">
+        <ul>
+          <li>Ikasgelan giro egokia sortu</li>
+          <li>Motibazioa bultzatu: irakasleok gure jakintzagairako grina adieraziko dugu</li>
+          <li>Ikaskuntza autonomoari lagundu: transmisio hutsezko ikaskuntza mugatu</li>
+          <li>Askotariko informazio-iturri fidagarriak identifikatu eta erabili</li>
+          <li>Ikasitakoa ahoz zein idatziz komunikatu</li>
+          <li>Ebaluazio hezitzailea sustatu: ebaluazio-irizpideak jakinarazi, auto-ebaluazioa zein koebaluazioa bultzatu</li>
+          <li>Ikasitakoaren funtzionaltasuna eskola-esparrutik kanpo bultzatu</li>
+          <li>Jarduerak izaera askotarikoak eta zailtasunaren arabera mailakatuak diseinatu</li>
+          <li>Pentsamendu kritikoa eta sortzailea sustatu</li>
+          <li>Aniztasun kulturala eta linguistikoa baloratu eta errespetatu</li>
+          <li>Garapen jasangarriaren helburuekin bat datozen jarduerak proposatu</li>
+          <li>Teknologia digitalak modu kritiko, seguru eta arduratsuan erabili</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3 id="baliabideak">Baliabideak</h3>
+  <p><strong>Atal teorikoa (analogikoa):</strong> irakasleak prestatutako materialak (fotokopiak, aurkezpenak, entzumenak, bideoak), ikasleen ordenagailu eramangarriak, arbel digitala eta Internet.</p>
+  <p><strong>Digitalak:</strong> Google plataforma (Classroom, Drive, Gmail, Calendar, Blogger). Irakaslearen sortutako testua oinarrizko jakintzak eta eduki zabalduak jasotzen dituena; bertan kalitate handiko webguneetarako erreferentzia ugari.</p>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 id="ebaluazioa">4. Ebaluazioari buruzko erabakiak</h2>
+
+  <h3 id="ebaluazio-printzipioak">Ebaluazio-printzipioak</h3>
+  <p>Filosofia ikasgaian ebaluazio jarraitua, integrala eta konpetentziala gauzatuko da, <span class="legal-ref">76/2023 Dekretua</span> eta <span class="legal-ref">17/2023 Euskadiko Legea</span> ezarritako printzipioei jarraituz. Ebaluazioaren funtsezko ezaugarriak:</p>
+
+  <div class="highlight-box">
+    Ebaluazio guztiak ikasgelan gauzatuko dira, ikasleek beraiek direla lanaren egileak ziurtatzeko eta ebaluazio-baldintzen berdintasuna bermatzeko. Ez dugu ebaluagarria den etxeko lanik eskatuko.
+  </div>
+
+  <h3 id="sistema-progresiboa">Sistema progresiboa: 15 ebidentzia</h3>
+  <p>Sistema hau ikaskuntza esanguratsua eta epe luzeko erretentzioa sustatzeko diseinatuta dago (Héctor Ruíz Martínen <em>aprendizaje significativo</em> printzipioa). Azken ebaluazioan bakarrik ikastera mugatutako estrategiak saihesten ditu.</p>
+
+  <div class="prog-table-wrap">
+  <table class="prog-table">
+    <thead>
+      <tr>
+        <th>Ebaluazio-tresna</th>
+        <th>Kopuru osoa</th>
+        <th>1. ebal. (1×)</th>
+        <th>2. ebal. (1,5×)</th>
+        <th>3. ebal. (2×)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Transferentzia-probak</strong></td>
+        <td style="font-family:var(--font-mono);text-align:center">6</td>
+        <td style="font-family:var(--font-mono);text-align:center">2</td>
+        <td style="font-family:var(--font-mono);text-align:center">2</td>
+        <td style="font-family:var(--font-mono);text-align:center">2</td>
+      </tr>
+      <tr>
+        <td><strong>Aurkezpen ahozkoak</strong></td>
+        <td style="font-family:var(--font-mono);text-align:center">3</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+      </tr>
+      <tr>
+        <td><strong>Disertazio filosofikoak</strong></td>
+        <td style="font-family:var(--font-mono);text-align:center">3</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+      </tr>
+      <tr>
+        <td><strong>Eztabaidak (debateak)</strong></td>
+        <td style="font-family:var(--font-mono);text-align:center">3</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+        <td style="font-family:var(--font-mono);text-align:center">1</td>
+      </tr>
+      <tr style="font-weight:600;background:var(--surface2)">
+        <td>GUZTIRA</td>
+        <td style="font-family:var(--font-mono);text-align:center;color:var(--accent)">15</td>
+        <td style="font-family:var(--font-mono);text-align:center">5</td>
+        <td style="font-family:var(--font-mono);text-align:center">5</td>
+        <td style="font-family:var(--font-mono);text-align:center">5</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><em>Oharra:</em> Lehen ebaluazioan, ikasgaia berria denez ikasleentzat, jasotako ebidentzien kopurua doitu egin daiteke.</p>
+
+  <h3 id="kalifikazio-formula">Kalifikazio-formula</h3>
+  <div class="formula-box">
+    Nota finala = [(1.eba × 1) + (2.eba × 1,5) + (3.eba × 2)] ÷ 4,5
+  </div>
+  <p>Sistema honek epe luzeko ikaskuntza sustatu nahi du. 2. ebaluazioak 1. ebaluazioko edukien errepasoa ere barneratzen du; 3. ebaluazioak aurreko guztien sintesia.</p>
+
+  <h3 id="ke-pisuak">Konpetentzia espezifikoen pisua</h3>
+
+  <div class="ke-weight-table">
+    <div class="ke-weight-row">
+      <span class="ke-badge ke1 ke-weight-badge">KE1</span>
+      <span class="ke-weight-desc">Arazoak identifikatu eta galderak egin</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:87.5%"></div></div>
+      <span class="ke-weight-pct">%14</span>
+    </div>
+    <div class="ke-weight-row">
+      <span class="ke-badge ke2 ke-weight-badge">KE2</span>
+      <span class="ke-weight-desc">Informazio filosofikoa bilatu eta kudeatu</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:50%"></div></div>
+      <span class="ke-weight-pct">%8</span>
+    </div>
+    <div class="ke-weight-row">
+      <span class="ke-badge ke3 ke-weight-badge">KE3</span>
+      <span class="ke-weight-desc">Argudioak erabili eta baloratu</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:100%"></div></div>
+      <span class="ke-weight-pct">%16</span>
+    </div>
+    <div class="ke-weight-row">
+      <span class="ke-badge ke4 ke-weight-badge">KE4</span>
+      <span class="ke-weight-desc">Elkarrizketa filosofikoa praktikatu</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:62.5%"></div></div>
+      <span class="ke-weight-pct">%10</span>
+    </div>
+    <div class="ke-weight-row">
+      <span class="ke-badge ke5 ke-weight-badge">KE5</span>
+      <span class="ke-weight-desc">Ikusmolde pluralak onartu</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:87.5%"></div></div>
+      <span class="ke-weight-pct">%14</span>
+    </div>
+    <div class="ke-weight-row">
+      <span class="ke-badge ke6 ke-weight-badge">KE6</span>
+      <span class="ke-weight-desc">Pentsalari nagusien ideiak ulertu</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:100%"></div></div>
+      <span class="ke-weight-pct">%16</span>
+    </div>
+    <div class="ke-weight-row">
+      <span class="ke-badge ke7 ke-weight-badge">KE7</span>
+      <span class="ke-weight-desc">Gaurkotasuneko gaien ikuspegi globala</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:87.5%"></div></div>
+      <span class="ke-weight-pct">%14</span>
+    </div>
+    <div class="ke-weight-row">
+      <span class="ke-badge ke8 ke-weight-badge">KE8</span>
+      <span class="ke-weight-desc">Arazo etiko-politikoak aztertu</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:100%"></div></div>
+      <span class="ke-weight-pct">%16</span>
+    </div>
+    <div class="ke-weight-row">
+      <span class="ke-badge ke9 ke-weight-badge">KE9</span>
+      <span class="ke-weight-desc">Arte-sentsibilitatea garatu</span>
+      <div class="ke-weight-bar-wrap"><div class="ke-weight-bar" style="width:50%"></div></div>
+      <span class="ke-weight-pct">%8</span>
+    </div>
+  </div>
+
+  <h3 id="ebaluazio-tresnak">Ebaluazio-tresnak eta errubrikak</h3>
+
+  <div class="eval-grid">
+    <div class="eval-card">
+      <div class="eval-card-title">🧪 <a href="#errubrika-transferentzia" style="color:inherit;text-decoration:none">Transferentzia-probak</a></div>
+      <p>Ez dira oroimen-proba soilak. Kasu errealetan aplikatzea. Lau galdera progresio kognitiboarekin. 5 irizpide errubrikaren bidez.<br><strong>KEak:</strong> 1, 3, 5, 6, 7</p>
+    </div>
+    <div class="eval-card">
+      <div class="eval-card-title">✍️ <a href="#errubrika-disertazioa" style="color:inherit;text-decoration:none">Disertazioak</a></div>
+      <p>Argumentu filosofikoen lanketa idatziz. Formatu egituratua argudioarekin.<br><strong>KEak:</strong> 1, 3, 5 (EI 5.1 eta 5.2 banaka), 8</p>
+    </div>
+    <div class="eval-card">
+      <div class="eval-card-title">🎭 <a href="#errubrika-debateak" style="color:inherit;text-decoration:none">Eztabaida egituratuak</a></div>
+      <p>Prestaketa-fasea eta gauzatze-fasea. 5 irizpide errubrikaren bidez.<br><strong>KEak:</strong> 2, 4, 6, 7, 8</p>
+    </div>
+    <div class="eval-card">
+      <div class="eval-card-title">🎤 <a href="#errubrika-ahozko" style="color:inherit;text-decoration:none">Ahozko aurkezpenak</a></div>
+      <p>5 minutuko aurkezpen laburrak, ebaluazio berehalakoarekin. 5 irizpide.<br><strong>KEak:</strong> 1, 2, 3, 6, 8</p>
+    </div>
+    <div class="eval-card">
+      <div class="eval-card-title">👁 <a href="#errubrika-behaketa" style="color:inherit;text-decoration:none">Behaketa zuzena</a></div>
+      <p>Klaseko parte-hartzea eta galdera laburrak (informazio gehigarria behar izanez gero).<br><strong>KEak:</strong> 1, 4, 5, 7, 8</p>
+    </div>
+  </div>
+
+  <h3 id="koaderno-metakognitiboa">Koaderno metakognitiboa (ez-ebaluagarria)</h3>
+  <p>Ikaskuntza-tresna pertsonal gisa koaderno metakognitibo bat erabiliko da, baina hau ez da ebaluagarria izango. Atalak:</p>
+  <ul>
+    <li>Kontzeptario pertsonala: gai bakoitzeko definizioak bere hitzekin</li>
+    <li>Pentsamenduaren bilakaera: nola aldatu diren bere iritziak</li>
+    <li>Aplikazio garaikideak: ikasitakoa eguneroko bizitzan nola erabili</li>
+    <li>Klasean hartutako oharrak</li>
+  </ul>
+  <div class="prog-collapse">
+    <button class="prog-collapse-btn" onclick="toggleProgCollapse(this)">
+      <span class="arr">▶</span> Galdera metakognitiboen bankua
+    </button>
+    <div class="prog-collapse-body">
+      <div class="prog-collapse-inner">
+        <ul>
+          <li>«Zer izan zait zailena gaur eta zergatik?»</li>
+          <li>«Non gehiago aplika dezaket ikasitakoa?»</li>
+          <li>«Noiz sentitu naiz galduta eta nola konpondu dut?»</li>
+          <li>«Nola azalduko nioke hau lagun bati?»</li>
+          <li>«Zer aldatu da nire iritzietan?»</li>
+          <li>«Zein konexio aurkitu ditut aurreko gaiekin?»</li>
+          <li>«Zer galdera berri sortu zaizkit?»</li>
+          <li>«Nola erabili dezaket hau nire bizitzan?»</li>
+          <li>«Zein izan da momenturik argigarriena?»</li>
+          <li>«Zer dudatan jarri nau gehien?»</li>
+          <li>«Nola defendatuko nuke nire posizioa?»</li>
+          <li>«Zein filósoforen ideiekin identifikatzen naiz gehien?»</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p>Koaderno hau eskuz idatziko da, erretentzia hobea sustatzeko (Héctor Ruíz Martínen ikerketen arabera, idazketa eskuzkoak kodeketa sakonagoa eragiten du).</p>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 id="ebaluazio-ondorioak">5. Ebaluazioaren ondorioak eta kalifikazio-irizpideak</h2>
+
+  <h3 id="kalifikazioa">Kalifikazioa</h3>
+  <p>Ikasle bakoitzaren kalifikazioa konpetentzia espezifikoen ebaluazio-irizpideen lorpen-mailaren arabera zehaztuko da. Kalifikazioak 1etik 10era emango dira; gainditzeko gutxieneko nota <strong>5</strong> da.</p>
+
+  <h3 id="aurreko-ikasgaia">Aurreko ikasturteko ikasgai gainditu gabeen errekuperazioa</h3>
+  <p>Batxilergoko bigarren mailara igo eta lehen mailako Filosofia ikasgaia gainditu gabe duten ikasleentzat, sailak errefortzu eta errekuperazio programa espezifikoa antolatzen du, <span class="legal-ref">2024/01/22 Agindua, 50. art.</span> eta <span class="legal-ref">76/2023 Dekretua</span>ren arabera.</p>
+
+  <div class="prog-table-wrap">
+  <table class="prog-table">
+    <thead>
+      <tr><th>Bidea</th><th>Baldintzak</th><th>Kalifikazioa</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Ebaluazio jarraitua</strong> (Hedatze saioetara joaten diren ikasleentzat)</td>
+        <td>Saio guztietara joan justifikaziorik gabe falta egin gabe</td>
+        <td>Hedatze saioetako lana %30 + Transferentzia-proba finala %70. Gutxieneko 4 puntu bi osagaietan.</td>
+      </tr>
+      <tr>
+        <td><strong>Transferentzia-proba bakarra</strong></td>
+        <td>Hedatze saioetara ez joan eta zuzenean probari aurre egin</td>
+        <td>%100 probaren emaitzaren araberakoa. 5 puntu edo gehiago: ikasgaia gainditua.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 id="etengabeko-arautegia">Etengabeko ebaluazioaren arautegia</h3>
+  <ul>
+    <li>Justifikatu gabeko arrazoiengatik probak ez egiteak kalifikazio negatiboa ekarriko du ebidentzia horretan.</li>
+    <li><strong>Hutsegite jarraituaren muga:</strong> justifikatu gabeko gehieneko hutsegiteen iraupena ezin da izan ordu-kopuruaren %20 baino handiagoa.</li>
+    <li>Arrazoi justifikatu batengatik proba egin ezin bada, lehentasunez ikaslea klaseetara itzultzen den egunean bertan egingo da.</li>
+  </ul>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 id="aniztasuna">6. Aniztasunaren tratamendua</h2>
+
+  <p>Euskal Autonomia Erkidegoko ikasleen aniztasunari erantzuteko neurri ugari hartuko ditugu <span class="legal-ref">2022/06/13 Ebazpena</span> eta IDU printzipioak oinarri hartuta:</p>
+  <ul>
+    <li>Zailtasunak dituzten ikasleentzat: banakako azalpenak, errefortzu fitxa osagarriak.</li>
+    <li>Gaitasun handiko ikasleentzat: sakontzeko proposamenak (irakurgaiak, bideoak, ikerketa lanak).</li>
+    <li>Ikuste- edo entzumen-ezintasuna, AGHA, dislexia/TEL, TDH/TDA kasuak: informazioaren aurkezpena, jardueren diseinua eta ebaluazio irizpideak egokitu.</li>
+  </ul>
+  <p>Euskararen erabilera bereziki zainduko da. Ahal den neurrian, kalitate handieneko euskarazko materialak erabiliko ditugu, baina gaztelania ere erabiliko dugu baliabide gisa aniztasunaren trataerari erantzuteko.</p>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 id="ekintza-osagarriak">7. Kanpoko ekintzak eta ekintza osagarriak</h2>
+
+  <div class="prog-collapse">
+    <button class="prog-collapse-btn" onclick="toggleProgCollapse(this)">
+      <span class="arr">▶</span> BIZIKASI – Bizikidetza eta eskola-jazarpenaren prebentzioa
+    </button>
+    <div class="prog-collapse-body">
+      <div class="prog-collapse-inner">
+        <p>Bizikidetza positiboa eta eskola-jazarpenaren prebentzioa sustatuz, hezkuntza-ingurune inklusiboa, segurua eta errespetuzkoa eraikitzeko. Ekintza zehatzak programazioan txertatuta.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prog-collapse">
+    <button class="prog-collapse-btn" onclick="toggleProgCollapse(this)">
+      <span class="arr">▶</span> HEZKIDETZA – Genero-berdintasuna filosofian
+    </button>
+    <div class="prog-collapse-body">
+      <div class="prog-collapse-inner">
+        <ul>
+          <li>Pentsamendu kritikoa sexismoaren aurrean: emakumearen diskriminazioa filosofiaren historian.</li>
+          <li>Emakumeen jakituriaren integrazioa: emakume filosofikoak historian zehar.</li>
+          <li>Berdintasunezko hezkuntza afektibo eta sexuala: nortasunaren egitura psikosomatika.</li>
+          <li>Emakumeen aurkako indarkeriaren prebentzioa.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="prog-collapse">
+    <button class="prog-collapse-btn" onclick="toggleProgCollapse(this)">
+      <span class="arr">▶</span> NORMALKUNTZA PROIEKTUA · IRAKURMEN PLANA · DIGITALIZAZIOA · AGENDA 30 · ADI eskola
+    </button>
+    <div class="prog-collapse-body">
+      <div class="prog-collapse-inner">
+        <ul>
+          <li><strong>Normalkuntza:</strong> Euskararen erabilera bultzatzeko ekimenak eta jarduerak.</li>
+          <li><strong>Irakurmen Plana:</strong> Irakurmena eta irakurriaren ulermena sistematizatua gure ikasgaian.</li>
+          <li><strong>Digitalizazioa:</strong> IKTen erabilera segurua, kritikoa, arduratsua eta iraunkorra.</li>
+          <li><strong>Agenda 30:</strong> 12. GJH — ekoizpena eta kontsumo arduratsua bultzatuko dugu.</li>
+          <li><strong>ADI eskola:</strong> Automatizazioaren, robotikaren eta adimen artifizialaren inplikazio etiko eta sozialei buruzko gogoeta.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2 id="errubrikak">8. Errubrikak</h2>
+  <p>Jarraian, ebaluazio-tresna bakoitzerako errubrika zehatza aurkezten da. Errubrika hauek bigarren pertsonan idatzita daude, ikaslearen auto-ebaluazioa eta gogoeta metakognitiboa errazteko. Tresna biziak dira, beharren arabera egokitu daitezkeenak.</p>
+
+
+  <div class="rubric-section" id="errubrika-transferentzia">
+    <div class="rubric-instrument-title">🧪 <a href="#errubrika-transferentzia" style="color:inherit;text-decoration:none">Transferentzia-probak</a></div>
+    <p class="rubric-note">KEak ebaluatzen ditu: KE1, KE3, KE5, KE6, KE7 · 6 proba guztira (2 ebaluazio bakoitzeko)</p>
+    <div class="rubric-wrap">
+    <table class="rubric-table">
+      <thead><tr>
+        <th class="col-crit">Irizpidea</th>
+        <th class="level-bikain">Bikain [9-10]</th>
+        <th class="level-ongi">Ongi [7-9)</th>
+        <th class="level-egokia">Egokia [5-7)</th>
+        <th class="level-hasierak">Hasierakoa (0-5)</th>
+        <th class="level-egingabe">Egin gabe [0]</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="criterion">Arazo filosofikoaren identifikazioa (KE1/EI1.1)</td>
+          <td>Arazoa sakonki identifikatzen eta aztertzen duzu, landutako doktrina filosofikoak erabiliz. Formulazio zehatza eta argia egiten duzu</td>
+          <td>Arazoa ondo identifikatzen eta aztertzen duzu, doktrina filosofiko batzuk aipatuz. Formulazioa egokia da</td>
+          <td>Oinarrizko identifikazioa egiten duzu, doktrina filosofikoak gainetik aipatuz. Formulazioa ulergarria da</td>
+          <td>Arazoa partzialki identifikatzen duzu, doktrina filosofikoak ia aipatu gabe. Formulazioa nahasia da</td>
+          <td>Ez duzu arazoa identifikatzen edo formulatzen</td>
+        </tr>
+        <tr>
+          <td class="criterion">Argudioen erabilera (KE3/EI3.1-3.2)</td>
+          <td>Argudio sendoak eraikitzen eta falaziak identifikatzen dituzu, landutako pentsamenduen argudioak erabiliz. Diskurtsoa koherentea da</td>
+          <td>Argudio egokiak eraikitzen eta falazia nagusiak identifikatzen dituzu, pentsamendu batzuen argudioak aipatuz</td>
+          <td>Oinarrizko argudioak erabiltzen dituzu. Falazia batzuk identifikatzen dituzu, pentsamenduak gainetik aipatuz</td>
+          <td>Argudio ahulak dituzu. Falaziak ez dituzu ondo identifikatzen, pentsamenduak ia aipatu gabe</td>
+          <td>Ez dituzu argudioak erabiltzen edo falaziaz beteta daude</td>
+        </tr>
+        <tr>
+          <td class="criterion">Ikuspegi filosofikoen azterketa (KE5/EI5.1-5.2)</td>
+          <td>Ikuspegi desberdinak sakonki aztertzen dituzu landutako doktrinak erabiliz, ikuspegi ez-dogmatikoa eraikiz</td>
+          <td>Ikuspegi desberdinak aztertzen dituzu doktrina batzuk aipatuz eta ez zara dogmatikoa</td>
+          <td>Ikuspegi desberdinak aipatzen dituzu doktrinak gainetik aipatuz baina analisia ez da oso sakona</td>
+          <td>Ikuspegi bakarra edo mugatua aurkezten duzu, doktrinak ia aipatu gabe</td>
+          <td>Ez dituzu ikuspegiak aztertzen edo oso dogmatikoa zara</td>
+        </tr>
+        <tr>
+          <td class="criterion">Historiako ekarpenak ulertzea (KE6/EI6.1)</td>
+          <td>Filosofiaren ekarpenak sakonki ulertzen eta erlazionatzen dituzu, pentsamenduaren historia modu egokian erabiliz</td>
+          <td>Ekarpen nagusiak ulertzen eta erlazionatzen dituzu, historia filosofikoa kontuan hartuz</td>
+          <td>Ekarpen batzuk ulertzen dituzu baina lotura gutxirekin, historia gainetik aipatuz</td>
+          <td>Ekarpenak gainetik aipatzen dituzu loturarik gabe, historiaren ulermen eskasarekin</td>
+          <td>Ez dituzu ekarpenak ulertzen edo ez dituzu aipatzen</td>
+        </tr>
+        <tr>
+          <td class="criterion">Ikuspegi globala eta ekarpena (KE7/EI7.1)</td>
+          <td>Diziplina arteko loturak eta ikuspegi sistematikoa erakusten duzu, ekarpen pertsonal sakonak eginez zure ezagutza eta esperientziatik</td>
+          <td>Diziplina desberdinak lotzen dituzu ikuspegi orokorrarekin, ekarpen pertsonal interesgarriak eginez</td>
+          <td>Diziplina batzuk aipatzen dituzu eta ekarpen pertsonal sinpleak egiten dituzu</td>
+          <td>Diziplina bakarrean zentratzen zara, ekarpen pertsonalik gabe</td>
+          <td>Ez duzu diziplinen arteko loturarik egiten ez ekarpen pertsonalik</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="rubric-section" id="errubrika-disertazioa">
+    <div class="rubric-instrument-title">✍️ Disertazioa</div>
+    <p class="rubric-note">KEak ebaluatzen ditu: KE1, KE3, KE5 (EI 5.1 eta 5.2 banaka), KE8 · 3 disertazio guztira (1 ebaluazio bakoitzeko)</p>
+    <div class="rubric-wrap">
+    <table class="rubric-table">
+      <thead><tr>
+        <th class="col-crit">Irizpidea</th>
+        <th class="level-bikain">Bikain [9-10]</th>
+        <th class="level-ongi">Ongi [7-9)</th>
+        <th class="level-egokia">Egokia [5-7)</th>
+        <th class="level-hasierak">Hasierakoa (0-5)</th>
+        <th class="level-egingabe">Egin gabe [0]</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="criterion">Arazo filosofikoaren identifikazioa (KE1/EI1.1)</td>
+          <td>Arazo filosofikoa sakonki identifikatzen eta aztertzen duzu. Haren garrantzia eta transzendentzia argi azaltzen dituzu</td>
+          <td>Arazo filosofikoa ondo identifikatzen eta aztertzen duzu. Haren garrantzia azaltzen duzu</td>
+          <td>Arazo filosofikoa identifikatzen duzu baina azaleko azterketa egiten duzu</td>
+          <td>Arazo filosofikoa partzialki identifikatzen duzu. Azterketa nahasia da</td>
+          <td>Ez duzu arazo filosofikoa identifikatzen</td>
+        </tr>
+        <tr>
+          <td class="criterion">Argudioen eraikuntza (KE3/EI3.1)</td>
+          <td>Argudio sendoak eta ongi egituratuak eraikitzen dituzu. Modu zorrotz eta koherentean aurkezten dituzu</td>
+          <td>Argudio argiak eraikitzen eta modu egokian aurkezten dituzu</td>
+          <td>Oinarrizko argudioak eraikitzen dituzu. Aurkezpena ulergarria da</td>
+          <td>Argudio ahulak eraikitzen dituzu. Aurkezpena ez da oso argia</td>
+          <td>Ez dituzu argudioak eraikitzen edo ez dira ulergarriak</td>
+        </tr>
+        <tr>
+          <td class="criterion">Ikuspegi konplexua (KE5/EI5.1)</td>
+          <td>Arazoa ikuspegi anitzetatik aztertzen duzu. Analisi sakona eta ez-dogmatikoa egiten duzu</td>
+          <td>Arazoa hainbat ikuspegitik aztertzen duzu. Analisi ez-dogmatikoa egiten duzu</td>
+          <td>Arazoaren ikuspegi desberdinak aipatzen dituzu baina analisia ez da oso sakona</td>
+          <td>Arazoaren ikuspegi bakarra edo oso mugatua aurkezten duzu</td>
+          <td>Ez duzu arazoaren analisirik egiten edo guztiz dogmatikoa zara</td>
+        </tr>
+        <tr>
+          <td class="criterion">Kontrako tesien azterketa (KE5/EI5.2)</td>
+          <td>Aurkako tesiak modu orekatuan eta kritikoan aztertzen dituzu. Sintesi aberatsa lortzen duzu</td>
+          <td>Aurkako tesiak modu egokian aztertzen dituzu. Sintesi ona lortzen duzu</td>
+          <td>Aurkako tesiak aipatzen dituzu baina azterketa ez da oso sakona</td>
+          <td>Aurkako tesiak azaletik baino ez dituzu aztertzen</td>
+          <td>Ez dituzu aurkako tesiak aztertzen</td>
+        </tr>
+        <tr>
+          <td class="criterion">Arazo etiko-politikoen azterketa (KE8/EI8.1-8.2)</td>
+          <td>Gaurkotasuneko arazo etiko-politikoak sakonki identifikatzen eta aztertzen dituzu. Jarrera filosofiko desberdinak kritikoki azaltzen dituzu eta iritzi autonomo ondo arrazoitua garatzen duzu</td>
+          <td>Gaurkotasuneko arazo etiko-politikoak ongi identifikatzen eta aztertzen dituzu. Jarrera filosofiko desberdinak azaltzen dituzu eta iritzi arrazoitua garatzen duzu</td>
+          <td>Arazo etiko-politiko batzuk identifikatzen dituzu. Jarrera filosofiko nagusiak ezagutzen dituzu eta oinarrizko iritzi propioa garatzen duzu</td>
+          <td>Arazo etiko-politikoen azterketa azalekoa da. Jarrera filosofikoen ezagutza mugatua duzu eta iritzi pertsonala garatzeko zailtasunak dituzu</td>
+          <td>Ez dituzu arazo etiko-politiko garaikideak identifikatzen. Ez dituzu jarrera filosofikoak ezagutzen eta ez duzu iritzi propiorik garatzen</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="rubric-section" id="errubrika-debateak">
+    <div class="rubric-instrument-title">🎭 <a href="#errubrika-debateak" style="color:inherit;text-decoration:none">Eztabaida egituratuak</a></div>
+    <p class="rubric-note">KEak ebaluatzen ditu: KE2, KE4, KE6, KE7, KE8 · 3 eztabaida guztira (1 ebaluazio bakoitzeko) · Puntuazioa: 0-20 tartean</p>
+    <div class="rubric-wrap">
+    <table class="rubric-table">
+      <thead><tr>
+        <th class="col-crit">Irizpidea</th>
+        <th class="level-bikain">Bikain [20]</th>
+        <th class="level-ongi">Aurreratua [15]</th>
+        <th class="level-egokia">Egokia [10]</th>
+        <th class="level-hasierak">Hasierakoa [5]</th>
+        <th class="level-egingabe">Egin gabe [0]</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="criterion">Informazio filosofikoaren erabilera eta kudeaketa (KE2/EI2.1-2.2, KE6/EI6.1-6.2)</td>
+          <td>Informazio filosofiko aberatsa eta ondo dokumentatua erabiltzen duzu, iturri anitzak eta fidagarriak erabiliz. Pentsalari nagusien ideiak sakontasunez azaltzen eta integratzen dituzu eztabaidan, haien arteko loturak eginez.</td>
+          <td>Informazio filosofiko ona eta ondo dokumentatua erabiltzen duzu, iturri fidagarriak erabiliz. Pentsalari nagusien ideiak ongi azaltzen dituzu eta eztabaidan txertatzen dituzu.</td>
+          <td>Oinarrizko informazio filosofikoa erabiltzen duzu, iturri batzuk aipatuz. Pentsalari nagusien ideia batzuk azaltzen dituzu.</td>
+          <td>Informazio filosofiko mugatua erabiltzen duzu, iturrien erabilera eskasarekin. Pentsalari nagusien ideiak azaltzeko zailtasunak dituzu.</td>
+          <td>Ez duzu informazio filosofikorik erabiltzen edo oso eskasa da. Ez dituzu pentsalari nagusien ideiak aipatzen.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Elkarrizketa filosofikoaren praktika (KE4/EI4.1-4.2)</td>
+          <td>Elkarrizketa filosofikoan modu bikainean parte hartzen duzu, besteen ideiak sakonki entzun eta aztertuz, eta modu eraikitzailean erantzunez. Arau etikoak zorrotz errespetatzen dituzu eta emozioak modu eredugarrian kudeatzen dituzu, eztabaida aberastuz.</td>
+          <td>Elkarrizketa filosofikoan modu aktiboan parte hartzen duzu, besteen ideiak entzun eta aztertuz. Arau etikoak ongi errespetatzen dituzu eta emozioak modu egokian kudeatzen dituzu.</td>
+          <td>Elkarrizketa filosofikoan parte hartzen duzu, besteen ideiak entzunez. Arau etiko nagusiak errespetatzen dituzu eta emozioak kontrolatzen saiatzen zara.</td>
+          <td>Elkarrizketa filosofikoan parte hartzeko zailtasunak dituzu. Arau etikoak batzuetan hausten dituzu eta emozioak kudeatzeko laguntza behar duzu.</td>
+          <td>Ez duzu elkarrizketa filosofikoan parte hartzen. Ez dituzu arau etikoak errespetatzen eta ez dituzu emozioak kontrolatzen.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Gai garaikideen analisi filosofikoa (KE7/EI7.1-7.2)</td>
+          <td>Gai garaikideak ikuspegi filosofiko sakon eta sistematikotik aztertzen dituzu, diziplina anitzeko informazioa modu konplexuan integratuz. Pentsamendu kritiko zorrotza aplikatzen duzu, gai garaikideen inplikazio etiko, sozial eta politikoak sakonki aztertuz.</td>
+          <td>Gai garaikideak ikuspegi filosofiko egokitik aztertzen dituzu, diziplina desberdinetako informazioa integratuz. Pentsamendu kritikoa ongi aplikatzen duzu, gai garaikideen inplikazio nagusiak aztertuz.</td>
+          <td>Gai garaikideak oinarrizko ikuspegi filosofikotik aztertzen dituzu, diziplina batzuetako informazioa erabiliz. Pentsamendu kritikoa oinarrizko mailan aplikatzen duzu.</td>
+          <td>Gai garaikideak aztertzeko zailtasunak dituzu ikuspegi filosofikotik. Diziplina desberdinetako informazioa integratzeko laguntza behar duzu. Pentsamendu kritikoa aplikatzeko zailtasunak dituzu.</td>
+          <td>Ez dituzu gai garaikideak aztertzen ikuspegi filosofikotik. Ez duzu diziplina desberdinetako informaziorik integratzen. Ez duzu pentsamendu kritikorik aplikatzen.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Arazo etiko-politikoen analisia (KE8/EI8.1-8.2)</td>
+          <td>Arazo etiko-politiko garaikideak sakontasunez identifikatu eta aztertzen dituzu, haien jatorri eta inplikazio konplexuak ulertuz. Jarrera filosofiko desberdinak modu kritiko eta sortzailean aztertzen dituzu, sintesi berriak proposatuz. Gai etikoetan iritzi propio sakon eta ondo arrazoitua garatzen duzu, erabaki moralak autonomiaz hartuz.</td>
+          <td>Arazo etiko-politiko garaikideak ongi identifikatu eta aztertzen dituzu, haien inplikazio nagusiak ulertuz. Jarrera filosofiko desberdinak modu egokian aztertzen dituzu. Gai etikoetan iritzi propio arrazoitua garatzen duzu eta erabaki moralak modu egokian hartzen dituzu.</td>
+          <td>Arazo etiko-politiko garaikide batzuk identifikatzen dituzu. Jarrera filosofiko desberdinak oinarrizko mailan aztertzen dituzu. Gai etikoetan oinarrizko iritzi propioa garatzen duzu eta erabaki moral sinpleak hartzen dituzu.</td>
+          <td>Arazo etiko-politiko garaikideak identifikatzeko zailtasunak dituzu. Jarrera filosofiko desberdinak aztertzeko laguntza behar duzu. Gai etikoetan iritzi propioa garatzeko zailtasunak dituzu eta erabaki moralak hartzeko zailtasunak dituzu.</td>
+          <td>Ez dituzu arazo etiko-politiko garaikideak identifikatzen. Ez dituzu jarrera filosofiko desberdinak aztertzen. Ez duzu iritzi propiorik garatzen gai etikoetan eta ez duzu erabaki moralik hartzen.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Argudioen eraikuntza eta defentsa (KE3/EI3.1-3.2)</td>
+          <td>Argudio filosofiko sendoak, konplexuak eta ongi egituratuak eraikitzen dituzu, logika zorrotza erabiliz. Zure ideiak modu bikainean defendatzen dituzu, diskurtso logiko zorrotzak sortuz eta arau erretorikoak maisutasunez aplikatuz. Aurkezpen argiak, erakargarriak eta oso konbentzigarriak egiten dituzu.</td>
+          <td>Argudio filosofiko onak eta koherenteak eraikitzen dituzu, logika egokia erabiliz. Zure ideiak ongi defendatzen dituzu, diskurtso logiko egokiak sortuz eta arau erretorikoak ongi aplikatuz. Aurkezpen argiak eta konbentzigarriak egiten dituzu.</td>
+          <td>Oinarrizko argudio filosofikoak eraikitzen dituzu, logika oinarrizkoa erabiliz. Zure ideiak oinarrizko mailan defendatzen dituzu, diskurtso logiko sinpleak sortuz eta arau erretorikoak aplikatzen saiatuz. Aurkezpen ulergarriak egiten dituzu.</td>
+          <td>Argudio filosofikoak eraikitzeko zailtasunak dituzu, akats logikoak eginez. Zure ideiak defendatzeko zailtasunak dituzu eta diskurtso logikoak sortzeko laguntza behar duzu. Arau erretorikoak aplikatzeko zailtasunak dituzu.</td>
+          <td>Ez dituzu argudio filosofikoak eraikitzen. Ez dituzu zure ideiak defendatzen eta ez dituzu diskurtso logikoak sortzen. Ez dituzu arau erretorikoak aplikatzen eta ez dituzu aurkezpen ulergarriak egiten.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="rubric-section" id="errubrika-ahozko">
+    <div class="rubric-instrument-title">🎤 <a href="#errubrika-ahozko" style="color:inherit;text-decoration:none">Ahozko aurkezpenak</a></div>
+    <p class="rubric-note">KEak ebaluatzen ditu: KE1, KE2, KE3, KE6, KE8 · 3 aurkezpen guztira (1 ebaluazio bakoitzeko) · 5 minutuko aurkezpena, berehalako ebaluazioa</p>
+    <div class="rubric-wrap">
+    <table class="rubric-table">
+      <thead><tr>
+        <th class="col-crit">Irizpidea</th>
+        <th class="level-bikain">Bikain [9-10]</th>
+        <th class="level-ongi">Ongi [7-9)</th>
+        <th class="level-egokia">Egokia [5-7)</th>
+        <th class="level-hasierak">Hasierakoa (0-5)</th>
+        <th class="level-egingabe">Egin gabe [0]</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="criterion">Arazo filosofikoaren identifikazioa eta planteamendua (KE1/EI1.1-1.2)</td>
+          <td>Arazo filosofikoa sakonki identifikatzen eta planteatzen duzu, bere transzendentzia eta bizitzarekiko lotura argiak eginez. Filosofiaren izaera eta adarrak modu koherentean azaltzen dituzu.</td>
+          <td>Arazo filosofikoa ondo identifikatzen eta planteatzen duzu, bere garrantzia azalduz. Filosofiaren izaera ulertzen duzu eta adar nagusiak ezagutzen dituzu.</td>
+          <td>Arazo filosofikoa identifikatzen duzu baina azterketa azalekoa da. Filosofiaren izaerari buruzko oinarrizko ezagutza erakusten duzu.</td>
+          <td>Arazo filosofikoa partzialki identifikatzen duzu, azalpena nahasia da. Filosofiaren izaerari buruzko ezagutza oso mugatua da.</td>
+          <td>Ez duzu arazo filosofikorik identifikatzen eta filosofiaren izaerari buruz ez duzu ezer azaltzen.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Informazio filosofikoaren bilaketa eta kudeaketa (KE2/EI2.1-2.2)</td>
+          <td>Informazio filosofiko fidagarria eta aberatsa erabiltzen duzu, iturri anitzak aipatuz eta egoki erreferentziatuz. Ikerketa filosofikoaren prozedurak zorrotz aplikatzen dituzu eta lan jatorrizkoa aurkezten duzu.</td>
+          <td>Informazio filosofiko egokia erabiltzen duzu, iturri fidagarriak aipatuz. Ikerketa filosofikoaren oinarrizko prozedurak aplikatzen dituzu eta lan autonomoa garatzen duzu.</td>
+          <td>Informazio filosofiko oinarrizkoa erabiltzen duzu, iturri batzuk aipatuz. Ikerketa prozeduren oinarriak ezagutzen dituzu baina aplikazioa ez da oso sakona.</td>
+          <td>Informazio filosofiko eskasa erabiltzen duzu, iturrien aipamen gutxirekin. Ikerketa prozedurak ezagutzen dituzu baina ez dituzu ondo aplikatzen.</td>
+          <td>Ez duzu informazio filosofiko egokia erabiltzen eta ez dituzu iturrien aipamenak egiten. Ez duzu ikerketa prozedurarik jarraitzen.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Argudioen eraikuntza eta koherentzia (KE3/EI3.1-3.2)</td>
+          <td>Argudio sendoak, ongi egituratuak eta koherenteak garatzen dituzu, logika zorrotza erabiliz. Falaziak identifikatzen eta saihesten dituzu, jarrera ez-dogmatikoa mantenduz.</td>
+          <td>Argudio egokiak eta koherenteak eraikitzen dituzu, logika egokia erabiliz. Falazia nagusiak identifikatzen dituzu eta jarrera kritikoa erakusten duzu.</td>
+          <td>Oinarrizko argudioak eraikitzen dituzu, koherentzia oinarrizkoa mantenduz. Falazia batzuk identifikatzen dituzu baina analisia ez da oso sakona.</td>
+          <td>Argudio ahulak garatzen dituzu, koherentzia arazoak dituzte. Falaziak identifikatzeko zailtasunak dituzu eta batzuetan jarrera dogmatikoa erakusten duzu.</td>
+          <td>Ez dituzu argudio koherenteak eraikitzen, logika akatsak ohikoak dira. Ez dituzu falaziak identifikatzen eta jarrera dogmatikoa erakusten duzu.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Pentsalari nagusien ideien integrazioa (KE6/EI6.1-6.2)</td>
+          <td>Pentsalari garrantzitsuen ideiak sakonki ulertzen eta modu kritikoan aztertzen dituzu. Filosofiaren ekarpen historikoaren balorazioa aberatsa eta Ã±abardurazkoa da. Ideiak aurkezpenean modu koherentean integratzen dituzu.</td>
+          <td>Pentsalari garrantzitsuen ideiak ongi ulertzen eta aztertzen dituzu. Filosofiaren ekarpen historikoa baloratzen duzu eta ideiak egoki integratzen dituzu aurkezpenean.</td>
+          <td>Pentsalari nagusien ideien oinarrizko ezagutza erakusten duzu. Filosofiaren ekarpen historikoa gainetik aipatzen duzu eta ideiak nolabait integratzen saiatzen zara.</td>
+          <td>Pentsalari nagusien ideien ezagutza mugatua da. Filosofiaren ekarpen historikoa ezagutzen duzu baina ez duzu sakonki aztertzen. Ideien integrazioa eskasa da.</td>
+          <td>Ez dituzu pentsalari nagusien ideiak aipatzen edo oker aipatzen dituzu. Ez duzu filosofiaren ekarpen historikorik baloratzen eta ez duzu ideia integraziorik egiten.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Arazo etiko-politikoen azterketa (KE8/EI8.1-8.2)</td>
+          <td>Gaurkotasuneko arazo etiko-politikoak sakonki identifikatzen eta aztertzen dituzu, jarrera filosofiko desberdinak kritikoki azalduz. Iritzi autonomo eta ondo arrazoitua garatzen duzu, erabaki moral sendoak hartuz.</td>
+          <td>Gaurkotasuneko arazo etiko-politikoak ongi identifikatzen eta aztertzen dituzu. Jarrera filosofiko desberdinak azaltzen dituzu eta iritzi arrazoitua garatzen duzu, erabaki moralak modu egokian hartuz.</td>
+          <td>Arazo etiko-politiko garaikide batzuk identifikatzen dituzu. Jarrera filosofiko nagusiak ezagutzen dituzu eta oinarrizko iritzi propioa garatzen duzu, erabaki moral sinpleak hartuz.</td>
+          <td>Arazo etiko-politikoen azterketa azalekoa da. Jarrera filosofikoen ezagutza mugatua duzu eta iritzi pertsonala garatzeko zailtasunak dituzu. Erabaki moralak hartzeko laguntza behar duzu.</td>
+          <td>Ez dituzu arazo etiko-politiko garaikideak identifikatzen. Ez dituzu jarrera filosofikoak ezagutzen eta ez duzu iritzi propiorik garatzen. Ez duzu erabaki moralik hartzen.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="rubric-section" id="errubrika-behaketa">
+    <div class="rubric-instrument-title">👁 <a href="#errubrika-behaketa" style="color:inherit;text-decoration:none">Behaketa zuzena</a></div>
+    <p class="rubric-note">KEak ebaluatzen ditu: KE1, KE4, KE5, KE7, KE8 · 3 behaketa guztira (1 ebaluazio bakoitzeko) · Klaseko parte-hartzea eta jarrera</p>
+    <div class="rubric-wrap">
+    <table class="rubric-table">
+      <thead><tr>
+        <th class="col-crit">Irizpidea</th>
+        <th class="level-bikain">Bikain [9-10]</th>
+        <th class="level-ongi">Ongi [7-9)</th>
+        <th class="level-egokia">Egokia [5-7)</th>
+        <th class="level-hasierak">Hasierakoa (0-5)</th>
+        <th class="level-egingabe">Egin gabe [0]</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="criterion">Arazo filosofikoen identifikazioa eta formulazioa (KE1/EI1.1-1.2)</td>
+          <td>Maiz identifikatzen dituzu arazo filosofikoak bizitza egunerokoan eta galdera sakonak formulatzen dituzu. Filosofiaren izaera eta adarren arteko loturak ulertzen dituzu eta bizitza gogoetatsurako jarrera sendoa erakusten duzu.</td>
+          <td>Arazo filosofikoak identifikatzen dituzu eta galdera egokiak formulatzen dituzu. Filosofiaren izaera ulertzen duzu eta bizitza gogoetatsurako jarrera ona erakusten duzu.</td>
+          <td>Arazo filosofiko batzuk identifikatzen dituzu eta galdera oinarrizkoak formulatzen dituzu. Filosofiaren izaerari buruzko oinarrizko ulermena duzu.</td>
+          <td>Arazo filosofikoak identifikatzeko zailtasunak dituzu eta galdera formulazioan laguntza behar duzu. Filosofiaren izaerari buruzko ezagutza oso oinarrizkoa da.</td>
+          <td>Ez dituzu arazo filosofikoak identifikatzen eta ez duzu galderarik formulatzen. Ez duzu filosofiaren izaerari buruzko ezagutzarik erakusten.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Elkarrizketa filosofikoan parte-hartzea (KE4/EI4.1-4.2)</td>
+          <td>Beti parte hartzen duzu elkarrizketa filosofikoetan modu aktibo eta errespetuz. Arau etiko eta formalak barneratu dituzu eta besteen ideiak modu kritikoan entzun eta aztertzen dituzu. Herritartasun aktiboa sustatzen duzu.</td>
+          <td>Maiz parte hartzen duzu elkarrizketa filosofikoetan. Arau etiko eta formalak errespetatzen dituzu eta besteen ideiak entzuten dituzu. Herritartasun demokratikoa erakusten duzu.</td>
+          <td>Batzuetan parte hartzen duzu elkarrizketa filosofikoetan. Arau etiko nagusiak errespetatzen dituzu baina beti ez dituzu besteen ideiak entzuten. Herritartasun oinarrizkoa erakusten duzu.</td>
+          <td>Gutxi parte hartzen duzu elkarrizketa filosofikoetan. Arau etikoak batzuetan hausten dituzu eta zaila egiten zaizu besteen ideiak entzutea.</td>
+          <td>Ez duzu parte hartzen elkarrizketa filosofikoetan edo arau etikoak sistematikoki urratzen dituzu.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Ikuspegi anitzen onarpen eta azterketa (KE5/EI5.1-5.2)</td>
+          <td>Beti erakusten duzu jarrera irekia eta tolerantea ikuspegi filosofiko desberdinen aurrean. Tesi filosofikoak konparatzen eta aztertzen dituzu modu kritikoan. Gatazken konponbide baketsua sustatzen duzu.</td>
+          <td>Normalean erakusten duzu jarrera irekia ikuspegi desberdinen aurrean. Tesi filosofikoak aztertzen eta konparatzen dituzu. Tolerantzia erakusten duzu.</td>
+          <td>Batzuetan erakusten duzu jarrera irekia ikuspegi desberdinen aurrean. Tesi filosofiko batzuk aztertzen dituzu baina analisia ez da oso sakona.</td>
+          <td>Jarrera itxia erakusten duzu ikuspegi desberdinen aurrean eta zaila egiten zaizu tesi filosofikoak aztertzea. Tolerantzia gutxi erakusten duzu.</td>
+          <td>Jarrera dogmatikoa erakusten duzu eta ez dituzu ikuspegi desberdinak onartu nahi. Ez dituzu tesi filosofikoak aztertzen.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Gai garaikideen azterketa kritikoa (KE7/EI7.1-7.2)</td>
+          <td>Gai garaikideak beti aztertzen dituzu ikuspegi global eta sistemikotik. Diziplina anitzeko informazioa integratzen duzu modu koherentean. Pentsamendu kritikoa aplikatzen duzu eta irtenbide sortzaileak proposatzen dituzu.</td>
+          <td>Gai garaikideak maiz aztertzen dituzu ikuspegi sistematikotik. Diziplina desberdinetako informazioa integratzen duzu. Pentsamendu kritikoa aplikatzen duzu.</td>
+          <td>Gai garaikideak batzuetan aztertzen dituzu ikuspegi orokorrago batetik. Diziplina batzuetako informazioa erabiltzen duzu. Oinarrizko pentsamendu kritikoa erakusten duzu.</td>
+          <td>Gai garaikideen azterketa azalekoa da. Zaila egiten zaizu informazio desberdinetako iturriak integratzea eta pentsamendu kritikoa aplikatzea.</td>
+          <td>Ez dituzu gai garaikideak aztertzen edo analisia ez da egokia. Ez duzu diziplinarteko ikuspegirik erakusten.</td>
+        </tr>
+        <tr>
+          <td class="criterion">Jarrera etiko-politikoen garapena (KE8/EI8.1-8.2)</td>
+          <td>Arazo etiko-politiko garaikideak beti identifikatzen eta aztertzen dituzu. Jarrera filosofiko desberdinak kritikoki azaltzen dituzu eta iritzi autonomo sendoa garatu duzu. Erabaki moralak hartzen dituzu modu koherentean.</td>
+          <td>Arazo etiko-politiko garaikideak maiz identifikatzen eta aztertzen dituzu. Jarrera filosofiko desberdinak azaltzen dituzu eta iritzi propio ona garatu duzu. Erabaki moralak hartzen dituzu.</td>
+          <td>Arazo etiko-politiko batzuk identifikatzen dituzu. Jarrera filosofiko nagusiak ezagutzen dituzu eta oinarrizko iritzi propioa garatu duzu. Erabaki moral sinpleak hartzen dituzu.</td>
+          <td>Arazo etiko-politikoen azterketa mugatua da. Jarrera filosofikoak ezagutzen dituzu baina ez dituzu sakonki aztertzen. Iritzi pertsonala garatzeko zailtasunak dituzu.</td>
+          <td>Ez dituzu arazo etiko-politikoak identifikatzen. Ez dituzu jarrera filosofikoak ezagutzen eta ez duzu iritzi propiorik garatzen.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PIE CC -->
+  <div class="cc-footer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="28" viewBox="0 0 120 42">
+      <rect x="0" y="0" width="120" height="42" rx="6" fill="none" stroke="#888899" stroke-width="1.5"/>
+      <text x="14" y="27" font-family="Arial" font-size="20" fill="#888899">©</text>
+      <text x="42" y="27" font-family="Arial" font-size="13" fill="#888899">BY</text>
+      <text x="70" y="27" font-family="Arial" font-size="13" fill="#888899">NC</text>
+      <text x="96" y="27" font-family="Arial" font-size="13" fill="#888899">SA</text>
+    </svg>
+    <div>
+      <strong>Eukeni Acebal</strong> · IES Minas BHI, Barakaldo · <span id="cc-year"></span><br>
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">Creative Commons BY-NC-SA 4.0</a> · Filosofia · Batxilergoa 1
+    </div>
+  </div>
+
+</main>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── AÑO DINÁMICO ────────────────────────────────────
+  var yrEl = document.getElementById('cc-year');
+  if (yrEl) yrEl.textContent = new Date().getFullYear();
+
+  // ── TEMA ────────────────────────────────────────────
+  var savedTheme = localStorage.getItem('prog-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  var btnTheme = document.getElementById('btn-theme');
+  if (btnTheme) btnTheme.textContent = savedTheme === 'dark' ? '☀' : '☾';
+
+  window.toggleTheme = function() {
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('prog-theme', next);
+    var btn = document.getElementById('btn-theme');
+    if (btn) btn.textContent = next === 'dark' ? '☀' : '☾';
+  };
+
+  // ── TOC ──────────────────────────────────────────────
+  var tocVisible = true;
+
+  window.toggleToc = function() {
+    var panel = document.getElementById('toc-panel');
+    var content = document.getElementById('content');
+    tocVisible = !tocVisible;
+    if (panel) {
+      if (tocVisible) {
+        panel.classList.remove('hidden');
+      } else {
+        panel.classList.add('hidden');
+      }
+    }
+    if (content) {
+      if (tocVisible) {
+        content.classList.remove('full-width');
+      } else {
+        content.classList.add('full-width');
+      }
+    }
+  };
+
+  function buildToc() {
+    var tocList = document.getElementById('toc-list');
+    if (!tocList) return;
+    var headings = document.querySelectorAll('#content h2, #content h3');
+    var currentGroup = null;
+
+    headings.forEach(function(h) {
+      if (!h.id) {
+        h.id = h.textContent.toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w-]/g, '')
+          .substring(0, 50);
+      }
+      var a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      a.className = 'toc-' + h.tagName.toLowerCase();
+
+      if (h.tagName === 'H2') {
+        currentGroup = document.createElement('div');
+        currentGroup.className = 'toc-group';
+        currentGroup.appendChild(a);
+        tocList.appendChild(currentGroup);
+      } else if (currentGroup) {
+        currentGroup.appendChild(a);
+      }
+    });
+  }
+
+  buildToc();
+
+  // IntersectionObserver para resaltar ítem activo
+  var allLinks = document.querySelectorAll('#toc-list a');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var id = entry.target.id;
+      var link = document.querySelector('#toc-list a[href="#' + id + '"]');
+      if (link) link.classList.toggle('active', entry.isIntersecting);
+    });
+  }, { rootMargin: '-46px 0px -60% 0px', threshold: 0 });
+
+  document.querySelectorAll('#content h2, #content h3').forEach(function(h) {
+    observer.observe(h);
+  });
+
+  // ── COLAPSABLES ──────────────────────────────────────
+  window.toggleProgCollapse = function(btn) {
+    var body = btn.nextElementSibling;
+    var isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    var arr = btn.querySelector('.arr');
+    if (arr) arr.textContent = isOpen ? '▶' : '▼';
+  };
+
+})();
+</script>
+</body>
+</html>
