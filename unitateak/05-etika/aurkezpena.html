@@ -1,0 +1,2489 @@
+<!DOCTYPE html>
+<html lang="eu" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f0f13">
+<title>Etika · Batxilergoa 1 · v4.3</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f13;
+  --surface: #1a1a24;
+  --surface2: #22222e;
+  --border: #2e2e42;
+  --text: #e8e8f0;
+  --text-muted: #888899;
+  --accent: #c9a84c;
+  --red: #e05252;
+  --blue: #5b8dee;
+  --green: #52c07a;
+  --purple: #9b72cf;
+  --font-body: 'Source Sans 3', sans-serif;
+  --font-title: 'Playfair Display', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+[data-theme="light"] {
+  --bg: #f5f4ef;
+  --surface: #ffffff;
+  --surface2: #ededea;
+  --border: #d8d6cc;
+  --text: #1a1a26;
+  --text-muted: #666677;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: clamp(15px, 1.7vw, 18px);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+  height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+}
+
+/* â”€â”€ NAVBAR â”€â”€ */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  min-height: 46px;
+}
+#navbar button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+#navbar button:hover, #navbar button.active { background: var(--accent); color: #000; border-color: var(--accent); }
+#navbar button.nav-arrow { font-size: 14px; padding: 4px 10px; }
+#navbar .sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+#session-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* â”€â”€ TOC â”€â”€ */
+#toc-panel {
+  position: fixed; top: 46px; left: 0; bottom: 0; z-index: 90;
+  width: 0; overflow: hidden;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  transition: width .25s;
+}
+#toc-panel.open { width: min(300px, 82vw); overflow-y: auto; }
+#toc-list { padding: 8px 0 16px; list-style: none; }
+.toc-group-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px 5px;
+  cursor: pointer; -webkit-user-select: none; user-select: none;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em;
+  border-top: 1px solid var(--border);
+  transition: color .15s, background .15s;
+}
+.toc-group-header:first-child { border-top: none; }
+.toc-group-header:hover { color: var(--text); background: var(--surface2); }
+.toc-group-header.active-group { color: var(--accent); }
+.toc-group-arrow { font-size: 9px; transition: transform .2s; display: inline-block; opacity: .5; }
+.toc-group-header.open .toc-group-arrow { transform: rotate(90deg); opacity: 1; }
+.toc-items { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
+.toc-items.open { max-height: 2000px; }
+.toc-items li {
+  font-size: 11.5px; padding: 5px 14px 5px 28px;
+  cursor: pointer; border-left: 3px solid transparent;
+  transition: all .15s; color: var(--text-muted); line-height: 1.35;
+}
+.toc-items li:hover { background: var(--surface2); color: var(--text); }
+.toc-items li.active { border-left-color: var(--accent); color: var(--accent); background: var(--surface2); }
+
+/* â”€â”€ MAIN CONTENT â”€â”€ */
+#content-wrap {
+  margin-top: 46px;
+  flex: 1;
+  transition: margin-left .25s;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 46px);
+  height: calc(-webkit-fill-available - 46px);
+  overflow: hidden;
+}
+#content-wrap.toc-open { margin-left: min(280px, 80vw); }
+
+/* â”€â”€ SLIDES â”€â”€ */
+#stage {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.slide {
+  display: none;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+  padding: clamp(20px, 3vw, 50px) clamp(20px, 5vw, 80px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  -webkit-animation: fadeIn .3s ease;
+  animation: fadeIn .3s ease;
+}
+.slide.active { display: flex; flex-direction: column; justify-content: center; }
+[data-session="portada"].active { justify-content: flex-start; padding-top: clamp(30px, 5vh, 60px); }
+@-webkit-keyframes fadeIn { from { opacity: 0; -webkit-transform: translateY(6px); transform: translateY(6px); } to { opacity: 1; -webkit-transform: none; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* â”€â”€ SLIDE TYPES â”€â”€ */
+.portada-title {
+  font-family: var(--font-title);
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  color: var(--accent);
+  margin-bottom: .25em;
+  line-height: 1.1;
+}
+.portada-sub {
+  font-size: clamp(.9rem, 2vw, 1.2rem);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: .04em;
+}
+.portada-nav { display: flex; flex-direction: column; gap: 4px; max-width: 680px; }
+.portada-nav-item {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  font-size: .88em;
+  color: var(--text-muted);
+  border-left: 2px solid transparent;
+}
+.portada-nav-item:hover { background: var(--surface2); color: var(--text); border-left-color: var(--accent); }
+.portada-nav-code {
+  font-family: var(--font-mono); font-size: .75em; font-weight: 600;
+  color: var(--accent); min-width: 28px; flex-shrink: 0;
+}
+
+/* â”€â”€ SLIDE COMPONENTS â”€â”€ */
+.slide-title {
+  font-family: var(--font-title);
+  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+  color: var(--accent);
+  margin-bottom: .6em;
+  line-height: 1.2;
+}
+.slide-subtitle {
+  font-family: var(--font-mono);
+  font-size: .75em;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--text-muted);
+  margin-bottom: .3em;
+}
+
+/* Phase badges */
+/* Phase badges hidden (v2.0: fase via data-phase + session-badge color) */
+.phase-badge { display: none; }
+[data-phase="hasiera"] .session-badge { color: var(--red); }
+[data-phase="garapena"] .session-badge { color: var(--blue); }
+[data-phase="itxiera"] .session-badge { color: var(--green); }
+
+/* Session badge */
+.session-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Case badge */
+.kasu-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(201,168,76,.12);
+  border: 1px solid rgba(201,168,76,.3);
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 12px 0;
+  font-size: .9em;
+  color: var(--accent);
+}
+.kasu-badge::before { content: '📋'; font-size: .95em; }
+
+/* Reveal lists */
+.reveal-list { list-style: none; padding: 0; margin: .5em 0; }
+.reveal-list li {
+  padding: 7px 0 7px 1.2em;
+  border-left: 2px solid transparent;
+  transition: opacity .3s, transform .3s;
+  position: relative;
+  line-height: 1.5;
+}
+.reveal-list li::before { content: '›'; position: absolute; left: 0; color: var(--accent); font-weight: bold; }
+.reveal-list li.hidden { opacity: 0; -webkit-transform: translateX(-8px); transform: translateX(-8px); pointer-events: none; }
+.reveal-list li.visible { opacity: 1; -webkit-transform: none; transform: none; border-left-color: var(--border); }
+.reveal-list li.current { border-left-color: var(--accent); }
+
+/* Collapse */
+/* Collapse: header always visible, body revealed with → like bullet points */
+.collapse-trigger {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 10px 0 0;
+  font-size: .95em;
+  -webkit-user-select: none; user-select: none;
+}
+.collapse-trigger .arr {
+  font-family: var(--font-mono);
+  font-size: .85em;
+  color: var(--text-muted);
+  opacity: .45;
+  transition: opacity .25s, color .25s;
+  flex-shrink: 0;
+}
+.collapse-trigger.open .arr { color: var(--accent); opacity: 1; }
+.collapse-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .4s ease, padding .25s ease, opacity .3s ease;
+  padding: 0 16px;
+  opacity: 0;
+  background: var(--surface);
+  border: 0px solid var(--border);
+  border-radius: 0 0 6px 6px;
+}
+.collapse-body.open {
+  padding: 12px 16px 14px;
+  border-width: 0 1px 1px 1px;
+  opacity: 1;
+  overflow: visible;
+}
+
+/* Tooltip */
+[data-tip] { position: relative; cursor: help; border-bottom: 1px dotted var(--accent); }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: .78em;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  max-width: 250px;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s .35s;
+  z-index: 200;
+  line-height: 1.4;
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+[data-tip]:hover::after { opacity: 1; }
+
+/* Cards grid */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin: 12px 0; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  transition: border-color .2s;
+}
+.card:hover { border-color: var(--accent); }
+.card-title { font-family: var(--font-title); font-size: 1.1em; margin-bottom: 6px; color: var(--accent); }
+.card-body { font-size: .9em; color: var(--text-muted); line-height: 1.5; }
+
+/* SVG container */
+.svg-wrap { width: 100%; max-width: 700px; margin: 0 auto; }
+.svg-wrap svg { width: 100%; height: auto; }
+
+/* Quote */
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 10px 18px;
+  margin: 14px 0;
+  color: var(--text-muted);
+  font-style: italic;
+  background: var(--surface);
+  border-radius: 0 6px 6px 0;
+}
+blockquote cite { display: block; margin-top: 6px; font-size: .85em; font-style: normal; color: var(--text-muted); }
+
+/* Table */
+.etika-table { width: 100%; border-collapse: collapse; font-size: .88em; margin: 12px 0; }
+.etika-table th { background: var(--surface2); padding: 8px 10px; text-align: left; font-family: var(--font-mono); font-size: .75em; text-transform: uppercase; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+.etika-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.etika-table tr:hover td { background: var(--surface); }
+
+/* â”€â”€ REVEAL COUNTER (presenter hint, bottom-left) â”€â”€ */
+#reveal-counter {
+  position: fixed;
+  bottom: 44px; left: 12px;
+  z-index: 95;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  display: flex; align-items: center; gap: 6px;
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+  -webkit-user-select: none; user-select: none;
+}
+#reveal-counter.visible { opacity: 1; }
+#reveal-counter .rc-dots { display: flex; gap: 3px; align-items: center; flex-wrap: wrap; max-width: 120px; }
+#reveal-counter .rc-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text-muted); opacity: .35; flex-shrink: 0;
+  transition: background .2s, opacity .2s;
+}
+#reveal-counter .rc-dot.rc-done { opacity: .6; }
+#reveal-counter .rc-dot.rc-pending { background: var(--accent); opacity: 1; }
+#reveal-counter .rc-dot.rc-collapse { background: var(--purple); opacity: 1; border-radius: 2px; width: 10px; }
+#reveal-counter .rc-label { font-size: 11px; color: var(--accent); }
+
+/* Progress highlight */
+.highlight-box {
+  background: var(--surface);
+  border-left: 4px solid var(--accent);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: .95em;
+}
+
+/* â”€â”€ DOTS BAR â”€â”€ */
+#dots-bar {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  min-height: 36px;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.dot.done { background: var(--text-muted); }
+.dot.active { background: var(--accent); border-color: var(--accent); width: 12px; height: 12px; box-shadow: 0 0 6px var(--accent); }
+
+/* â”€â”€ PRINT â”€â”€ */
+@media print {
+  #navbar, #toc-panel, #dots-bar { display: none !important; }
+  body { overflow: auto; height: auto; background: white !important; }
+  #stage { position: static !important; overflow: visible !important; height: auto !important; }
+
+  /* Mostrar TODAS las slides, compactas, una tras otra */
+  .slide {
+    display: flex !important;
+    flex-direction: column !important;
+    position: static !important;
+    -webkit-animation: none !important;
+    animation: none !important;
+    min-height: 0 !important;
+    height: auto !important;
+    width: 100% !important;
+    padding: 16px 24px !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-bottom: 1px solid #ccc !important;
+    page-break-inside: avoid;
+    justify-content: flex-start !important;
+  }
+
+  /* Todos los bullets visibles (estado final revelado) */
+  .reveal-list li,
+  .reveal-list li.hidden,
+  .reveal-list li.visible,
+  .reveal-list li.current {
+    opacity: 1 !important;
+    -webkit-transform: none !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Colapsables abiertos */
+  .collapse-body {
+    max-height: none !important;
+    padding: 10px 14px !important;
+    visibility: visible !important;
+    display: block !important;
+  }
+
+  /* Colores accesibles en papel */
+  .slide-title { color: #1a1a2e !important; }
+  .session-badge { color: #555 !important; }
+  .kasu-badge {
+    border-color: #aaa !important;
+    color: #333 !important;
+    background: #f5f5f5 !important;
+  }
+}
+
+/* â”€â”€ RESPONSIVE â”€â”€ */
+@media (max-width: 600px) {
+  #session-tabs { display: none; }
+  .slide { padding: 16px; }
+}
+/* ── §2.13 Pie CC BY-SA ─────────────────────────────── */
+.cc-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 10px 16px;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 8px 8px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.cc-icon {
+  width: 54px;
+  height: 19px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.cc-text { line-height: 1.4; }
+.cc-link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent);
+}
+.cc-link:hover { opacity: .75; }
+@media print {
+  .cc-footer { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <button id="btn-toc" onclick="toggleToc()" title="Aurkibidea">T</button>
+  <div class="sep"></div>
+  <button class="nav-arrow" onclick="prevSlide()">←</button>
+  <button class="nav-arrow" onclick="nextSlide()">→</button>
+  <button class="nav-arrow" onclick="skipSlide(1)" title="Ctrl+→">⏭</button>
+  <button class="nav-arrow" onclick="skipSlide(-1)" title="Ctrl+←">⏮</button>
+  <div class="sep"></div>
+  <div id="session-tabs">
+    <button onclick="goToSession('portada')" id="tab-portada">⌂</button>
+    <button onclick="goToSession('s01')" id="tab-s01">S01</button>
+    <button onclick="goToSession('s02')" id="tab-s02">S02</button>
+    <button onclick="goToSession('s03')" id="tab-s03">S03</button>
+    <button onclick="goToSession('s04')" id="tab-s04">S04</button>
+    <button onclick="goToSession('s05')" id="tab-s05">S05</button>
+    <button onclick="goToSession('s06')" id="tab-s06">S06</button>
+    <button onclick="goToSession('s07')" id="tab-s07">S07</button>
+    <button onclick="goToSession('s08')" id="tab-s08">S08</button>
+    <button onclick="goToSession('s09')" id="tab-s09">S09</button>
+    <button onclick="goToSession('s10')" id="tab-s10">S10</button>
+    <button onclick="goToSession('s11')" id="tab-s11">S11</button>
+    <button onclick="goToSession('s12')" id="tab-s12">S12</button>
+  </div>
+  <div class="sep"></div>
+  <button id="btn-theme" onclick="toggleTheme()">☀</button>
+  <button onclick="window.print()" title="Inprimatu">🖨</button>
+</nav>
+
+<!-- TOC -->
+<div id="toc-panel">
+  <ul id="toc-list"></ul>
+</div>
+
+<!-- CONTENT -->
+<div id="content-wrap">
+  <div id="stage">
+
+    <!-- ══════════════════════════════════════════════
+         PORTADA
+    ══════════════════════════════════════════════ -->
+    <div class="slide active" data-session="portada" data-label="Portada">
+      <div class="portada-title">Etika</div>
+      <div class="portada-sub">Batxilergoa 1 · IES Minas BHI · 2025–26 · v4.3</div>
+      <nav class="portada-nav" style="margin-top:2.4em;">
+        <div class="portada-nav-item" onclick="goToSession('s01')"><span class="portada-nav-code">S01</span><span>Morala vs. etika · Metaetika</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s02')"><span class="portada-nav-code">S02</span><span>Egoismoa · Altruismoa · Emotibismoa · Kognitibismoa</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s03')"><span class="portada-nav-code">S03</span><span>Kohlbergen faseak · Gilliganen kritika</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s04')"><span class="portada-nav-code">S04</span><span>Bertutezko etika · Platon · Aristoteles</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s05')"><span class="portada-nav-code">S05</span><span>Estoizismoaren jatorria · 4 bertuteak</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s06')"><span class="portada-nav-code">S06</span><span>Apatheia · Propathos · Ariketa estoikoak</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s07')"><span class="portada-nav-code">S07</span><span>Deontologia · Locke · Kant sarrera</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s08')"><span class="portada-nav-code">S08</span><span>Inperatibo kategorikoa · Formulazioak</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s09')"><span class="portada-nav-code">S09</span><span>Etika ondoriozkoa · Utilitarismoa</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s10')"><span class="portada-nav-code">S10</span><span>Nietzsche · Nihilismoa · Bi moralak</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s11')"><span class="portada-nav-code">S11</span><span>Gilliganen etika · Trontoren zaintzaren etika</span></div>
+        <div class="portada-nav-item" onclick="goToSession('s12')"><span class="portada-nav-code">S12</span><span>Etika aplikatua · Printzipio normatiboak</span></div>
+      </nav>
+      <div class="cc-footer">
+        <svg class="cc-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 42" aria-hidden="true">
+          <circle cx="21" cy="21" r="20" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <text x="21" y="26.5" text-anchor="middle" font-size="17" font-family="sans-serif" font-weight="bold" fill="currentColor">CC</text>
+          <circle cx="63" cy="21" r="20" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <text x="63" y="26.5" text-anchor="middle" font-size="14" font-family="sans-serif" font-weight="bold" fill="currentColor">BY</text>
+          <circle cx="105" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <text x="105" y="26.5" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="bold" fill="currentColor">SA</text>
+        </svg>
+        <span class="cc-text">
+          Eukeni Acebal, <span id="cc-year"></span> ·
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="cc-link">CC BY-SA 4.0</a>
+          · Elaborado con asistencia de IA (Claude, Anthropic)
+        </span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S01 · MORALA VS. ETIKA · METAETIKA
+    ══════════════════════════════════════════════ -->
+    <div class="slide" data-session="s01" data-phase="hasiera" data-label="Kasu: Portu kalea">
+      <span class="session-badge">S01 · 1. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Kasu bat: Portu kalea</h2>
+      <div class="kasu-badge">Kasu nagusia · Barakaldo</div>
+      <p>Arratsaldeko seietan, Barakaldoko Portu kalean, moto bat autoarekin talka egin du. Kolpea gogorra izan da: motogidaria asfalto gainean erori da eta ez da mugitzen. Auto gidaria alde egin du ihesi, geratzen saiatu ere egin gabe.</p>
+      <p style="margin-top:.7em;">Istripua hamabi pertsonak ikusi dute gutxienez: bizilagunak leihoetatik, oinezkoak espaloitik, beste gidari batzuk gertu geldituta. Inork ez du berehalako erreakziorik izan. Bost minutu igaro dira.</p>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)" style="margin-top:1em;">
+        <span class="arr">→</span> Bost minutu igaro dira. Oraindik inork ez du 112 deitu.
+      </div>
+      <div class="collapse-body">
+        <p>Motogidariaren eskua lurretik mugitzen da pixka bat. Bizirik dago oraindik. Segundu bakoitzak garrantzia du.</p>
+        <p style="margin-top:.6em; color:var(--text-muted); font-size:.92em;"><strong style="color:var(--accent);">Galdera:</strong> Zergatik ez du inork deitu? Egoismoa da? Beldurra? Ardura-falta? Ala beste zerbait? – Erantzuna ez dugu oraingoz emango. Saio bakoitzean teoria filosofiko batek bere erantzuna emango du.</p>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s01" data-phase="garapena" data-label="Morala zer da?">
+      <span class="session-badge">S01 · Morala</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Morala zer da?</h2>
+      <p><strong>Morala</strong> arau, erregela eta balio multzo bat da, zer dagoen ongi eta zer gaizki arautzen duena.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Gizabanako, talde edo gizarte bati lotuta egoten da</li>
+        <li class="hidden">Agindu eta debekuak biltzen ditu: «ez hil», «zergak ordaindu»…</li>
+        <li class="hidden">Kultural fenomenoa da gehienetan: moral kristaua, judu-morala…</li>
+        <li class="hidden">Etimologia: latinezko <em>moralis</em> → «ohiturak»</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s01" data-phase="garapena" data-label="Etika zer da?">
+      <span class="session-badge">S01 · Etika</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Etika zer da?</h2>
+      <p><strong>Etika</strong> Filosofiaren arloa da: portaera on eta txarraren kontzeptuak sistematizatu, defendatu eta gomendatzea dakarrena.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Arau moralak aztertu, ikertu eta epaitzen ditu</li>
+        <li class="hidden">Galdetzen du: <em>zergatik</em> da gaizki lapurtzea?</li>
+        <li class="hidden">Etimologia: <span data-tip="izaera edo portaera (gr.)">ethos</span> → izaera, portaera</li>
+        <li class="hidden">Moralik gabe ez litzateke etikarik existituko</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s01" data-phase="garapena" data-label="Morala vs. Etika">
+      <span class="session-badge">S01 · Desberdintasuna</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Morala vs. etika</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Morala</div>
+          <div class="card-body">Zehazki esaten digu zer den on eta txar. Zuzenean agintzen du: «ez lapurtu».</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Etika</div>
+          <div class="card-body">Justifikazioei buruz hausnartzen du. Galdetzen du: «Zergatik da gaizki lapurtzea?»</div>
+        </div>
+      </div>
+      <ul class="reveal-list">
+        <li class="hidden">Moralaren oinarria: erlijioa, tradizioa, naturarena…</li>
+        <li class="hidden">Etika arrazoian eta arrazoietan soilik oinarritzen da</li>
+        <li class="hidden">Arau moralari <em>buruzko</em> galdera egiten dugunean, etika egiten ari gara</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s01" data-phase="garapena" data-label="Metaetika zer da?">
+      <span class="session-badge">S01 · Metaetika</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title"><span data-tip="Etikak bere buruari buruz egiten duen hausnarketa">Metaetika</span></h2>
+      <p>Etikak bere buruari buruz arrazoiaren bidez egiten duen hausnarketa. Bi arazo mota:</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Arazo metafisikoak:</strong> objektibismoa vs. erlatibismoa – balio moralak «daude» ala sortzen dira?</li>
+        <li class="hidden"><strong>Arazo psikologikoak:</strong> zergatik jokatu moralki? Zer bultzatzen gaitu?</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s01" data-phase="garapena" data-label="Objektibismoa">
+      <span class="session-badge">S01 · Objektibismoa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Objektibismo morala</h2>
+      <p>Arau moralak egia betierekoak, absolutuak, aldaezinak eta unibertsalak dira.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Platonen muturreko kasua:</strong> balio moralak existentzia propioa dute, gauza immaterialak dira</li>
+        <li class="hidden">Matematikak <em>aurkitu</em> egiten ditugu bezala, balioak ere aurkitu egiten ditugu</li>
+        <li class="hidden"><strong>Boluntarismoa</strong> (Ockham, Duns Scoto): Jainkoaren borondateak ezartzen ditu arauak</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s01" data-phase="garapena" data-label="Erlatibismoa">
+      <span class="session-badge">S01 · Erlatibismoa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Erlatibismo morala</h2>
+      <p>Balio eta arau moralen izaera objektiboa ukatzen da: giza asmakizunak dira.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Erlatibismo indibiduala</div>
+          <div class="card-body">Gizabanako bakoitzak bere irizpidea sor dezake. Nietzschek: <em>gaingizonak</em> bere moral propioa sortzen du.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Erlatibismo kulturala</div>
+          <div class="card-body">Morala gizartearen produktua da. Sofistak, Montaigne, Sumner. Ez dago arau moral unibertsalik.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s01" data-phase="itxiera" data-label="Kasu: Portu kalea (S01 itxiera)">
+      <span class="session-badge">S01 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Kasu nagusira itzuli</h2>
+      <div class="kasu-badge">S01 aplikazioa</div>
+      <p>Hamabi lagunek ikusi dute istripua. Bost minutu igaro dira. Inork ez du deitu 112.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Haien <strong>morala</strong>: «lagundu behar zaio istripatutakoari» dio agian haien kodeak</li>
+        <li class="hidden">Baina <strong>etikak</strong> galdetzen du: zergatik ez dute lagundu? Zer printzipiok galarazi die?</li>
+        <li class="hidden">Bystander efektua? Ardura diluzio soziala? Beldurra? Arau sozialen pisua?</li>
+        <li class="hidden">Datorren saioan: egoismoa eta altruismoa aztertuko ditugu</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S02 · EGOISMOA · ALTRUISMOA · EMOTIBISMOA · KOGNITIBISMOA
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s01" data-label="S01 · Gaur ikasi dugu…">
+      <span class="session-badge">S01 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Morala:</strong> arau, balio eta erregelen multzo bat da — kultura batetik bestera alda daiteke</li>
+        <li class="hidden"><strong>Etika:</strong> Filosofiaren arloa da: arau moralak aztertu eta justifikatzen ditu arrazoiaren bidez</li>
+        <li class="hidden"><strong>Metaetika:</strong> etikak bere buruari buruz egiten duen hausnarketa: objektibismoa vs. erlatibismoa</li>
+        <li class="hidden"><strong>Galdera irekia:</strong> Portu kalean: morala badute — baina etikak galdetzen du zergatik ez duten lagundu</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s02" data-label="S02 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S02 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zer desberdintasun dago <strong>morala</strong> eta <strong>etika</strong> artean?</li>
+        <li class="hidden">Zer azterketa mota egiten ditu <strong>metaetikak</strong>?</li>
+        <li class="hidden">Zertan bereizten dira <strong>objektibismoa</strong> eta <strong>erlatibismoa</strong>?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s02" data-phase="hasiera" data-label="Zergatik jokatu moralki?">
+      <span class="session-badge">S02 · 2. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Zergatik jokatu moralki?</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: azken 24 orduetan ekintza «on» bat egin al duzu? Zergatik?
+      </div>
+      <div class="collapse-body">
+        <p>Norbere onuragatik? Beste batek espero duelako? Zigorra saihesteko? Edo besterik gabe «hori zen egokia zelako»?</p>
+      </div>
+      <p style="margin-top:16px;">Saio honetan etikaren <strong>psikologia</strong>: zer bultzatzen gaitu moralki jokatzera?</p>
+    </div>
+
+    <div class="slide" data-session="s02" data-phase="garapena" data-label="Egoismo psikologikoa (Hobbes)">
+      <span class="session-badge">S02 · Hobbes</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Egoismo psikologikoa</h2>
+      <p><strong>Thomas Hobbes</strong> (1588–1679): ekintza guztiak egoismoz mugitzen dira.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Baliabide mugatuko munduan bizirauteko borrokatu behar dugu</li>
+        <li class="hidden">«Gizakia gizakiarentzat da <span data-tip="otso (lat.)">lupus</span>»</li>
+        <li class="hidden">Bi printzipio: mina saihestu + plazera bilatu</li>
+        <li class="hidden">Dohaintza karitateari: ekintza egoista da – boterea edo ospea lortzeko</li>
+      </ul>
+      <div class="kasu-badge">Portu kalea: bostetan inork ez du lagundu → egoismoa? Arriskua? Norbere ardura eza?</div>
+    </div>
+
+    <div class="slide" data-session="s02" data-phase="garapena" data-label="Altruismo psikologikoa (Butler)">
+      <span class="session-badge">S02 · Butler</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Altruismo psikologikoa</h2>
+      <p><strong>Joseph Butler</strong> (1692–1752): gizakia besteen onurarako jokatzeko gai da, trukean ezer espero gabe.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Onartzen du ekintza asko egoismoaz eraginda daudela</li>
+        <li class="hidden">Baina izpiritua ongi egituratua duen pertsonak <strong>onginahiaren printzipioa</strong> ere badu</li>
+        <li class="hidden">Ongizate orokorra bilatzen du, ez soilik norberea</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s02" data-phase="garapena" data-label="Emotibismoa (Hume)">
+      <span class="session-badge">S02 · Hume</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Emotibismoa</h2>
+      <p><strong>David Hume</strong> (1711–1776): adierazpen moralak <em>gure emozioen</em> mende daude, ez arrazoiarenak.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Arrazoiak informazioa ematen du, baina ez du baieztapen morala adierazten</li>
+        <li class="hidden">«Lapurtzea gaizki dago» = erreakzio emozionala + entzuleari agintzea</li>
+        <li class="hidden"><strong>A.J. Ayer</strong> (XX. mendea): bi elementu – emotiboa (onarpen sentimendua) + preskriptiboa (agindu bat)</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s02" data-phase="garapena" data-label="Kognitibismoa (Kant)">
+      <span class="session-badge">S02 · Kant</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Kognitibismoa</h2>
+      <p><strong>Immanuel Kant</strong>: faktoreak emozionalak maiz baldintzatzen dute portaera, baina aurre egin behar diogu.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Benetako ekintza morala <strong>arrazoiak soilik</strong> zuzentzen du</li>
+        <li class="hidden">Emozioek jokabidea motibatu dezakete, baina ez dute balio morala ematen ekintzari</li>
+        <li class="hidden">Saio batuetan sakonago aztertuko dugu: inperatibo kategorikoa (S08)</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s02" data-phase="itxiera" data-label="Konparazio-laburpena">
+      <span class="session-badge">S02 · Laburpena</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Lau ikuspegiak konparatuta</h2>
+      <table class="etika-table">
+        <tr><th>Autore</th><th>Zer bultzatzen gaitu?</th><th>Arrazoia vs. emozioa</th></tr>
+        <tr><td>Hobbes</td><td>Norberaren interesa</td><td>Arrazoi instrumentala</td></tr>
+        <tr><td>Butler</td><td>Onginahia ere bai</td><td>Bietan</td></tr>
+        <tr><td>Hume</td><td>Emozioak</td><td>Emozioak nagusi</td></tr>
+        <tr><td>Kant</td><td>Betebeharra</td><td>Arrazoia soilik</td></tr>
+      </table>
+      <div class="kasu-badge">Portu kalea: zein teoriak azaltzen du hobeto bost lagunen jarrera?</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S03 · KOHLBERGEN FASEAK · GILLIGAN
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s02" data-label="S02 · Gaur ikasi dugu…">
+      <span class="session-badge">S02 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Egoismo psikologikoa (Hobbes):</strong> ekintza guztiak interes propioz mugitzen dira, nahita nahiez</li>
+        <li class="hidden"><strong>Altruismo psikologikoa (Butler):</strong> gizakiak berez enpatiarako joera du, ez dena egoismora murrizteko</li>
+        <li class="hidden"><strong>Emotibismoa:</strong> balio moralak ez dira egiazkoak — sentimenduak adierazten dituzte soilik</li>
+        <li class="hidden"><strong>Kognitibismoa:</strong> balio moralak proposizio egiazkoak dira, arrazoiaz justifika daitezkeenak</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s03" data-label="S03 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S03 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zer da <strong>egoismo psikologikoa</strong>? Nork defendatu zuen?</li>
+        <li class="hidden">Zer da <strong>altruismo psikologikoa</strong>? Nola defendatzen da?</li>
+        <li class="hidden">Zer desberdintasun dago <strong>emotibismoaren</strong> eta <strong>kognitibismoaren</strong> artean?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s03" data-phase="hasiera" data-label="Judy eta Louise">
+      <span class="session-badge">S03 · 3. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Judy eta Louise</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Irakurri eta erantzun: zer egingo zenuke Louise bazina?
+      </div>
+      <div class="collapse-body">
+        <p>Amak agindua eman zion Judyri: aurreztu zuen dirua nahi duen bezala erabil dezake. Judyk kontzerturako sarrerak erosi ditu ama esan gabe. Louisi esan dio. Amak ez daki ezer. <strong>Louisek ama esan behar al dio?</strong></p>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s03" data-phase="garapena" data-label="Kohlbergen garapen morala">
+      <span class="session-badge">S03 · Kohlberg</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Kohlbergen garapen morala</h2>
+      <p><strong>Lawrence Kohlberg</strong> (1927–1987): garapen morala sei etapatan gertatzen da, hiru fasetan banatuta.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Esperimentalki aztertu zituen pertsonen erantzunak dilema moralei</li>
+        <li class="hidden">Garapen morala batez ere <strong>justiziarekin</strong> lotuta dago</li>
+        <li class="hidden">Etapak sekuentziazkoak dira: bat ere ez da saltatzen</li>
+        <li class="hidden">Etapetan aurrera egiten dugu, gutxitan itzultzen gara</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s03" data-phase="garapena" data-label="Faseak: SVG diagrama">
+      <span class="session-badge">S03 · 3 faseak eta 6 etapak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">3 faseak eta 6 etapak</h2>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 700 320" font-family="'Source Sans 3', sans-serif" font-size="13">
+          <!-- AURRE-KONBENTZIONALA -->
+          <rect x="10" y="10" width="210" height="280" rx="10" fill="#e0525215" stroke="#e05252" stroke-width="1.5"/>
+          <text x="115" y="35" text-anchor="middle" fill="#e05252" font-weight="bold" font-size="12">Aurre-konbentzionala</text>
+          <rect x="25" y="50" width="180" height="90" rx="6" fill="#1a1a24" stroke="#2e2e42"/>
+          <text x="115" y="70" text-anchor="middle" fill="#c9a84c" font-weight="bold">1. Etapa</text>
+          <text x="115" y="87" text-anchor="middle" fill="#e8e8f0">Obedientzia</text>
+          <text x="115" y="104" text-anchor="middle" fill="#888899" font-size="11">Zigorra saihestea</text>
+          <rect x="25" y="155" width="180" height="90" rx="6" fill="#1a1a24" stroke="#2e2e42"/>
+          <text x="115" y="175" text-anchor="middle" fill="#c9a84c" font-weight="bold">2. Etapa</text>
+          <text x="115" y="192" text-anchor="middle" fill="#e8e8f0">Interes propioa</text>
+          <text x="115" y="209" text-anchor="middle" fill="#888899" font-size="11">Quid pro quo</text>
+          <!-- KONBENTZIONALA -->
+          <rect x="245" y="10" width="210" height="280" rx="10" fill="#5b8dee15" stroke="#5b8dee" stroke-width="1.5"/>
+          <text x="350" y="35" text-anchor="middle" fill="#5b8dee" font-weight="bold" font-size="12">Konbentzionala</text>
+          <rect x="260" y="50" width="180" height="90" rx="6" fill="#1a1a24" stroke="#2e2e42"/>
+          <text x="350" y="70" text-anchor="middle" fill="#c9a84c" font-weight="bold">3. Etapa</text>
+          <text x="350" y="87" text-anchor="middle" fill="#e8e8f0">Adostasuna</text>
+          <text x="350" y="104" text-anchor="middle" fill="#888899" font-size="11">«Neska/mutil ona»</text>
+          <rect x="260" y="155" width="180" height="90" rx="6" fill="#1a1a24" stroke="#2e2e42"/>
+          <text x="350" y="175" text-anchor="middle" fill="#c9a84c" font-weight="bold">4. Etapa</text>
+          <text x="350" y="192" text-anchor="middle" fill="#e8e8f0">Legea eta ordena</text>
+          <text x="350" y="209" text-anchor="middle" fill="#888899" font-size="11">Ordena soziala</text>
+          <!-- POST-KONBENTZIONALA -->
+          <rect x="480" y="10" width="210" height="280" rx="10" fill="#52c07a15" stroke="#52c07a" stroke-width="1.5"/>
+          <text x="585" y="35" text-anchor="middle" fill="#52c07a" font-weight="bold" font-size="12">Post-konbentzionala</text>
+          <rect x="495" y="50" width="180" height="90" rx="6" fill="#1a1a24" stroke="#2e2e42"/>
+          <text x="585" y="70" text-anchor="middle" fill="#c9a84c" font-weight="bold">5. Etapa</text>
+          <text x="585" y="87" text-anchor="middle" fill="#e8e8f0">Kontratu soziala</text>
+          <text x="585" y="104" text-anchor="middle" fill="#888899" font-size="11">Eskubideak</text>
+          <rect x="495" y="155" width="180" height="90" rx="6" fill="#1a1a24" stroke="#2e2e42"/>
+          <text x="585" y="175" text-anchor="middle" fill="#c9a84c" font-weight="bold">6. Etapa</text>
+          <text x="585" y="192" text-anchor="middle" fill="#e8e8f0">Printzipio unibertsalak</text>
+          <text x="585" y="209" text-anchor="middle" fill="#888899" font-size="11">Kontzientzia autonoma</text>
+          <!-- arrows -->
+          <path d="M215 145 L245 145" stroke="#c9a84c" stroke-width="1.5" marker-end="url(#arr)"/>
+          <path d="M450 145 L480 145" stroke="#c9a84c" stroke-width="1.5" marker-end="url(#arr)"/>
+          <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c9a84c"/></marker></defs>
+          <!-- note -->
+          <text x="350" y="310" text-anchor="middle" fill="#888899" font-size="11">Gehienak 4. etapan geratzen dira</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s03" data-phase="garapena" data-label="Kohlberg: 6 etapak taula">
+      <span class="session-badge">S03 · 6 etapak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">6 etapak: ezaugarriak eta Portu kalea</h2>
+      <table class="etika-table">
+        <thead>
+          <tr>
+            <th style="width:13%">Maila</th>
+            <th style="width:17%">Etapa</th>
+            <th style="width:35%">Arrazonamendu morala</th>
+            <th style="width:35%">Portu kalea: zer egingo luke?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:rgba(224,82,82,.08)">
+            <td rowspan="2" style="border-left:3px solid var(--red);color:var(--red);font-weight:600;font-size:.82em;vertical-align:middle;text-align:center">Aurre-<br>konbent.</td>
+            <td><strong>1.</strong> Obedientzia</td>
+            <td>Zigorra saihestea</td>
+            <td style="color:var(--text-muted);font-size:.9em">«Ez naute harrapatuko» → ez lagundu</td>
+          </tr>
+          <tr style="background:rgba(224,82,82,.08)">
+            <td><strong>2.</strong> Interes propioa</td>
+            <td>Truke: zer lortzen dut?</td>
+            <td style="color:var(--text-muted);font-size:.9em">«Ez da nire arazoa» → ez lagundu</td>
+          </tr>
+          <tr style="background:rgba(91,141,238,.08)">
+            <td rowspan="2" style="border-left:3px solid var(--blue);color:var(--blue);font-weight:600;font-size:.82em;vertical-align:middle;text-align:center">Konbent.</td>
+            <td><strong>3.</strong> Adostasuna</td>
+            <td>«Neska/mutil ona» izatea</td>
+            <td style="color:var(--text-muted);font-size:.9em">«Jendeak zer pentsatuko du?» → bai</td>
+          </tr>
+          <tr style="background:rgba(91,141,238,.08)">
+            <td><strong>4.</strong> Legea eta ordena</td>
+            <td>Arau sozialak · ordena soziala</td>
+            <td style="color:var(--text-muted);font-size:.9em">«112 deitu behar zaio» → bai, legeak agintzen du</td>
+          </tr>
+          <tr style="background:rgba(82,192,122,.08)">
+            <td rowspan="2" style="border-left:3px solid var(--green);color:var(--green);font-weight:600;font-size:.82em;vertical-align:middle;text-align:center">Post-<br>konbent.</td>
+            <td><strong>5.</strong> Kontratu soziala</td>
+            <td>Eskubide orokorrak · demokrazia</td>
+            <td style="color:var(--text-muted);font-size:.9em">Biztanleen eskubideak babestu → bai</td>
+          </tr>
+          <tr style="background:rgba(82,192,122,.08)">
+            <td><strong>6.</strong> Printzipio unibertsal.</td>
+            <td>Kontzientzia autonoma · dignitate unibertsal.</td>
+            <td style="color:var(--text-muted);font-size:.9em">Pertsonaren dignitatea → bai, baldintzarik gabe</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:.8em;color:var(--text-muted);margin-top:8px;">◊ Gehienak 3–4. etapan geratzen dira · 6. etapa erreala da (Mandela, MLK)</p>
+    </div>
+
+    <div class="slide" data-session="s03" data-phase="garapena" data-label="Gilliganen kritika">
+      <span class="session-badge">S03 · Gilligan</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Gilliganen kritika</h2>
+      <p><strong>Carol Gilligan</strong>: Kohlbergen jatorrizko ikerketak gizonengan egin ziren. Emazteak baztertu zituen.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Mutilak moralki helduagoak direlako ondorioa – baina hezkuntza kontrolatuz desagertzen da desberdintasuna</li>
+        <li class="hidden">Emakumeek enpatian eta errukian oinarritutako moralitate bat nahiago dute</li>
+        <li class="hidden">Kohlbergen justizia-ardatza vs. Gilliganen <strong>zaintza-ardatza</strong></li>
+        <li class="hidden">S11 saio osoa eskainiko diogu zaintzaren etikari</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s03" data-phase="itxiera" data-label="S03 itxiera">
+      <span class="session-badge">S03 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Kasu nagusia S03 begiekin</h2>
+      <div class="kasu-badge">Portu kalea</div>
+      <ul class="reveal-list">
+        <li class="hidden">1. etapa: «Ez naute harrapatuko» → ez lagundu</li>
+        <li class="hidden">3. etapa: «Jendea zain dago, beharbada norbaitek deitzen du» → ardura diluzio</li>
+        <li class="hidden">4. etapa: «112 deitu behar zaio» → bai, legeak agintzen du</li>
+        <li class="hidden">Zein etapatara iritsita lagundu nahi izango zenuke beti?</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S04 · BERTUTEZKO ETIKA · PLATON · ARISTOTELES
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s03" data-label="S03 · Gaur ikasi dugu…">
+      <span class="session-badge">S03 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Kohlbergen 6 etapak:</strong> 3 maila: aurre-konbentzionala (1-2), konbentzionala (3-4), post-konbentzionala (5-6)</li>
+        <li class="hidden"><strong>Gilligan:</strong> Kohlbergen ikerketak maskulinoki alboraturik zeuden — zaintza-ardatza falta zuen</li>
+        <li class="hidden"><strong>Ardura diluzio soziala:</strong> taldean erantzukizuna banatzen da — nork ere inork ez du ezer egiten</li>
+        <li class="hidden"><strong>Datorren saioan:</strong> bertutezko etika: izaera ona forjatzea ekintza zuzena baino lehen</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s04" data-label="S04 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S04 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zein da Kohlbergen garapen moralaren 6 etapen eskema laburra?</li>
+        <li class="hidden">Nola kritikatu zuen Gilliganek Kohlbergen ikerketa? Zein argudio erabili zuen?</li>
+        <li class="hidden">Zer iradokitzen du <strong>bystander efektuak</strong> Portu kaleko kasuari buruz?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s04" data-phase="hasiera" data-label="Bizitza on bat">
+      <span class="session-badge">S04 · 4. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Zer da bizitza on bat?</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: zein 3 ezaugarri ditu bizitza on batek zuretzat?
+      </div>
+      <div class="collapse-body">
+        <p>Ona izatea = ondo jokatzea (arauak betetzea)? Ala ona izatea = izaera ona izatea?</p>
+      </div>
+      <p style="margin-top:16px;">Bertutezko etikak bigarren bidea aukeratzen du: <strong>karakterea forjatzea</strong> da helburua.</p>
+    </div>
+
+    <div class="slide" data-session="s04" data-phase="garapena" data-label="Bertutezko etika zer da?">
+      <span class="session-badge">S04 · Bertutezko etika</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Bertutezko etika</h2>
+      <p>Planteamendua: <em>ohitura onen garapena</em> eta <em>izaera on bat eratzea</em> azpimarratzen ditu.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Ez da «lapurtzea gaizki dago, beraz ez lapurtu»</li>
+        <li class="hidden">Baizik eta: <strong>onberatasuna eskuratu</strong>, zure izaeraren ezaugarri bihur dadin</li>
+        <li class="hidden">Gero egoera gehienetan onberatasunez jokatuko duzu automatikoki</li>
+        <li class="hidden">Antzinako Grezian sortu zen: <span data-tip="bikaintasuna (gr.)">arete</span> zen ideala</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s04" data-phase="garapena" data-label="Platonen 4 bertuteak">
+      <span class="session-badge">S04 · Platon</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Platonen 4 bertute kardinalak</h2>
+      <p><strong>Platon</strong> (K.a. 427–347): lau bertute kardinal nabarmendu zituen.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title"><span data-tip="justizia (gr.)">Dikaiosyne</span></div>
+          <div class="card-body">Justizia: bakoitzari dagokiona ematea.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Phronesis</div>
+          <div class="card-body">Zuhurtzia / jakinduria praktikoa.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span data-tip="kemena, adorea (gr.)">Andreia</span></div>
+          <div class="card-body">Sendotasuna / adorea.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span data-tip="neurritasuna (gr.)">Sophrosine</span></div>
+          <div class="card-body">Neurritasuna / moderazioa.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s04" data-phase="garapena" data-label="Aristotelesek erdibidea">
+      <span class="session-badge">S04 · Aristoteles</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Aristotelesen erdibidea</h2>
+      <p><strong>Aristoteles</strong> (K.a. 386–322): «Bertutea erdibidean dago»</p>
+      <div class="svg-wrap" style="max-width:600px; margin-bottom: .8em;">
+        <svg viewBox="0 0 600 160" font-family="'Source Sans 3', sans-serif" font-size="13">
+          <line x1="60" y1="80" x2="540" y2="80" stroke="#2e2e42" stroke-width="2"/>
+          <circle cx="60" cy="80" r="18" fill="#e0525230" stroke="#e05252"/>
+          <text x="60" y="85" text-anchor="middle" fill="#e05252">Koldar</text>
+          <text x="60" y="55" text-anchor="middle" fill="#e05252" font-size="11">Bizioa (falta)</text>
+          <circle cx="540" cy="80" r="18" fill="#e0525230" stroke="#e05252"/>
+          <text x="540" y="85" text-anchor="middle" fill="#e05252">Ausarta</text>
+          <text x="540" y="55" text-anchor="middle" fill="#e05252" font-size="11">Bizioa (gehiegizko)</text>
+          <circle cx="380" cy="80" r="26" fill="#c9a84c30" stroke="#c9a84c" stroke-width="2"/>
+          <text x="380" y="77" text-anchor="middle" fill="#c9a84c" font-weight="bold">Adorea</text>
+          <text x="380" y="93" text-anchor="middle" fill="#c9a84c" font-size="11">Bertutea</text>
+          <text x="380" y="130" text-anchor="middle" fill="#888899" font-size="11">Ausarkeriaren aldean (ez erdian)</text>
+          <text x="300" y="155" text-anchor="middle" fill="#888899" font-size="11">Bertutea ≠ batezbesteko matematikoa: muturretara jotzen du</text>
+        </svg>
+      </div>
+      <table class="etika-table" style="font-size:.82em;">
+        <thead>
+          <tr>
+            <th style="width:28%">Bizioa (falta) · Vicio (defecto)</th>
+            <th style="width:28%; color:var(--accent);">Bertutea (erdibidea) · Virtud (término medio)</th>
+            <th style="width:28%">Bizioa (gehiegizko) · Vicio (exceso)</th>
+            <th style="width:16%; color:var(--text-muted); font-size:.9em;">Eremua · Ámbito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:#e05252">Koldarkerria · Cobardía</td>
+            <td style="color:#c9a84c; font-weight:600">Adorea · Valentía</td>
+            <td style="color:#e05252">Ausarkeria · Temeridad</td>
+            <td style="color:#888899">Arriskua · El peligro</td>
+          </tr>
+          <tr>
+            <td style="color:#e05252">Xuhurtasun osoa · Tacañería</td>
+            <td style="color:#c9a84c; font-weight:600">Eskuzabaltasuna · Generosidad</td>
+            <td style="color:#e05252">Dilapilazioa · Prodigalidad</td>
+            <td style="color:#888899">Dirua · El dinero</td>
+          </tr>
+          <tr>
+            <td style="color:#e05252">Lotsagabetasuna · Descaro</td>
+            <td style="color:#c9a84c; font-weight:600">Lotsatia · Pudor</td>
+            <td style="color:#e05252">Lotsazkeria · Vergüenza excesiva</td>
+            <td style="color:#888899">Izen ona · La reputación</td>
+          </tr>
+          <tr>
+            <td style="color:#e05252">Sumingarritasuna · Irascibilidad</td>
+            <td style="color:#c9a84c; font-weight:600">Bake-zaletasuna · Apacibilidad</td>
+            <td style="color:#e05252">Ezinduritasuna · Indiferencia</td>
+            <td style="color:#888899">Haserrea · La ira</td>
+          </tr>
+          <tr>
+            <td style="color:#e05252">Umiltasun txarrekoa · Pusilanimidad</td>
+            <td style="color:#c9a84c; font-weight:600">Handinahi egokia · Magnanimidad</td>
+            <td style="color:#e05252">Harrokeria · Vanidad</td>
+            <td style="color:#888899">Izen ona · El honor</td>
+          </tr>
+          <tr>
+            <td style="color:#e05252">Gezurtia · Falsedad</td>
+            <td style="color:#c9a84c; font-weight:600">Egizkotasuna · Veracidad</td>
+            <td style="color:#e05252">Alardegilea · Jactancia</td>
+            <td style="color:#888899">Hizketa · El discurso</td>
+          </tr>
+          <tr>
+            <td style="color:#e05252">Aspergarria · Hosco/gruñón</td>
+            <td style="color:#c9a84c; font-weight:600">Atsegintasuna · Amabilidad</td>
+            <td style="color:#e05252">Lagunzalea · Adulador</td>
+            <td style="color:#888899">Harremanak · Las relaciones</td>
+          </tr>
+          <tr>
+            <td style="color:#e05252">Sentsiberatza eza · Insensibilidad</td>
+            <td style="color:#c9a84c; font-weight:600">Neurrizko plazera · Templanza</td>
+            <td style="color:#e05252">Lizunkeria · Intemperancia</td>
+            <td style="color:#888899">Plazera · El placer</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="slide" data-session="s04" data-phase="garapena" data-label="Eudaimonia">
+      <span class="session-badge">S04 · Eudaimonia</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title"><span data-tip="zorion betea, loratzea (gr.)">Eudaimonia</span></h2>
+      <p>Aristotelesek zioen bertutea ohitura ona dela: emozioak erregulatzen ditu.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Izaera bikaina (<span data-tip="bertutetsua (gr.)">aretea</span>) duena zuzen jokatuko du une egokian eta modu egokian</li>
+        <li class="hidden"><em>Eudaimonia</em>: giza loratze osoa, bizitza onaren fruitua</li>
+        <li class="hidden">Bertuteak: <strong>landu behar</strong> dira – ez dira berezkoak</li>
+        <li class="hidden">Bizioak saihestu behar dira: koldarkeria, injustizia, harrokeria…</li>
+      </ul>
+      <div class="kasu-badge">Portu kalea: andreia (adorea) bertutea izango balu, 112 deituko al zuen?</div>
+    </div>
+
+    <div class="slide" data-session="s04" data-phase="itxiera" data-label="S04 itxiera">
+      <span class="session-badge">S04 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Erdi Aroa eta gaur egun</h2>
+      <ul class="reveal-list">
+        <li class="hidden">Erdi Aroko teologoek Aristotelesen bertuteei hiru bertute teologal gehitu zizkieten: fedea, itxaropena eta karitatea</li>
+        <li class="hidden">XIX. mendean bertutezko etika gutxitu zen beste hurbilketekin</li>
+        <li class="hidden">XX. erdialdera berpiztu zen: Alasdair MacIntyre (1929–)</li>
+        <li class="hidden">Datorren saioan: bertutezko etikaren adibide praxiko bat – estoizismoa</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S05 · ESTOIZISMOAREN JATORRIA · 4 BERTUTEAK
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s04" data-label="S04 · Gaur ikasi dugu…">
+      <span class="session-badge">S04 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Bertutezko etika:</strong> ohitura onen garapena — izaera on bat eratzea da helburua, ez arauak betetzea</li>
+        <li class="hidden"><strong>Platonen 4 bertuteak:</strong> dikaiosyne, phronesis, andreia, sophrosine — arimaren ordena</li>
+        <li class="hidden"><strong>Aristoteleseren erdibidea:</strong> bertutea bi muturren arteko tartea da — eta ohitura bidez eskuratzen da</li>
+        <li class="hidden"><strong>Eudaimonia:</strong> giza loratze osoa — bertuteak behar bezala praktikatuz lortzen dena</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s05" data-label="S05 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S05 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zertan datza <strong>bertutezko etika</strong>? Zein da bere proposamen nagusia?</li>
+        <li class="hidden">Zertan bereizten dira Platonen eta Aristotelesek bertutea ulertzerakoan?</li>
+        <li class="hidden">Zer da <em>eudaimonia</em>? Nola lortzen da Aristoteleseren ustez?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s05" data-phase="hasiera" data-label="Greziar krisia">
+      <span class="session-badge">S05 · 5. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Krisi eta estoizismoa</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu krisi garaietan zer egin
+      </div>
+      <div class="collapse-body">
+        <p>Pandemia, krisi ekonomikoa, ziurgabetasuna… Nola mantendu buru lasaia?</p>
+      </div>
+      <p style="margin-top:16px;">Antzinako Greziako krisi helenistikoan sortu zen estoizismoa erantzun gisa.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Alexandro Handia hil zen 33 urte zituela → inperioa zatitu</li>
+        <li class="hidden">Garapenaren ondotik krisi osoa eta ziurgabetasuna</li>
+        <li class="hidden">Filosofia egoera berrira egokitu zen: estoizismoa sortuz</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s05" data-phase="garapena" data-label="4 filosofo estoiko nagusiak">
+      <span class="session-badge">S05 · Filosofoak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">4 filosofo estoiko nagusiak</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Zitioko Zenon</div>
+          <div class="card-body">(K.a. 336–264) Merkataria. Itsasontzi-hondamendia jasan, dena galdu. Atenasen estoizismoa fundatu zuen.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Epikteto</div>
+          <div class="card-body">(55–135) Esklaboa. Menderatze fisikotik askatasun filosofikoa lortu zuen.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Seneka</div>
+          <div class="card-body">(K.a. 4–65) Erromatarrik aberatsenetako bat. Boterearen tentazioari aurre egin zion.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Marco Aurelio</div>
+          <div class="card-body">(121–180) Enperadorea. <em>Meditazioak</em> bere egunkariak dira – inoiz ez zuen argitaratzeko asmorik.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s05" data-phase="garapena" data-label="Naturaren arabera bizitzea">
+      <span class="session-badge">S05 · Oinarria</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Naturaren arabera bizitzea</h2>
+      <p>Estoikoek argi zuten: giza naturarekin bat etorrita biziz.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Unibertsoa <span data-tip="arrazoia, antolaketa unibertsala (gr.)">logos</span>aren arabera antolatuta dago</li>
+        <li class="hidden">Gizakiak arrazoiaz hornituak gaude hori ulertzeko</li>
+        <li class="hidden">Metafora: igots korronte aldeko igeriketa – ez da alferrikakoa erresistitzea</li>
+        <li class="hidden">Naturaren arabera bizitzeak ez du esan nahi basora joatea, baizik eta <em>gizakiaren izaerari</em> jarraituz</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s05" data-phase="garapena" data-label="4 bertute estoikoak">
+      <span class="session-badge">S05 · 4 bertuteak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">4 bertute estoikoak</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title"><span data-tip="jakinduria praktikoa (gr.)">Phronesis</span></div>
+          <div class="card-body">Ona, txarra eta berdin-berbera bereizteko gaitasuna. Beste hiruren zuzendaria.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span data-tip="kemena, adorea (gr.)">Andreia</span></div>
+          <div class="card-body">Ekintza zuzenak egiteko kemena eta jasankortasuna. Beldurrari eta minari aurre egitea.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span data-tip="justizia, moralitate soziala (gr.)">Dikaiosyne</span></div>
+          <div class="card-body">Moralitatearen gizarte-dimentsioa. «Kolmenarentzat ona ez dena, ez da erleenarentzat ona.»</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span data-tip="neurritasuna, moderazioa (gr.)">Sophrosine</span></div>
+          <div class="card-body">Jadanik duguna baloratu; ez dugunaren desira gabe. Gehiegikeriarik ez.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s05" data-phase="garapena" data-label="Kontrolaren dikotomia">
+      <span class="session-badge">S05 · Dikotomia</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Kontrolaren dikotomia</h2>
+      <p>Estoikoek zorrotz bereizten zituzten bi gauza mota:</p>
+      <div class="cards">
+        <div class="card" style="border-color: var(--green);">
+          <div class="card-title" style="color:var(--green)">Gure esku dago</div>
+          <div class="card-body">Gure borondatea, pentsamendua, ekintzak, balioak.</div>
+        </div>
+        <div class="card" style="border-color: var(--red);">
+          <div class="card-title" style="color:var(--red)">Ez gure esku</div>
+          <div class="card-body">Gorputza, ospea, aberastasuna, besteen ekintzak, patua.</div>
+        </div>
+      </div>
+      <ul class="reveal-list">
+        <li class="hidden">Kontrola ezin dugunaz kezkatzea alferrikako sufrimendua da</li>
+        <li class="hidden">Bada hirugarren kategoria: <strong>eragin partzialeko</strong> gauzak – besteen portaera neurri batean eragin diezagukegu</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s05" data-phase="itxiera" data-label="S05 itxiera">
+      <span class="session-badge">S05 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Estoizismoa eta Portu kalea</h2>
+      <div class="kasu-badge">Aplikazioa</div>
+      <ul class="reveal-list">
+        <li class="hidden"><em>Phronesis</em>: laguntzea ona dela jakitea – erraza. Laguntza emateko gai izatea – hori da jakinduria praktikoa.</li>
+        <li class="hidden"><em>Andreia</em>: beldurra gainditu eta deitu 112 – kemena behar da</li>
+        <li class="hidden"><em>Dikaiosyne</em>: gizarteko kide gisa motogidaria zaintzea gure betebeharra da</li>
+        <li class="hidden">Datorren saioan: apatheia, ariketak eta estoizismoaren kritikak</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S06 · APATHEIA · PROPATHOS · ARIKETA ESTOIKOAK
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s05" data-label="S05 · Gaur ikasi dugu…">
+      <span class="session-badge">S05 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Estoizismoaren jatorria:</strong> Greziar krisian sortu zen — Zenon, Epikteto, Seneka, Marco Aurelio nagusiak</li>
+        <li class="hidden"><strong>Naturaren arabera bizitzea:</strong> giza izaeraren arabera jokatuz: arrazoiaz eta bertutez</li>
+        <li class="hidden"><strong>4 bertute estoikoak:</strong> phronesis (jakinduria), andreia (kemena), dikaiosyne (justizia), sophrosine (neurritasuna)</li>
+        <li class="hidden"><strong>Kontrolaren dikotomia:</strong> kontrolatu dezakegunean zentratu — gainerakoa onartu</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s06" data-label="S06 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S06 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Noiz eta non sortu zen <strong>estoizismoa</strong>? Aipatu ezazu lau filosofo nagusi.</li>
+        <li class="hidden">Zer esan nahi du «naturarenaren arabera bizitzeak» estoikoendako?</li>
+        <li class="hidden">Zertan datza estoikoen <strong>kontrolaren dikotomia</strong>?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s06" data-phase="hasiera" data-label="Indiarra ipuina">
+      <span class="session-badge">S06 · 6. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Berdintasunaren adibidea</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Irakurri: zer erantzungo zenuke nekazariak bezala?
+      </div>
+      <div class="collapse-body">
+        <p>Nekazari baten zaldi bakarra ihes egiten du. Auzokideek esan zioten: «Zenbat zoritxar!» Eta nekazariak erantzun: «Agian». Hurrengo egunean zaldia itzuli zen beste zortzi zaldiarekin. «Zenbat zoriontasun!» – «Agian». Semea zaldi hauek hezitzen saiatu zen, eta erori eta hanka hautsi zuen. «Zenbat zoritxar!» – «Agian». Hurrengo astean gudua piztu zen eta armadak gazte guztiak hartu zituen. Baina semea ezin zuten hartu hanka puskatua zuelako…</p>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s06" data-phase="garapena" data-label="Apatheia">
+      <span class="session-badge">S06 · Apatheia</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title"><span data-tip="ez-sufrimendua, berdintasun mentala (gr.)">Apatheia</span></h2>
+      <p>Estoikoek <em>apatheia</em> lortu nahi zuten – ez «apatia» modernoa, baizik gogo-berdintasuna.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Sentimendurik gabe egotea ez: emozio txarrek molestatu gabe bizitzea</li>
+        <li class="hidden"><span data-tip="lasaitasun mentala, perturbazio eza (gr.)">Ataraxia</span>: ez gehiegi sufritzea ezta gehiegi gozatzea ere – berdintasuna</li>
+        <li class="hidden">Emozio intentsoek desegonkortu egiten gaituzte: bai tristurak eta bai euforia gehiegizkoak</li>
+        <li class="hidden">Helburua: gure erreakzio emozionalak arrazoimenaren bidez eraldatzea</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s06" data-phase="garapena" data-label="Propathos eta eupathos">
+      <span class="session-badge">S06 · Emozioak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title"><span data-tip="aurre-emozio, lehenengo bultzada (gr.)">Propathos</span> eta <span data-tip="ongi bideratutako emozio arrazionala (gr.)">eupathos</span></h2>
+      <div class="cards">
+        <div class="card" style="border-color:var(--red);">
+          <div class="card-title" style="color:var(--red)">Propathos</div>
+          <div class="card-body">Aurre-emozioa: lehenengo bultzada, automatikoa. Estoikoak onartu egiten du – ezin da ekidin.</div>
+        </div>
+        <div class="card" style="border-color:var(--green);">
+          <div class="card-title" style="color:var(--green)">Eupathos</div>
+          <div class="card-body">Ongi bideratutako emozioa: arrazoiak gidatua. Gure ardura da hau garatzen.</div>
+        </div>
+      </div>
+      <ul class="reveal-list">
+        <li class="hidden">Beldurra sentitzea (propathos) naturala da → beldurrera begiratu eta arrazoiaz epaituz (eupathos)</li>
+        <li class="hidden">Helburua: propathos → eupathos bidea laburtzea etengabeko praktikarekin</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s06" data-phase="garapena" data-label="4 ariketa estoikoak">
+      <span class="session-badge">S06 · Ariketak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">4 ariketa estoiko</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Goizeko meditazioa:</strong> eguneko erronkak irudikatu eta zer bertute beharko dituzun pentsatu</li>
+        <li class="hidden"><strong>Txoriaren ikuspegia:</strong> ikusi zaitez gorputzetik kanpo, kosmostik. Zure arazoak txikiago ikusten dira.</li>
+        <li class="hidden"><strong><span data-tip="gaitz gaiztoen aldez aurretiko irudi-keta (lat.)">Premeditatio malorum</span></strong> eta <strong><span data-tip="gogoratu hilko zarela (lat.)">memento mori</span></strong>: txarrenak modu errealistan irudikatu, neurri egokia emateko</li>
+        <li class="hidden"><strong>Iluntzeko meditazioa / egunkaria:</strong> eguneko ekintza on eta txarrak berrikusi. Marco Aurelioren <em>Meditazioak</em> horrela sortu ziren.</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s06" data-phase="garapena" data-label="Estoizismoaren kritikak">
+      <span class="session-badge">S06 · Kritikak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Estoizismoaren kritikak</h2>
+      <ul class="reveal-list">
+        <li class="hidden">Fisika estoikoa zaharkituta dago – baina etika bertatik bereizgarria al da?</li>
+        <li class="hidden">Emozioetatik erabat bereiztea ezinezkoa da – psikologiak argi du emozioa eta arrazoia nahasita daudela</li>
+        <li class="hidden">Kontrolaren dikotomia muturrekoegia – «eragin partzialeko» kategoria falta zait</li>
+        <li class="hidden">Erdi-potentziaz praktikatuz gero: pasibitaterantz jo dezake</li>
+        <li class="hidden">XXI. mendean: Ryan Holiday, Tim Ferriss, Massimo Pigliucci – berrikuste modernoak</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s06" data-phase="itxiera" data-label="S06 itxiera">
+      <span class="session-badge">S06 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Estoizismoa baloratzea</h2>
+      <blockquote>
+        «Gauza batzuk jakiteko ez da nahikoa ikasi izana» – bada praktikatu ere egin behar dira.
+        <cite>– Seneka</cite>
+      </blockquote>
+      <ul class="reveal-list">
+        <li class="hidden">Estoizismoak egin zuen filosofiatik psikologiara: TKK-ren aitzindaria da</li>
+        <li class="hidden">Victor Frankl logoterapia: nazien esparruetan bizirik iraunarazi zuen pentsatze-molde baten ondorengo</li>
+        <li class="hidden">Datorren saioan: etika deontologikora itzultzen gara – Locke eta Kant</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S07 · DEONTOLOGIA · LOCKE · KANT SARRERA
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s06" data-label="S06 · Gaur ikasi dugu…">
+      <span class="session-badge">S06 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Apatheia:</strong> ez-pasioa: emozioak kontrolatzea, ez ezabatzea — propathos vs. eupathos</li>
+        <li class="hidden"><strong>Propathos:</strong> lehenengo bultzada automatikoa — saihestezina, baina bertatik abiatuz arrazoia ezar daiteke</li>
+        <li class="hidden"><strong>Eupathos:</strong> ondo bideratutako emozioa arrazionalki — estoikoaren helburua</li>
+        <li class="hidden"><strong>Ariketa estoikoak:</strong> memento mori, premeditatio malorum, journala — izaera trebatzen dute</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s07" data-label="S07 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S07 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zer da <em>apatheia</em>? Zergatik da garrantzitsua estoikoendako?</li>
+        <li class="hidden">Zer desberdintasun dago <em>propathos</em> eta <em>eupathos</em> artean?</li>
+        <li class="hidden">Zeintzuk dira ariketa estoiko nagusiak? Zertarako balio dute?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s07" data-phase="hasiera" data-label="Betebeharrak eta eskubideak">
+      <span class="session-badge">S07 · 7. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Betebeharrak eta eskubideak</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: ekintza bat on da bere ondorioengatik ala bere berezko izaeragatik?
+      </div>
+      <div class="collapse-body">
+        <p>Emaztea salbatzeko lapurtu → emaitza ona, baina lapurreta. Moralki ona al da?</p>
+        <p>Deontologiak erantzuten du: ekintzek <em>berez</em> dute balioa, ondorioetatik independente.</p>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s07" data-phase="garapena" data-label="Etika deontologikoak">
+      <span class="session-badge">S07 · Deontologia</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Etika <span data-tip="betebeharra (gr. deo)">deontologikoak</span></h2>
+      <p>Irizpide bat edo batzuk ezartzen dituzte portaera moralaren oinarri gisa: <strong>betebeharrak</strong>.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Betebeharrak agintzen du zer egin eta zer ez, ondorioetatik (nolabait) independente</li>
+        <li class="hidden">Bi hurbilketa: Lockeren eskubide naturalak + Kanten inperatibo kategorikoa</li>
+        <li class="hidden">Kontrastea ondoriozko etikarekin (S09): hemen ekintza bera epaitzen da, ez emaitza</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s07" data-phase="garapena" data-label="Lockeren eskubide naturalak">
+      <span class="session-badge">S07 · Locke</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Lockeren eskubide naturalak</h2>
+      <p><strong>John Locke</strong> (1632–1704): Jainkoak ezarri zituen bizitza, askatasun eta jabetza pribatuaren eskubide naturalak.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Naturalak:</strong> ez ditu gizarte edo gobernu batek asmatu</li>
+        <li class="hidden"><strong>Unibertsalak:</strong> ez dira aldatzen herrialde batetik bestera</li>
+        <li class="hidden"><strong>Berdinak guztiontzat:</strong> sexua, arraza, ezgaitasuna gorabehera</li>
+        <li class="hidden"><strong>Besterenezinak:</strong> ezin ditugu baztertu edo laga – ezin dugu geure burua esklabo saldu</li>
+        <li class="hidden">AEBetako Independentzia Adierazpenean eragina: bizitza, askatasuna, zorionaren bilaketa</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s07" data-phase="garapena" data-label="Kant sarrera">
+      <span class="session-badge">S07 · Kant sarrera</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Kant: inflexio-puntua</h2>
+      <p><strong>Immanuel Kant</strong> (1724–1804): etikaren historia birritan piztu zuen filosofoa.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Aurreko etika guztiak <em>etika materialak</em> zirela uste zuen: helburu bat lortzera bideratuak</li>
+        <li class="hidden">«Zoriontsu izan nahi baduzu, egin X» → hori inperatibo <em>hipotetikoa</em> da</li>
+        <li class="hidden">Baina norbaitek ez badu zoriontsu izateko asmorik? Zergatik egin X?</li>
+        <li class="hidden">Kantena: inperatibo <em>kategorikoa</em> behar da – beti bete behar dena, desiretatik independente</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s07" data-phase="itxiera" data-label="S07 itxiera">
+      <span class="session-badge">S07 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Kasu nagusia deontologiarekin</h2>
+      <div class="kasu-badge">Portu kalea</div>
+      <ul class="reveal-list">
+        <li class="hidden">Lockeren arabera: motogidariaren bizitzeko eskubideak betebehar sortzen du laguntzeko</li>
+        <li class="hidden">Betebehar hau ez da ondorioetan oinarrituta – berezkoa da</li>
+        <li class="hidden">Datorren saioan: Kanten inperatibo kategorikoa eta bere bi formulazioak</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S08 · INPERATIBO KATEGORIKOA · FORMULAZIOAK
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s07" data-label="S07 · Gaur ikasi dugu…">
+      <span class="session-badge">S07 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Deontologia:</strong> ekintzak beren izaeraren arabera moralak dira — ondorioek ez dute definitzen</li>
+        <li class="hidden"><strong>Locke eta eskubideak:</strong> bizitza, askatasuna eta jabetza — gobernuak babestu behar dituen eskubide naturalak</li>
+        <li class="hidden"><strong>Kantiar oinarria:</strong> arrazoiak lege morala ematen digu — erlijioa eta sentimenduak ez dira nahikoa</li>
+        <li class="hidden"><strong>Borondate ona:</strong> gauza bakarra beti ona dena — baldintza gabe</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s08" data-label="S08 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S08 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zertan datza <strong>deontologia</strong>? Zer bereizten du ondoriozkotik?</li>
+        <li class="hidden">Nori esleitzen dio Kantek eskubide moralak izateko ahalmena?</li>
+        <li class="hidden">Zer da <strong>borondate ona</strong> Kantentzat? Zergatik da etikaren oinarria?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s08" data-phase="hasiera" data-label="Inperatibo hipotetikoa vs. kategorikoa">
+      <span class="session-badge">S08 · 8. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Inperatibo hipotetikoa vs. kategorikoa</h2>
+      <div class="cards">
+        <div class="card" style="border-color:var(--text-muted);">
+          <div class="card-title">Hipotetikoa</div>
+          <div class="card-body">«Zoriontsu izan nahi <em>badituzu</em>, egin X». Helburuaren menpe dago. Baldintzatua.</div>
+        </div>
+        <div class="card" style="border-color:var(--accent);">
+          <div class="card-title">Kategorikoa</div>
+          <div class="card-body">«Egin X». Beti bete behar da. Desiretatik independente. Hori da benetako moral-legea.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s08" data-phase="garapena" data-label="1. formulazioa: pertsonak helburu gisa">
+      <span class="session-badge">S08 · 1. formulazioa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">1. formulazioa: pertsonak helburu gisa</h2>
+      <div class="highlight-box">
+        «Pertsonak <em>beti</em> helburu gisa tratatu behar ditugu eta ez bitarteko gisa.»
+      </div>
+      <ul class="reveal-list">
+        <li class="hidden">Beste pertsonak gure helburuak lortzeko tresna gisa erabiltzea debekatuta dago</li>
+        <li class="hidden">Pertsonek berezko balioa dute, beste edozein inguruabarretik independente</li>
+        <li class="hidden">Adibidea: ikaskideari mugikorra lapurtzea → pertsona bitarteko huts gisa erabiltzen ari naiz</li>
+        <li class="hidden">Portu kalea: motogidaria «ez niri dagokion problema» bezala tratatzea → bitarteko gisa (ikusgarritasun eza)</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s08" data-phase="garapena" data-label="2. formulazioa: lege unibertsala">
+      <span class="session-badge">S08 · 2. formulazioa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">2. formulazioa: lege unibertsala</h2>
+      <div class="highlight-box">
+        «Jokatu soilik zure borondatez lege unibertsal bihur daitekeen maxima haren arabera.»
+      </div>
+      <ul class="reveal-list">
+        <li class="hidden">Ekin aurretik geure buruari galdetu: beste edozein pertsonak gauza bera egin beharko luke?</li>
+        <li class="hidden">Adibidea: gezurra esatera banoa → denek gezurra esango balute, ez litzateke komunikaziorik izango → kontraesankorra</li>
+        <li class="hidden">Erabilgarria: lapurreta universalizatuko bagenu, jabetza-kontzeptua desagertuko litzateke</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s08" data-phase="garapena" data-label="Asmoa vs. emaitza">
+      <span class="session-badge">S08 · Asmoa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Asmoa vs. emaitza</h2>
+      <p>Kantek argi du: balio morala ekintzaren <strong>asmoan</strong> datza, ez emaitzetan.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Ekintza ona = betebeharra betetzeko egina, arrazoimenaren aginduz</li>
+        <li class="hidden">Norbait laguntzen badut erreputazioa hobetzeko → ez da ekintza moral kantianoa</li>
+        <li class="hidden">Norbait laguntzen badut betebeharra delako → ekintza moral kantianoa</li>
+        <li class="hidden">Kritika: zenbat jende ezagutzen dugu «hutsa» den intentzioz jokatzeko gai denik?</li>
+      </ul>
+      <div class="kasu-badge">Portu kalea: 112 deitzen baduzu erreputazioagatik – Kantentzat ez da nahikoa morala. Betebeharra delako deitu behar duzu.</div>
+    </div>
+
+    <div class="slide" data-session="s08" data-phase="itxiera" data-label="S08 itxiera">
+      <span class="session-badge">S08 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Kanten iraultza eta mugak</h2>
+      <ul class="reveal-list">
+        <li class="hidden">Iraultza: lege moral unibertsal bat arrazoitik soilik eratortzea lortu zuen</li>
+        <li class="hidden">Erlijioa, sentimenduak, ohiturak ekuaziotik kanpo</li>
+        <li class="hidden">Muga: rigidoegia – gezurra inoiz ez esateko agintzen badu, salbatzaile bati ezkututako pertsonari buruz gezurrik esan ezin?</li>
+        <li class="hidden">Datorren saioan: emaitzek garrantzi handia dute – etika ondoriozkoa eta utilitarismoa</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S09 · ETIKA ONDORIOZKOA · UTILITARISMOA
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s08" data-label="S08 · Gaur ikasi dugu…">
+      <span class="session-badge">S08 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Inperatibo hipotetikoa:</strong> baldintzatua: «X nahi baduzu, egin Y» — ez da benetako betebehar morala</li>
+        <li class="hidden"><strong>Inperatibo kategorikoa:</strong> baldintzagabea: unibertsalizatu dezakeen arauaren arabera jokatu</li>
+        <li class="hidden"><strong>2. formulazioa:</strong> pertsonak beti helburu gisa tratatuak izan behar dira, inoiz ez soilik bitarteko gisa</li>
+        <li class="hidden"><strong>Kanten muga:</strong> rigidotasun absolutua — gezur kasuetan ere beti egia esan behar dela</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s09" data-label="S09 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S09 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zein bi formulazio nagusi ditu Kanten <strong>inperatibo kategorikoak</strong>?</li>
+        <li class="hidden">Zer esan nahi du «gizakia helburua dela, ez bitartekoa»?</li>
+        <li class="hidden">Zein da deontologiaren muga nagusia Kanten sistemaren barruan?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s09" data-phase="hasiera" data-label="Emaitzak garrantzi dute">
+      <span class="session-badge">S09 · 9. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Emaitzak garrantzi dute</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Dilema: mediku bat ebakuntzan aurkitzen da. Paziente hil egingo da 5 minututan sendagaia erabili ezean. Baina sendagaia beste paziente baten da. Hartu al dezake?
+      </div>
+      <div class="collapse-body">
+        <p>Deontologiak: ez, jabetza-eskubidea eta beste pertsonaren autonomia urratu egingo lituzkete.<br>
+        Utilitarismoak: baloratuko du ondorioen saldo orokorra.</p>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s09" data-phase="garapena" data-label="Etika ondoriozkoa">
+      <span class="session-badge">S09 · Ondoriozkoa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Etika <span data-tip="ondorioak aztertzen dituen etika (gr. telos = helburua)">ondoriozkoa</span></h2>
+      <p>Ekintza bat zuzena da bere <strong>ondorioak</strong> kaltegarriak baino onuragarriagoak badira.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Ondorio guztiak zerrendatu: onak eta txarrak</li>
+        <li class="hidden">Ondorio onek txarrak gainditzen badituzte → ekintza morala</li>
+        <li class="hidden">Abantaila: ondorioak ikusi eta egiaztatu daitezke</li>
+        <li class="hidden">Hiru mota: egoismo etikoa · altruismo etikoa · utilitarismoa</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s09" data-phase="garapena" data-label="Hiru ondoriozko etikak">
+      <span class="session-badge">S09 · Hiru motak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Hiru ondoriozko etikak konparatuta</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Egoismo etikoa</div>
+          <div class="card-body">Zuzena = kaltegarriak baino onuragarriagoak <strong>egillearentzat soilik</strong>.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Altruismo etikoa</div>
+          <div class="card-body">Zuzena = onuragarriagoak <strong>egileaz kanpokoei</strong>. Egilea kalkulutik at.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Utilitarismoa</div>
+          <div class="card-body">Zuzena = onuragarriagoak <strong>guztientzat</strong>, egilea barne. Gehiengo handiena.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s09" data-phase="garapena" data-label="Bentham eta Mill">
+      <span class="session-badge">S09 · Bentham eta Mill</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Bentham eta Mill</h2>
+      <p><strong>Jeremy Bentham</strong> (1748–1832): utilitarismo hedonikoa.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Ekintzaren utilitarismoa: ekintza bakoitzaren ondorioak ebaluatu plazera eta minaren arabera</li>
+        <li class="hidden">Kritika: tortura moralki onargarri izango litzateke gizarteari onura ekarriko balio</li>
+        <li class="hidden"><strong>John Stuart Mill</strong>: arauaren utilitarismoa – araua epaitzen dugu, ekintza zehatza bakarrik ez</li>
+        <li class="hidden">Millena: «Gutxiagoek pairatzen bada, arau okerragoa da» → plazera kalitatez ere neurtzen du</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s09" data-phase="itxiera" data-label="S09 itxiera">
+      <span class="session-badge">S09 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Utilitarismoa eta Portu kalea</h2>
+      <div class="kasu-badge">Aplikazioa</div>
+      <ul class="reveal-list">
+        <li class="hidden">Egoismo etikoa: «112 deituz gero denbora galdu eta arazoetan sartuko naiz» → ez lagundu</li>
+        <li class="hidden">Altruismo etikoa: «motogidariaren ongizatea kontuan hartu behar dut soilik» → deitu</li>
+        <li class="hidden">Utilitarismoa: «saldo orokorra zein da?» Hamabi pertsona, denbora gutxi, bizitza bat jokoan → deitu</li>
+        <li class="hidden">Datorren saioan: Nietzscherekin moralaren kritika sakon bat</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S10 · NIETZSCHE · NIHILISMOA · BI MORALAK
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s09" data-label="S09 · Gaur ikasi dugu…">
+      <span class="session-badge">S09 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Etika ondoriozkoa:</strong> ekintzak ondorioen arabera epaitzen ditu — ez bere izaeragatik</li>
+        <li class="hidden"><strong>Egoismo etikoa:</strong> zuzena = egillearentzat onura handiena dakarkiona</li>
+        <li class="hidden"><strong>Utilitarismoa (Bentham):</strong> zuzena = guztientzako plazera maximizatzen duena — kalkulu hedonikoa</li>
+        <li class="hidden"><strong>Mill:</strong> plazeraren kalitatea ere garrantzitsua da — arauaren utilitarismoa ekintzarenaren gainetik</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s10" data-label="S10 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S10 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zertan bereizten dira <strong>egoismo etikoa</strong>, <strong>altruismo etikoa</strong> eta <strong>utilitarismoa</strong>?</li>
+        <li class="hidden">Nola desberdintzen dira Bentham eta Mill utilitarismoa ulertzerakoan?</li>
+        <li class="hidden">Zein da utilitarismoaren kritika nagusia? Nola erasan diezaieke torturaren kasuak?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s10" data-phase="hasiera" data-label="Nietzsche sarrera">
+      <span class="session-badge">S10 · 10. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Nietzsche: kritikari suntsitzailea</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: «Egia erdiak, gezurrak, saihesten saiatzen garen gauzak» – zergatik onartzen ditugu?
+      </div>
+      <div class="collapse-body">
+        <p>Nietzschek galdetzen du: nondik dator gure morala? Noren interesak zerbitzatzen ditu? Eta gero desmuntatzen ditu.</p>
+      </div>
+      <p style="margin-top:12px;"><strong>Friedrich Nietzsche</strong> (1844–1900): Mendebaldeko kulturaren kritikari zorrotz eta suntsitzailea.</p>
+    </div>
+
+    <div class="slide" data-session="s10" data-phase="garapena" data-label="Jainkoa hil da · Nihilismoa">
+      <span class="session-badge">S10 · Nihilismoa</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">«Jainkoa hil da»</h2>
+      <blockquote>
+        «Jainkoa hil da eta guk hil dugu.»
+        <cite>– Nietzsche, <em>Zientzia alaia</em></cite>
+      </blockquote>
+      <ul class="reveal-list">
+        <li class="hidden">Iraultza Zientifikoa + darwinismoa: Mendebaldeko kontakizun bateratzailea hondatu da</li>
+        <li class="hidden">Jada ez dago erreferente absoluturik gure morala oinarritzeko</li>
+        <li class="hidden"><span data-tip="balioen gabetasuna, zentzugabekeria (lat. nihil = ezer ez)">Nihilismoa</span>: existentziak ez du zentzurik, moralak ere ez</li>
+        <li class="hidden">Aurkikuntza traumatikoa: oinarriak diren gauza asko gezurrak ziren</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s10" data-phase="garapena" data-label="Nagusien vs. esklaboaren morala SVG">
+      <span class="session-badge">S10 · Bi moralak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Nagusien morala vs. esklaboaren morala</h2>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 680 260" font-family="'Source Sans 3', sans-serif" font-size="13">
+          <!-- left: nagusiak -->
+          <rect x="10" y="10" width="300" height="240" rx="10" fill="#c9a84c10" stroke="#c9a84c" stroke-width="1.5"/>
+          <text x="160" y="38" text-anchor="middle" fill="#c9a84c" font-weight="bold" font-size="14">Nagusien morala</text>
+          <text x="160" y="58" text-anchor="middle" fill="#888899" font-size="11">Gerrariak, patrizioak</text>
+          <line x1="30" y1="68" x2="290" y2="68" stroke="#2e2e42"/>
+          <text x="40" y="88" fill="#e8e8f0">▸ Indarra eta adorea</text>
+          <text x="40" y="110" fill="#e8e8f0">▸ Harrotasuna eta noblezia</text>
+          <text x="40" y="132" fill="#e8e8f0">▸ Ahultasuna mespretxatzen</text>
+          <text x="40" y="154" fill="#e8e8f0">▸ Ekintzak ondorioz epaitzen</text>
+          <text x="40" y="176" fill="#e8e8f0">▸ «On» = indartsu, noble</text>
+          <text x="40" y="198" fill="#888899" font-size="11">▸ Bizitza baieztatzen du</text>
+          <!-- right: esklaboak -->
+          <rect x="370" y="10" width="300" height="240" rx="10" fill="#9b72cf10" stroke="#9b72cf" stroke-width="1.5"/>
+          <text x="520" y="38" text-anchor="middle" fill="#9b72cf" font-weight="bold" font-size="14">Esklaboaren morala</text>
+          <text x="520" y="58" text-anchor="middle" fill="#888899" font-size="11">Artaldea, morroi, kristautasuna</text>
+          <line x1="390" y1="68" x2="650" y2="68" stroke="#2e2e42"/>
+          <text x="400" y="88" fill="#e8e8f0">▸ Apaltasuna eta errukia</text>
+          <text x="400" y="110" fill="#e8e8f0">▸ Adeitasuna eta barkamena</text>
+          <text x="400" y="132" fill="#e8e8f0">▸ Sufrimendua balio gisa</text>
+          <text x="400" y="154" fill="#e8e8f0">▸ Ekintzak asmoez epaitzen</text>
+          <text x="400" y="176" fill="#e8e8f0">▸ «On» = apal, errukitsua</text>
+          <text x="400" y="198" fill="#888899" font-size="11">▸ Mendebaldean nagusi bilakatu</text>
+          <!-- center arrow: inversion -->
+          <text x="340" y="135" text-anchor="middle" fill="#e05252" font-size="20">⇌</text>
+          <text x="340" y="152" text-anchor="middle" fill="#e05252" font-size="10">balioen</text>
+          <text x="340" y="163" text-anchor="middle" fill="#e05252" font-size="10">inbertsioa</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s10" data-phase="garapena" data-label="Erresuminua eta moral kristaua">
+      <span class="session-badge">S10 · Erresuminua</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title"><span data-tip="mendekuzko haserrea, biktimismoaren indar morala (fr.)">Erresuminua</span></h2>
+      <p>Nola garaitu zuten ahulak? Kristautasunaren bidez balioak alderantziz jarriz.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Esklaboek «zerua» asmatu zuten: bizitza honetako injustizia hurrengorako ordainduko zaio</li>
+        <li class="hidden">Kontzientzia: gizakiaren berezko erasotasuna barnera bideratuta – sufrimendu gehigarria</li>
+        <li class="hidden">Erru sentimendua asmatu zuten: ahulak soilik gaizki tratatuta ez, <em>erantzule</em> eginda</li>
+        <li class="hidden">Apaizak: artaldea kontrolatzeko agenteak, beren sufrimenduaren interpretatzaileak</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s10" data-phase="garapena" data-label="Gaingizona">
+      <span class="session-badge">S10 · Gaingizona</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title"><span data-tip="gizakiaren gainditzea, moral propioa sortzen duena (al.)">Übermensch</span></h2>
+      <p>Eta orain, zer? Jainkorik gabe, moralaren oinarririk gabe, zer geratzen zaigu?</p>
+      <ul class="reveal-list">
+        <li class="hidden">Nagusiaren moralera ezin itzuli, baina sublimatu dezakegu: artista, filosofoa</li>
+        <li class="hidden"><em>Gaingizonak</em> bere moral propioa sortzen du, masaren moral konbentzionaletatik libre</li>
+        <li class="hidden">Nietzschek «mailukadaka filosofatzen» zuela zioen – desmuntatzeko tresna, ez eraikitzekoa</li>
+        <li class="hidden">Ondorioa: nori bere esku uzten gaitu moral propioa lantzeko – baina hori arriskutsua da</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s10" data-phase="itxiera" data-label="S10 itxiera">
+      <span class="session-badge">S10 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Nietzscheren ondarea</h2>
+      <div class="kasu-badge">Portu kalea Nietzsche begiekin</div>
+      <ul class="reveal-list">
+        <li class="hidden">Esklaboaren moralak: laguntza eskatzen du (errukia, altruismoa)</li>
+        <li class="hidden">Nietzscheren gaingizonak ez luke morala jarraituko – bere irizpidea sortu beharko luke</li>
+        <li class="hidden">Baina hori ez da babes handia istripatu batentzat…</li>
+        <li class="hidden">Datorren saioan: Gilliganen zaintzaren etika – Nietzscheren aurkako erantzuna?</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S11 · GILLIGANEN ZAINTZAREN ETIKA · TRONTO
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s10" data-label="S10 · Gaur ikasi dugu…">
+      <span class="session-badge">S10 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Nihilismoa:</strong> Mendebaldeko moralaren fundamentuak hondatu dira — ez dago balio absoluturik</li>
+        <li class="hidden"><strong>Nagusien morala:</strong> indarrean, noblezan eta indibidualismoan oinarritzen da — bizitza baieztatzen du</li>
+        <li class="hidden"><strong>Esklaboaren morala:</strong> apaltasun, erruki eta mendetasunak definitzen du — mendekuzko asmakizuna</li>
+        <li class="hidden"><strong>Übermensch:</strong> masaren moraletik libre den gizakia — bere balio propioak sortzen ditu</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s11" data-label="S11 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S11 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zergatik kritikatzen du Nietzschek Mendebaldeko morala? Zer terminorekin deskribatzen du?</li>
+        <li class="hidden">Zer desberdintasun dago «nagusien morala» eta «esklaboaren morala» artean?</li>
+        <li class="hidden">Zer da <em>Übermensch</em>a? Zergatik proposatzen du Nietzschek?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s11" data-phase="hasiera" data-label="Zaintzaren etika zer da?">
+      <span class="session-badge">S11 · 11. saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Zaintzaren etika</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Pentsatu: zaintzea ekintza morala al da?
+      </div>
+      <div class="collapse-body">
+        <p>Ama bat seme/alaba gaixoa zaindu: moralki laudagarria. Mediku bat pazientea zaindu: profesionala. Lagun bat beste baten zaindu: lagunartea. Noiz da <em>etikoa</em> zaintzea?</p>
+      </div>
+      <p style="margin-top:12px;"><strong>Carol Gilligan</strong>: zaintzak moralean leku zentrala merezi du, marginalizatua egon den arren.</p>
+    </div>
+
+    <div class="slide" data-session="s11" data-phase="garapena" data-label="Gilliganen kritika Kohlbergi">
+      <span class="session-badge">S11 · Gilligan eta Kohlberg</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Gilliganen kritika Kohlbergi</h2>
+      <p>Gilligan Kohlbergekin lankide izan zen – eta bere emaitzen kontra egin zuen.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Kohlbergen ikerketak gizonengan soilik egin ziren 50eko hamarkadan</li>
+        <li class="hidden">Ondorioa: mutilak moralki helduagoak → baina hezkuntza kontrolatuz desagertzen da desberdintasuna</li>
+        <li class="hidden">Desberdintasunak <em>kulturalak</em> dira, ez berezkoak</li>
+        <li class="hidden">1982: <em>In a Different Voice</em> – psikologia teoriaren eta emakumeen garapenaren inguruan</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s11" data-phase="garapena" data-label="Bi ahots: justizia vs. zaintza">
+      <span class="session-badge">S11 · Bi ahots</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Bi ahots moral</h2>
+      <div class="cards">
+        <div class="card" style="border-color:var(--blue);">
+          <div class="card-title" style="color:var(--blue)">Justiziaren ahotsa</div>
+          <div class="card-body">Kohlbergen ardatza. Arauak, betebeharrak, eskubideak, printzipioaren unibertsaltasuna. Abstraktua, inpartzial.</div>
+        </div>
+        <div class="card" style="border-color:var(--green);">
+          <div class="card-title" style="color:var(--green)">Zaintzaren ahotsa</div>
+          <div class="card-body">Gilliganen ardatza. Harremanak, errukia, erantzukizuna, testuingurua. Konkretu, harreman-bidezko.</div>
+        </div>
+      </div>
+      <ul class="reveal-list">
+        <li class="hidden">Bi ahotsak ez dira kontrajarri: osagarriak dira</li>
+        <li class="hidden">Kohlbergek soilik justizia-ardatza aztertu zuen → ikusmira mugatua</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s11" data-phase="garapena" data-label="Trontoren 5 ezaugarriak">
+      <span class="session-badge">S11 · Tronto</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Joan Trontoren zaintzaren 5 ezaugarri etikoak</h2>
+      <p><strong>Joan Tronto</strong> (1952–): zaintzak 5 ezaugarri etiko ditu.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>1. Arreta:</strong> besteon beharrez konturatu – ohartu</li>
+        <li class="hidden"><strong>2. Erantzukizuna:</strong> besteez arduratu – ez soilik ohartu</li>
+        <li class="hidden"><strong>3. Gaitasuna:</strong> besteez zaintzeak jakin eta egin ahal izatea eskatzen du</li>
+        <li class="hidden"><strong>4. Erantzuteko ahalmena:</strong> zaintzailearekiko – benetan behar dutena atenditzea, ez espekula­tzioa</li>
+        <li class="hidden"><strong>5. Aniztasuna, komunikazioa, konfiantza, errespetua eta elkar-zaintza:</strong> herritartasuna zaintza-harreman multzo gisa</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s11" data-phase="garapena" data-label="Zaintzaren garrantzia soziala">
+      <span class="session-badge">S11 · Gizarte-garrantzia</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Zaintza: esfera publikoa eta pribatua</h2>
+      <p>Zaintzak sozialki emakumeei esleitu zaizkie historikoki – horrek debaluazioa ekarri du.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Feminista batzuen kritika Gilligani: genero-estereotipoak indartzen ditu</li>
+        <li class="hidden">Gilliganen erantzuna: zaintzak gizon eta emakumeei irakatsi eta eskatu behar zaizkie</li>
+        <li class="hidden">Trontoren ekarpena: zaintzaren rola prestigiatu behar da esfera publikoan zein pribatuan</li>
+        <li class="hidden">Zaintza lanaren ezkututasuna: ekonomian ez da neurtzen, baina ezinbestekoa da</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s11" data-phase="garapena" data-label="Zaintzaren etikaren kritikak">
+      <span class="session-badge">S11 · Kritikak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Kritikak zaintzaren etikari</h2>
+      <ul class="reveal-list">
+        <li class="hidden">Gilliganen ikerketak ez zituen lagin nahikoa – erreplikazioa zaila</li>
+        <li class="hidden">Naomi Weinstein: psikologian «psikologo feministek» ez dute esentzialismoari ihes egiten</li>
+        <li class="hidden">Emakume eta gizonen arteko desberdintasunak «finkoak» bailiran tratatzea → testuinguru soziala ahaztu</li>
+        <li class="hidden">Erantzuna: hori ez da zaintzaren etikaren nukleoa – zaintzak guztiei dagokie</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s11" data-phase="itxiera" data-label="S11 itxiera">
+      <span class="session-badge">S11 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Zaintzaren etika eta Portu kalea</h2>
+      <div class="kasu-badge">Aplikazioa</div>
+      <ul class="reveal-list">
+        <li class="hidden">Trontoren 1. ezaugarria: arreta – ohartu. Hamabiak ohartu ziren. Arazo hori konponduta.</li>
+        <li class="hidden">2. ezaugarria: erantzukizuna – arduratu. Hemen huts egin zuten bost minutuz.</li>
+        <li class="hidden">3. ezaugarria: gaitasuna – 112 nola deitu badakite guztiek. Gai dira.</li>
+        <li class="hidden">4. ezaugarria: erantzuteko ahalmena – motogidariaren <em>benetako</em> beharretara erantzutea.</li>
+        <li class="hidden">Datorren azken saioan: teoria guztiak aplikatuko ditugu kasu konkretuari</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         S12 · ETIKA APLIKATUA · PRINTZIPIO NORMATIBOAK
+    ══════════════════════════════════════════════ -->
+            <div class="slide" data-phase="itxiera" data-session="s11" data-label="S11 · Gaur ikasi dugu…">
+      <span class="session-badge">S11 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Zaintzaren etika:</strong> harremanak, errukia eta erantzukizuna dira oinarri — ez arau abstraktuak</li>
+        <li class="hidden"><strong>Gilligan vs. Kohlberg:</strong> zaintza-ahotsa justizia-ahotsa bezain baliozkoa da — osagarriak dira</li>
+        <li class="hidden"><strong>Trontoren 5 ezaugarriak:</strong> arreta → erantzukizuna → gaitasuna → erantzutea → elkar-zaintza herritartasuna</li>
+        <li class="hidden"><strong>Esfera publikoa:</strong> zaintzaren lana ikusarazi eta prestigiatu behar da gizarte osoan</li>
+      </ul>
+    </div>
+
+<div class="slide" data-phase="hasiera" data-session="s12" data-label="S12 · Aurreko saioa: gogoratu">
+      <span class="session-badge">S12 · Hasiera</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Aurreko saioa: gogoratu</h2>
+      <p style="color:var(--text-muted); font-size:.92em; margin-bottom:1em;">Hitz egin bikotean — ondoren, gela osoarekin.</p>
+      <ul class="reveal-list">
+        <li class="hidden">Zein da <strong>zaintzaren etikak</strong> deontologiari eta utilitarismoari egiten dien ekarpen nagusia?</li>
+        <li class="hidden">Zertan datza Trontoren «arreta» eta «erantzukizuna» zaintzaren etikan?</li>
+        <li class="hidden">Nola erantzuten die zaintzaren etikak genero-estereotipoen kritikari?</li>
+      </ul>
+    </div>
+
+<div class="slide" data-session="s12" data-phase="hasiera" data-label="Etika aplikatua zer da?">
+      <span class="session-badge">S12 · 12. saioa · Azken saioa</span>
+      <div class="phase-badge phase-hasiera">Hasiera</div>
+      <h2 class="slide-title">Etika aplikatua</h2>
+      <p>Metaetika eta etika normatiboa abstraktuak dira. Etika aplikatuak <strong>gai moral zehatzak</strong> lantzen ditu.</p>
+      <ul class="reveal-list">
+        <li class="hidden">2 baldintza gai bat etika aplikatuaren objektutzat hartzeko:</li>
+        <li class="hidden"><strong>1. Eztabaida</strong>: sektore batzuk alde, besteak kontra (eutanasia, drogen legeztatze…)</li>
+        <li class="hidden"><strong>2. Ez soilik arazo politiko edo legal</strong>: moralaren dimentsioa gainditzen du antolaketa soziala</li>
+        <li class="hidden">Adibidea: promiskuitate sexuala moralgabea iruditu arren, ez du debekatzeko legerik eskatzen</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s12" data-phase="garapena" data-label="10 printzipio normatiboak">
+      <span class="session-badge">S12 · Printzipioak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">10 printzipio normatiboak</h2>
+      <p>Eztabaida produktiboak egiteko printzipio adostuak. Ez dira jarrera etiko batetik soilik.</p>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>1. Onura pertsonala:</strong> gizabanakoari ondorio onuragarriak sortzea</li>
+        <li class="hidden"><strong>2. Onura soziala:</strong> gizarteari ondorio onuragarriak sortzea</li>
+        <li class="hidden"><strong>3. Onberatasun printzipioa:</strong> beharrean dagoenari laguntzea</li>
+        <li class="hidden"><strong>4. Paternalismo printzipioa:</strong> bere kabuz lortu ezin duenari laguntzea</li>
+        <li class="hidden"><strong>5. Kalte printzipioa:</strong> besteei kalterik ez egitea</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-session="s12" data-phase="garapena" data-label="10 printzipioak (jarraipena)">
+      <span class="session-badge">S12 · Printzipioak II</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">10 printzipio normatiboak (jarraipena)</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>6. Zintzotasun printzipioa:</strong> besteei ez engainatzea</li>
+        <li class="hidden"><strong>7. Legezkotasun printzipioa:</strong> legea ez urratzea</li>
+        <li class="hidden"><strong>8. Autonomia printzipioa:</strong> gizabanakoaren askatasuna aitortzea bere gorputzari dagokionez</li>
+        <li class="hidden"><strong>9. Justizia printzipioa:</strong> banakako eskubideak – epaiketa zuzena, konponketa, banaketaren zuzentasuna</li>
+        <li class="hidden"><strong>10. Eskubideak:</strong> bizitza, informazioa, pribatutasuna, adierazpen askatasuna, segurtasuna</li>
+      </ul>
+      <p style="margin-top:12px; font-size:.85em; color:var(--text-muted);">1–2 ondoriozkoak; 3–10 deontologikoak. 3–7 betebeharrak besteekiko; 8–10 eskubide moraletan oinarrituak.</p>
+    </div>
+
+    <div class="slide" data-session="s12" data-phase="garapena" data-label="Etika aplikatuaren eremuak">
+      <span class="session-badge">S12 · Eremuak</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Etika aplikatuaren eremuak</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Bioetika</div>
+          <div class="card-body">Eutanasia, abortu, ikerketa genetikoa, transhumanismoa, adimen artifiziala…</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Negozio-etika</div>
+          <div class="card-body">Korporazioen erantzukizuna, publizitate engainuzkoa, lan-baldintzak, ustelkeria…</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Ingurumen-etika</div>
+          <div class="card-body">Animalien eskubideak, klima-aldaketa, gizakiaren betebeharra naturarekiko…</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Adimen artifiziala</div>
+          <div class="card-body">Algoritmoen aurreiritzia, lanaren ordezkapena, pribatutasuna, ardurakizun morala…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" data-session="s12" data-phase="garapena" data-label="Kasu nagusia aplikatua: Portu kalea final">
+      <span class="session-badge">S12 · Kasu nagusia</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">Portu kalea: analisi osoa</h2>
+      <div class="kasu-badge">10 printzipioen aplikazioa</div>
+      <table class="etika-table">
+        <tr><th>Printzipioa</th><th>Aplikazioa</th></tr>
+        <tr><td>Onberatasuna</td><td>Motogidaria beharrean dago → lagundu behar zaio</td></tr>
+        <tr><td>Kalte printzipioa</td><td>Ez laguntzeak kalte larria eragin dezake</td></tr>
+        <tr><td>Zintzotasuna</td><td>Bystander efektua: nork bere burua engainatzen du «besteak lagunduko du» pentsatuz</td></tr>
+        <tr><td>Legezkotasuna</td><td>112 deitzeko betebehar legala dago istripu baten lekukoa izatean</td></tr>
+        <tr><td>Eskubideak</td><td>Motogidariaren bizitzeko eskubidea jokoan dago</td></tr>
+      </table>
+    </div>
+
+    <div class="slide" data-session="s12" data-phase="garapena" data-label="Teoria guztiak konparatuta">
+      <span class="session-badge">S12 · Sintesia</span>
+      <div class="phase-badge phase-garapena">Garapena</div>
+      <h2 class="slide-title">12 saio: teoria guztiak Portu kalean</h2>
+      <table class="etika-table">
+        <tr><th>Teoria</th><th>Erantzuna</th></tr>
+        <tr><td>Bertutezko etika</td><td>Andreia eta dikaiosyne bertuteek laguntza eskatzen dute</td></tr>
+        <tr><td>Estoizismoa</td><td>Kontrola daukazuna erabili: deitu. Gainerakoa ez dago gure esku.</td></tr>
+        <tr><td>Deontologia (Kant)</td><td>Motogidaria helburu gisa tratatzen ez bagara, deitu</td></tr>
+        <tr><td>Utilitarismoa</td><td>Saldo orokorra: deitu (bizitza baten balioa > 5 minutu)</td></tr>
+        <tr><td>Zaintzaren etika</td><td>Trontoren 5 ezaugarriak: arreta âœ“ erantzukizuna ✗ → laguntza eskatzen</td></tr>
+        <tr><td>Nietzsche</td><td>Moral konbentzionala zalantzan jartzen du, baina ez du irtenbiderik ematen</td></tr>
+      </table>
+    </div>
+
+
+    <div class="slide" data-session="s12" data-phase="itxiera" data-label="Itxiera nagusia">
+      <span class="session-badge">S12 · Itxiera nagusia</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Etika kurtsoa: zer ikasi dugu?</h2>
+      <div class="collapse-trigger" onclick="toggleCollapse(this)">
+        <span class="arr">→</span> Hausnarketa: zein teoria sentitzen duzu gehiago zurea dela? Zergatik?
+      </div>
+      <div class="collapse-body">
+        <p>Baten bat esango du utilitarismoa, besteak bertutezko etika, besteak zaintzaren etika… Denak dira ikusmira baliozkoak eta osagarriak.</p>
+      </div>
+      <ul class="reveal-list" style="margin-top:16px;">
+        <li class="hidden">Filosofia morala ez da erantzun zuzena bilatzea – galdera egokiak egitea da</li>
+        <li class="hidden">Teoriaren bakoitzak argi egiten digu bere aldetik: Kant arauetan, Aristoteles karakterean, Gilligan harremanetan…</li>
+        <li class="hidden">Portu kaleako kasua: teoria guztiek diote lagundu behar duzula – baina arrazoiak desberdinak dira</li>
+        <li class="hidden">Filosofia politikora: nola antolatzen gara taldean? → hurrengo gaia</li>
+      </ul>
+    </div>
+
+    <div class="slide" data-phase="itxiera" data-session="s12" data-label="S12 · Gaur ikasi dugu…">
+      <span class="session-badge">S12 · Itxiera</span>
+      <div class="phase-badge phase-itxiera">Itxiera</div>
+      <h2 class="slide-title">Gaur ikasi dugu…</h2>
+      <ul class="reveal-list">
+        <li class="hidden"><strong>Etika aplikatua:</strong> 2 baldintza: eztabaida soziala + moralaren dimentsioa antolaketa soziala baino haratago</li>
+        <li class="hidden"><strong>10 printzipio normatiboak:</strong> onura (1-2), betebeharra besteekiko (3-7), eskubideak (8-10)</li>
+        <li class="hidden"><strong>Teoria guztiak Portu kalean:</strong> denek diote lagundu behar duzula — arrazoiak desberdinak dira</li>
+        <li class="hidden"><strong>Filosofia moralaren funtzioa:</strong> ez erantzun bakar bat bilatzea, galdera egokiak egitea da</li>
+      </ul>
+    </div>
+
+  </div><!-- #stage -->
+  <div id="dots-bar"></div>
+</div><!-- #content-wrap -->
+
+<div id="reveal-counter"><span class="rc-dots"></span><span id="rc-label" class="rc-label"></span></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════
+const slides = Array.from(document.querySelectorAll('.slide'));
+let current = 0;
+const revealState = {}; // { slideIndex: revealedCount }
+
+// ══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════════
+function goTo(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+  slides[current].classList.remove('active');
+  current = idx;
+  slides[current].classList.add('active');
+  updateDots();
+  updateToc();
+  updateSessionTabs();
+  updateRevealCounter();
+}
+
+function nextSlide() {
+  const list = getRevealList(current);
+  if (list.length > 0) {
+    const revealed = revealState[current] || 0;
+    if (revealed < list.length) {
+      revealNext(current);
+      return;
+    }
+  }
+  if (current < slides.length - 1) goTo(current + 1);
+}
+
+function prevSlide() {
+  const list = getRevealList(current);
+  if (list.length > 0) {
+    const revealed = revealState[current] || 0;
+    if (revealed > 0) {
+      retractLast(current);
+      return;
+    }
+  }
+  if (current > 0) {
+    goTo(current - 1);
+    const prev = current;
+    const prevList = getRevealList(prev);
+    if (prevList.length > 0) {
+      revealState[prev] = prevList.length;
+      prevList.forEach(item => {
+        if (item.tagName === 'LI') { item.classList.remove('hidden'); item.classList.add('visible'); }
+        else openCollapse(item);
+      });
+    }
+  }
+}
+
+function skipSlide(dir) {
+  if (dir > 0) {
+    const list = getRevealList(current);
+    revealState[current] = list.length;
+    list.forEach(item => {
+      if (item.tagName === 'LI') { item.classList.remove('hidden'); item.classList.add('visible'); }
+      else openCollapse(item);
+    });
+    if (current < slides.length - 1) goTo(current + 1);
+  } else {
+    if (current > 0) {
+      const list = getRevealList(current);
+      revealState[current] = 0;
+      list.forEach(item => {
+        if (item.tagName === 'LI') { item.classList.add('hidden'); item.classList.remove('visible', 'current'); }
+        else closeCollapse(item);
+      });
+      goTo(current - 1);
+    }
+  }
+}
+
+function goToSession(sessionId) {
+  const idx = slides.findIndex(s => s.dataset.session === sessionId);
+  if (idx >= 0) {
+    revealState[idx] = 0;
+    const list = getRevealList(idx);
+    list.forEach(li => { li.classList.add('hidden'); li.classList.remove('visible', 'current'); });
+    goTo(idx);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  REVEAL
+// ══════════════════════════════════════════════════════════
+function getRevealList(idx) {
+  // Returns reveal-list items AND collapse-triggers in DOM order
+  return Array.from(slides[idx].querySelectorAll('.reveal-list li, .collapse-trigger'));
+}
+
+function revealNext(idx) {
+  const list = getRevealList(idx);
+  const revealed = revealState[idx] || 0;
+  if (revealed < list.length) {
+    if (revealed > 0) {
+      const prev = list[revealed - 1];
+      if (prev.tagName === 'LI') prev.classList.remove('current');
+    }
+    const item = list[revealed];
+    if (item.tagName === 'LI') {
+      item.classList.remove('hidden');
+      item.classList.add('visible', 'current');
+    } else {
+      // collapse-trigger
+      openCollapse(item);
+    }
+    revealState[idx] = revealed + 1;
+  }
+  updateRevealCounter();
+}
+
+function retractLast(idx) {
+  const list = getRevealList(idx);
+  const revealed = revealState[idx] || 0;
+  if (revealed > 0) {
+    const item = list[revealed - 1];
+    if (item.tagName === 'LI') {
+      item.classList.add('hidden');
+      item.classList.remove('visible', 'current');
+    } else {
+      closeCollapse(item);
+    }
+    if (revealed > 1) {
+      const prevItem = list[revealed - 2];
+      if (prevItem.tagName === 'LI') prevItem.classList.add('current');
+    }
+    revealState[idx] = revealed - 1;
+  }
+  updateRevealCounter();
+}
+
+// Init: hide all reveal items, close all collapses
+slides.forEach((slide, idx) => {
+  const list = getRevealList(idx);
+  list.forEach(item => {
+    if (item.tagName === 'LI') item.classList.add('hidden');
+    // collapse-triggers are already closed by default (max-height:0)
+  });
+  revealState[idx] = 0;
+});
+
+// ══════════════════════════════════════════════════════════
+//  DOTS
+// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+//  REVEAL COUNTER
+// ══════════════════════════════════════════════════════════
+function updateRevealCounter() {
+  const counter = document.getElementById('reveal-counter');
+  const label = document.getElementById('rc-label');
+  const dotsEl = counter.querySelector('.rc-dots');
+  const list = getRevealList(current);
+  const revealed = revealState[current] || 0;
+
+  dotsEl.innerHTML = '';
+  if (list.length === 0) {
+    counter.classList.remove('visible');
+    return;
+  }
+  list.forEach((item, i) => {
+    const d = document.createElement('span');
+    const isCollapse = item.tagName !== 'LI';
+    if (i < revealed) {
+      d.className = 'rc-dot rc-done' + (isCollapse ? ' rc-collapse' : '');
+    } else {
+      d.className = 'rc-dot rc-pending' + (isCollapse ? ' rc-collapse' : '');
+    }
+    dotsEl.appendChild(d);
+  });
+  const pending = list.length - revealed;
+  if (pending > 0) {
+    label.textContent = pending + ' ›';
+    counter.classList.add('visible');
+  } else {
+    label.textContent = '✔';
+    counter.classList.add('visible');
+    setTimeout(() => {
+      if ((revealState[current] || 0) === list.length) counter.classList.remove('visible');
+    }, 1800);
+  }
+}
+
+function buildDots() {
+  const bar = document.getElementById('dots-bar');
+  bar.innerHTML = '';
+  // group by session
+  const sessionSlides = {};
+  slides.forEach((s, i) => {
+    const sess = s.dataset.session;
+    if (!sessionSlides[sess]) sessionSlides[sess] = [];
+    sessionSlides[sess].push(i);
+  });
+  // render dots for current session
+  const currentSession = slides[current].dataset.session;
+  const sessionGroup = sessionSlides[currentSession] || [];
+  sessionGroup.forEach(i => {
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (i === current ? ' active' : (i < current ? ' done' : ''));
+    dot.onclick = () => goTo(i);
+    bar.appendChild(dot);
+  });
+}
+
+function updateDots() { buildDots(); }
+
+// ══════════════════════════════════════════════════════════
+//  TOC
+// ══════════════════════════════════════════════════════════
+function buildToc() {
+  const list = document.getElementById('toc-list');
+  const SESSION_TITLES = {
+    'portada': 'Portada',
+    's01': 'S01 · Morala · Etika · Metaetika',
+    's02': 'S02 · Egoismoa · Emotibismoa',
+    's03': 'S03 · Kohlberg · Gilligan',
+    's04': 'S04 · Bertutezko etika',
+    's05': 'S05 · Estoizismoa',
+    's06': 'S06 · Apatheia · Ariketa',
+    's07': 'S07 · Deontologia · Kant',
+    's08': 'S08 · Inperatibo kategorikoa',
+    's09': 'S09 · Utilitarismoa',
+    's10': 'S10 · Nietzsche · Nihilismoa',
+    's11': 'S11 · Zaintzaren etika',
+    's12': 'S12 · Etika aplikatua',
+  };
+  const sessions = {};
+  const sessionOrder = [];
+  slides.forEach((s, i) => {
+    const sess = s.dataset.session;
+    if (!sessions[sess]) { sessions[sess] = []; sessionOrder.push(sess); }
+    sessions[sess].push({ idx: i, label: s.dataset.label || 'Diapositiba' });
+  });
+  sessionOrder.forEach(sess => {
+    const items = sessions[sess];
+    const title = SESSION_TITLES[sess] || sess.toUpperCase();
+    const header = document.createElement('div');
+    header.className = 'toc-group-header';
+    header.dataset.sess = sess;
+    header.innerHTML = `<span class="toc-group-arrow">▶</span><span>${title}</span>`;
+    header.onclick = () => {
+      const isOpen = header.classList.toggle('open');
+      const itemsEl = header.nextElementSibling;
+      itemsEl.style.maxHeight = isOpen ? '2000px' : '0';
+      itemsEl.classList.toggle('open', isOpen);
+    };
+    list.appendChild(header);
+    const itemsUl = document.createElement('ul');
+    itemsUl.className = 'toc-items';
+    items.forEach(({ idx, label }) => {
+      const li = document.createElement('li');
+      li.textContent = label;
+      li.dataset.idx = idx;
+      li.onclick = () => { goTo(idx); };
+      itemsUl.appendChild(li);
+    });
+    list.appendChild(itemsUl);
+  });
+}
+
+function updateToc() {
+  document.querySelectorAll('.toc-items li').forEach(li => {
+    li.classList.toggle('active', parseInt(li.dataset.idx) === current);
+  });
+  const currentSess = slides[current].dataset.session;
+  document.querySelectorAll('.toc-group-header').forEach(h => {
+    h.classList.toggle('active-group', h.dataset.sess === currentSess);
+    if (h.dataset.sess === currentSess && !h.classList.contains('open')) {
+      h.classList.add('open');
+      h.nextElementSibling.style.maxHeight = '2000px';
+      h.nextElementSibling.classList.add('open');
+    }
+  });
+  const activeLi = document.querySelector('.toc-items li.active');
+  if (activeLi) activeLi.scrollIntoView({ block: 'nearest' });
+}
+
+function toggleToc() {
+  document.getElementById('toc-panel').classList.toggle('open');
+  document.getElementById('content-wrap').classList.toggle('toc-open');
+}
+
+// ══════════════════════════════════════════════════════════
+//  SESSION TABS
+// ══════════════════════════════════════════════════════════
+function updateSessionTabs() {
+  const currentSession = slides[current].dataset.session;
+  document.querySelectorAll('#session-tabs button').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  const tab = document.getElementById('tab-' + currentSession);
+  if (tab) tab.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════
+//  COLLAPSE
+// ══════════════════════════════════════════════════════════
+function openCollapse(trigger) {
+  const body = trigger.nextElementSibling;
+  trigger.classList.add('open');
+  body.style.maxHeight = '2000px';
+  body.classList.add('open');
+}
+function closeCollapse(trigger) {
+  const body = trigger.nextElementSibling;
+  trigger.classList.remove('open');
+  body.style.maxHeight = '0';
+  body.classList.remove('open');
+}
+function toggleCollapse(trigger) {
+  trigger.classList.contains('open') ? closeCollapse(trigger) : openCollapse(trigger);
+}
+
+// ══════════════════════════════════════════════════════════
+//  THEME
+// ══════════════════════════════════════════════════════════
+function toggleTheme() {
+  const html = document.documentElement;
+  const isLight = html.dataset.theme === 'light';
+  html.dataset.theme = isLight ? 'dark' : 'light';
+  document.getElementById('btn-theme').textContent = isLight ? '☀' : '🌙';
+}
+
+// ══════════════════════════════════════════════════════════
+//  KEYBOARD
+// ══════════════════════════════════════════════════════════
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.ctrlKey && e.key === 'ArrowRight') { e.preventDefault(); skipSlide(1); }
+  else if (e.ctrlKey && e.key === 'ArrowLeft') { e.preventDefault(); skipSlide(-1); }
+  else if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+  else if (e.key === 't' || e.key === 'T') toggleToc();
+});
+
+// ══════════════════════════════════════════════════════════
+//  TOUCH / SWIPE (iOS Safari)
+// ══════════════════════════════════════════════════════════
+(function() {
+  var startX = 0, startY = 0, startTime = 0;
+  var stage = document.getElementById('stage');
+  stage.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    startTime = Date.now();
+  }, { passive: true });
+  stage.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - startX;
+    var dy = e.changedTouches[0].clientY - startY;
+    var dt = Date.now() - startTime;
+    if (dt > 500) return;                      // too slow
+    if (Math.abs(dy) > Math.abs(dx)) return;   // vertical scroll, not swipe
+    if (Math.abs(dx) < 40) return;             // too short
+    if (dx < 0) nextSlide();
+    else prevSlide();
+  }, { passive: true });
+})();
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+buildToc();
+// Año dinámico en el pie CC
+(function() {
+  var el = document.getElementById('cc-year');
+  if (el) el.textContent = new Date().getFullYear();
+})();
+buildDots();
+updateSessionTabs();
+updateRevealCounter();
+</script>
+</body>
+</html>
